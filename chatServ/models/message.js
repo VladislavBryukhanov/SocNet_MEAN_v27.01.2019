@@ -1,10 +1,10 @@
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/chat', { useNewUrlParser: true });
-module.exports = mongoose.model('Message', {
+var messageSchema = mongoose.Schema({
     username: String,
     content: String,
     time: {
-      type: Date,
-      default: Date.now
+        type: Date,
+        default: Date.now
     }
 });
+module.exports = mongoose.model('Message', messageSchema);

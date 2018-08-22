@@ -5,8 +5,11 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var romsRouter = require('./routes/rooms');
 
 var app = express();
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017/chat', { useNewUrlParser: true });
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -16,5 +19,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/rooms', romsRouter);
 
 module.exports = app;

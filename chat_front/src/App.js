@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
-import './App.css';
-import io from 'socket.io-client';
+// import io from 'socket.io-client';
+import { connect } from 'react-redux';
+import InputComponent from './inputComponent';
 
-const socket = io("192.168.0.103:3000", {
+/*
+const socket = io("192.168.1.220:31315", {
     path: "/chat"
 });
+*/
 
 class App extends Component {
     constructor(props) {
@@ -12,41 +15,24 @@ class App extends Component {
         this.state = {
             messages: [],
             username: 'USER',
-            messageContent: '',
             onlineCounter: 0
         }
     }
 
-    keyBind = (e) => {
-        if(e.key === 'Enter') {
-            this.onSendMessage();
-        }
-    };
-
-    onUsernameChange = (e) => {
-        this.setState({username: e.target.value});
-    };
-
-    onMessageChange = (e) => {
-        this.setState({messageContent: e.target.value});
-    };
-
-    onSendMessage = () => {
-        let message = {
-            username: this.state.username,
-            content: this.state.messageContent
-        };
-        socket.emit("message", message);
-    };
+    componentWillMount() {
+        console.log(this.props.socket);
+        console.log('+++++++++++++++++++++++++++');
+        this.props.initSocket('/chat');
+    }
 
     componentDidMount() {
-        socket.on("newConnection", (users) => {
+        this.props.socket.on("newConnection", (users) => {
             this.setState({onlineCounter: users})
         });
-        socket.on("messages", (messages) => {
+        this.props.socket.on("messages", (messages) => {
             this.setState({messages: messages})
         });
-        socket.on("message", (msg) => {
+        this.props.socket.on("message", (msg) => {
             this.setState({messages: [
                 ...this.state.messages, msg
             ]});
@@ -69,16 +55,25 @@ class App extends Component {
                 })}
             </div>
             <hr/>
-            <input  onChange={this.onMessageChange}
-                    onKeyPress={this.keyBind}
-                    value={this.state.messageContent}
-                    placeholder="message" />
-
-            <button onClick={this.onSendMessage}>Send</button>
+            {/*<InputComponent/>*/}
         </div>
 
     );
   }
 }
 
-export default App;
+const mapStateToProps = (state) => ({
+    socket: state.socket
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    initSocket: (path) => {
+        dispatch({type: 'newSocket', path: path});
+    }
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)
+(App);
