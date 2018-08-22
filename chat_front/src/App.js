@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import io from 'socket.io-client';
 
-const socket = io("192.168.1.220:3000", {
+const socket = io("192.168.0.103:3000", {
     path: "/chat"
 });
 
@@ -37,12 +37,6 @@ class App extends Component {
             content: this.state.messageContent
         };
         socket.emit("message", message);
-        this.setState({
-            messages: [
-                ...this.state.messages, message
-            ],
-            messageContent: ''
-        });
     };
 
     componentDidMount() {
@@ -56,7 +50,6 @@ class App extends Component {
             this.setState({messages: [
                 ...this.state.messages, msg
             ]});
-            console.log(msg);
         });
     }
 

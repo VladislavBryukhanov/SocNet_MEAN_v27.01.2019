@@ -2,7 +2,20 @@ var Message = require('../models/message');
 
 var getMessages = (clientSocket) => {
     Message.find({}, (err, data) => {
+        if (err) {
+            console.log(err);
+        }
         clientSocket.emit('messages', data);
+    });
+};
+
+var saveMessages = (socket, msg) => {
+    let message = Message(msg);
+    message.save((err, msg)=>{
+        if (err) {
+            console.log(err);
+        }
+        socket.emit('message', msg)
     });
 };
 
@@ -25,12 +38,7 @@ module.exports = (server) => {
         });
 
         client.on('message', (msg) => {
-            let message = Message(msg);
-            // console.log(message);
-            message.save((err)=>{
-                console.log(err)
-            });
-           client.broadcast.emit('message', msg)
+            saveMessages(io, msg);
         });
     })
 };
