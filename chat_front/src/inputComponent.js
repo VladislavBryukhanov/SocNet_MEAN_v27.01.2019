@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 class InputComponent extends Component {
     constructor(props) {
@@ -7,10 +8,6 @@ class InputComponent extends Component {
             messageContent: ''
         }
     }
-
-    onUsernameChange = (e) => {
-        this.setState({username: e.target.value});
-    };
 
     onMessageChange = (e) => {
         this.setState({messageContent: e.target.value});
@@ -26,6 +23,18 @@ class InputComponent extends Component {
             this.setState({messageContent: ''});
         }
     };
+    onSendMessage2 = () => {
+        this.props.socket.emit("messageRoom", 'E');
+        this.props.socket.on("cb", (msg) => {
+            console.log(msg);
+        });
+    };
+    onSendMessage3 = () => {
+        this.props.socket.emit("join", 'q');
+        this.props.socket.on("cb", (msg) => {
+            console.log(msg);
+        });
+    };
 
     keyBind = (e) => {
         if(e.key === 'Enter') {
@@ -36,15 +45,25 @@ class InputComponent extends Component {
     render() {
         return (
             <div>
-                <input  onChange={this.onMessageChange}
-                      onKeyPress={this.keyBind}
-                      value={this.state.messageContent}
-                      placeholder="message" />
+                <input
+                    value={this.state.messageContent}
+                    onChange={this.onMessageChange}
+                    onKeyPress={this.keyBind}
+                    placeholder="message" />
 
                 <button onClick={this.onSendMessage}>Send</button>
+                <button onClick={this.onSendMessage2}>Send</button>
+                <button onClick={this.onSendMessage3}>Send</button>
             </div>
         );
     }
 }
 
-export default InputComponent;
+const mapStateToProps = (state) => ({
+   socket: state.socket
+});
+
+export default connect(
+    mapStateToProps,
+    null
+)(InputComponent);

@@ -13,16 +13,9 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            messages: [],
             username: 'USER',
             onlineCounter: 0
         }
-    }
-
-    componentWillMount() {
-        console.log(this.props.socket);
-        console.log('+++++++++++++++++++++++++++');
-        this.props.initSocket('/chat');
     }
 
     componentDidMount() {
@@ -30,46 +23,53 @@ class App extends Component {
             this.setState({onlineCounter: users})
         });
         this.props.socket.on("messages", (messages) => {
-            this.setState({messages: messages})
+            this.props.loadMessages(messages);
         });
         this.props.socket.on("message", (msg) => {
-            this.setState({messages: [
-                ...this.state.messages, msg
-            ]});
+            this.props.addMessage(msg);
         });
     }
 
-  render() {
-    return (
-        <div>
-            <div>Online: {this.state.onlineCounter}</div>
-            <input onChange={this.onUsernameChange}
-                   value={this.state.username}
-                   placeholder="Nickname"/>
-            <hr/>
-            <div>
-                {this.state.messages.map((item) => {
-                    return <p key={item._id}>
-                        {item.username}: {item.content} | {item.time}
-                    </p>
-                })}
-            </div>
-            <hr/>
-            {/*<InputComponent/>*/}
-        </div>
+    onUsernameChange = (e) => {
+        this.setState({username: e.target.value});
+    };
 
-    );
-  }
+    render() {
+        return (
+            <div>
+                <div>Online: {this.state.onlineCounter}</div>
+                <input
+                    value={this.state.username}
+                    onChange={this.onUsernameChange}
+                    placeholder="Nickname"/>
+                <hr/>
+                <div>
+                    {this.props.messages.map((item) => {
+                        return <p key={item._id}>
+                            {item.username}: {item.content} | {item.time}
+                        </p>
+                    })}
+                </div>
+                <hr/>
+                <InputComponent/>
+            </div>
+
+        );
+    }
 }
 
 const mapStateToProps = (state) => ({
-    socket: state.socket
+    socket: state.socket,
+    messages: state.messages
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    initSocket: (path) => {
-        dispatch({type: 'newSocket', path: path});
-    }
+    loadMessages: (messages) => (
+        dispatch({type: "loadMessages", messages: messages})
+    ),
+    addMessage: (message) => (
+        dispatch({type: "addMessage", message: message})
+    )
 });
 
 export default connect(

@@ -40,5 +40,13 @@ module.exports = (server) => {
         client.on('message', (msg) => {
             saveMessages(io, msg);
         });
+
+        client.on('messageRoom', (msg) => {
+            io.to('WWW').emit('cb', msg);
+        });
+
+        client.on('join', (msg) => {
+            client.join('WWW');
+        });
     })
 };
