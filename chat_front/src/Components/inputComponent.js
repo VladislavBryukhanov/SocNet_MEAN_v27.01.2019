@@ -23,18 +23,6 @@ class InputComponent extends Component {
             this.setState({messageContent: ''});
         }
     };
-    onSendMessage2 = () => {
-        this.props.socket.emit("messageRoom", 'E');
-        this.props.socket.on("cb", (msg) => {
-            console.log(msg);
-        });
-    };
-    onSendMessage3 = () => {
-        this.props.socket.emit("join", 'q');
-        this.props.socket.on("cb", (msg) => {
-            console.log(msg);
-        });
-    };
 
     keyBind = (e) => {
         if(e.key === 'Enter') {
@@ -52,8 +40,6 @@ class InputComponent extends Component {
                     placeholder="message" />
 
                 <button onClick={this.onSendMessage}>Send</button>
-                <button onClick={this.onSendMessage2}>Send</button>
-                <button onClick={this.onSendMessage3}>Send</button>
             </div>
         );
     }

@@ -1,19 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
-import Rooms from './rooms';
 import registerServiceWorker from './registerServiceWorker';
 import { createStore } from 'redux';
 import { Provider,  } from 'react-redux';
 import io from 'socket.io-client';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-
+import App from './App';
+import Auth from "./Pages/auth";
+import Registration from "./Pages/registration";
+import Rooms from './Pages/rooms';
 // const socketIp = "192.168.0.103:31315";
 // var socketIp = "192.168.1.220:31315";
 
 const initState = {
-    serverIp: "192.168.0.103:31315",
-    socket: io("192.168.0.103:31315", {
+    serverIp: "http://192.168.0.103:31315",
+    socket: io("http://192.168.0.103:31315", {
         path: "/chat"
     }),
     messages: []
@@ -47,8 +48,10 @@ ReactDOM.render(
     <Provider store = {store}>
         <BrowserRouter>
             <Switch>
-                {/*<Route path="/" component={Rooms}/>*/}
-                <Route path="/dialog" component={App}/>
+                <Route exact path="/" component={Auth}/>
+                <Route path="/registration" component={Registration}/>
+                <Route path="/Rooms" component={Rooms}/>
+                <Route path="/dialog/:roomId" component={App}/>
             </Switch>
         </BrowserRouter>
     </Provider>,

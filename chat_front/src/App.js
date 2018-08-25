@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 // import io from 'socket.io-client';
 import { connect } from 'react-redux';
-import InputComponent from './inputComponent';
+import InputComponent from './Components/inputComponent';
+import NavBar from './Components/navBar';
 
 /*
 const socket = io("192.168.1.220:31315", {
@@ -13,9 +14,19 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            username: 'USER',
             onlineCounter: 0
         }
+    }
+
+    componentWillUnmount() {
+        this.props.socket.off('newConnection');
+        this.props.socket.off('messages');
+        this.props.socket.off('message');
+        this.props.socket.emit("leaveRoom", this.props.match.params.roomId);
+    }
+
+    componentWillMount() {
+        this.props.socket.emit("joinRoom", this.props.match.params.roomId);
     }
 
     componentDidMount() {
@@ -30,24 +41,16 @@ class App extends Component {
         });
     }
 
-    onUsernameChange = (e) => {
-        this.setState({username: e.target.value});
-    };
-
     render() {
         return (
             <div>
+                <NavBar/>
                 <div>Online: {this.state.onlineCounter}</div>
-                <input
-                    value={this.state.username}
-                    onChange={this.onUsernameChange}
-                    placeholder="Nickname"/>
-                <hr/>
                 <div>
                     {this.props.messages.map((item) => {
-                        return <p key={item._id}>
-                            {item.username}: {item.content} | {item.time}
-                        </p>
+                        return  <p key={item._id}>
+                                    {item.username}: {item.content} | {item.time}
+                                </p>
                     })}
                 </div>
                 <hr/>

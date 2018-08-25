@@ -9,7 +9,10 @@ router.get("/getRooms", (request, response) => {
 });
 
 router.post("/addRoom", (request, response) => {
-
+    let newRoom = new Room(request.body);
+    newRoom.save((err, res) => {
+        response.send(res);
+    });
 });
 
 module.exports = router;

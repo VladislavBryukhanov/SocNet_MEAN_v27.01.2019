@@ -9,14 +9,9 @@ var getMessages = (clientSocket) => {
     });
 };
 
-var saveMessages = (socket, msg) => {
+var saveMessages = (msg, callback) => {
     let message = Message(msg);
-    message.save((err, msg)=>{
-        if (err) {
-            console.log(err);
-        }
-        socket.emit('message', msg)
-    });
+    message.save(callback);
 };
 
 module.exports = (server) => {
@@ -29,6 +24,34 @@ module.exports = (server) => {
 
     let onlineCounter = 0;
     io.on('connection', (client) => {
+
+        client.on('joinRoom', (roomId) => {
+
+            client.join(roomId);
+            client.room = roomId;
+            io.to(roomId).emit('newConnection', ++onlineCounter);
+            getMessages(client);//, roomId);
+
+            // client.on('disconnect', _ => {
+                // io.emit('newConnection', --onlineCounter);
+            // });
+        });
+
+        client.on('message', (msg) => {
+            saveMessages(msg, (err, msg) => {
+                if (err) {
+                    console.log(err);
+                }
+                io.to(client.room).emit('message', msg)
+            });
+        });
+
+        client.on('leaveRoom', (roomId) => {
+            client.leave(roomId);
+            io.emit('newConnection', --onlineCounter);
+        });
+
+/*
         console.log('con');
         getMessages(client);
         io.emit('newConnection', ++onlineCounter);
@@ -40,13 +63,14 @@ module.exports = (server) => {
         client.on('message', (msg) => {
             saveMessages(io, msg);
         });
+*/
 
-        client.on('messageRoom', (msg) => {
+/*        client.on('messageRoom', (msg) => {
             io.to('WWW').emit('cb', msg);
         });
 
         client.on('join', (msg) => {
             client.join('WWW');
-        });
+        });*/
     })
 };
