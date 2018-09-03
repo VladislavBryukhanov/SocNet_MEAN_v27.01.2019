@@ -9,6 +9,7 @@ router.get("/getRooms", (request, response) => {
 });
 
 router.post("/addRoom", (request, response) => {
+    console.log(request.user);
     let newRoom = new Room(request.body);
     newRoom.save((err, res) => {
         response.send(res);

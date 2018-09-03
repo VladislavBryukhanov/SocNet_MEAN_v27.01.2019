@@ -1,82 +1,54 @@
 import React, { Component } from 'react';
-// import io from 'socket.io-client';
+import { Switch, Route } from 'react-router-dom';
+import axios from 'axios';
 import { connect } from 'react-redux';
-import InputComponent from './Components/inputComponent';
+import { compose } from 'redux';
+import { withCookies } from 'react-cookie';
 import NavBar from './Components/navBar';
-
-/*
-const socket = io("192.168.1.220:31315", {
-    path: "/chat"
-});
-*/
+import Auth from "./Pages/auth";
+import Registration from "./Pages/registration";
+import Rooms from './Pages/rooms';
+import Chat from './Pages/chat';
 
 class App extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            onlineCounter: 0
-        }
-    }
-
-    componentWillUnmount() {
-        this.props.socket.off('newConnection');
-        this.props.socket.off('messages');
-        this.props.socket.off('message');
-        this.props.socket.emit("leaveRoom", this.props.match.params.roomId);
     }
 
     componentWillMount() {
-        this.props.socket.emit("joinRoom", this.props.match.params.roomId);
-    }
-
-    componentDidMount() {
-        this.props.socket.on("newConnection", (users) => {
-            this.setState({onlineCounter: users})
-        });
-        this.props.socket.on("messages", (messages) => {
-            this.props.loadMessages(messages);
-        });
-        this.props.socket.on("message", (msg) => {
-            this.props.addMessage(msg);
-        });
+        axios.defaults.baseURL = this.props.serverIp;
+        if(!this.props.cookies.get('token')) {
+            this.props.history.push("/");
+        } else {
+            axios.defaults.headers = {
+                authorization: 'Bearer ' + this.props.cookies.get('token').data
+            };
+            // this.props.history.push("/rooms");
+        }
     }
 
     render() {
         return (
             <div>
-                <NavBar/>
-                <div>Online: {this.state.onlineCounter}</div>
-                <div>
-                    {this.props.messages.map((item) => {
-                        return  <p key={item._id}>
-                                    {item.username}: {item.content} | {item.time}
-                                </p>
-                    })}
-                </div>
-                <hr/>
-                <InputComponent/>
+                {/*<NavBar/>*/}
+                <Switch>
+                    <Route exact path="/" component={Auth}/>
+                    <Route path="/registration" component={Registration}/>
+                    <Route path="/rooms" component={Rooms}/>
+                    <Route path="/dialog/:roomId" component={Chat}/>
+                </Switch>
             </div>
-
         );
     }
 }
 
 const mapStateToProps = (state) => ({
     socket: state.socket,
-    messages: state.messages
+    messages: state.messages,
+    serverIp: state.serverIp
 });
 
-const mapDispatchToProps = (dispatch) => ({
-    loadMessages: (messages) => (
-        dispatch({type: "loadMessages", messages: messages})
-    ),
-    addMessage: (message) => (
-        dispatch({type: "addMessage", message: message})
-    )
-});
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)
-(App);
+export default compose (
+    withCookies,
+    connect(mapStateToProps)
+)(App);

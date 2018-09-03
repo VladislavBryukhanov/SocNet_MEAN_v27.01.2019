@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux'
-import { Link, Router, Route } from 'react-router-dom';
-import Registration from "./registration";
-import App from '../App';
-import Rooms from './rooms';
+import { Link } from 'react-router-dom';
+import { compose } from 'redux';
+import { withCookies } from 'react-cookie';
 
 class Auth extends Component {
     constructor(props) {
@@ -14,6 +13,13 @@ class Auth extends Component {
             password:''
         }
     }
+
+/*    componentWillMount() {
+        axios.defaults.baseURL = this.props.serverIp;
+        axios.defaults.headers = {
+            authorization: 'Bearer ' + this.props.cookies.get('token')
+        };
+    }*/
 
     onLoginChanged = (e) => {
         this.setState({login: e.target.value});
@@ -29,27 +35,15 @@ class Auth extends Component {
             login: this.state.login,
             password: this.state.password
         };
-        axios.defaults.baseURL = this.props.serverIp;
-/*        axios.create({
-            baseURL: 'https://some-domain.com/api/',
-            timeout: 1000,
-            headers: {'X-Custom-Header': 'foobar'}
-        });*/
         axios.post('/signIn', user)
             .then((res) => {
-                console.log(res.data);
+                this.props.cookies.set('token', res, {path: '/', expiresIn: 365 * 24 * 60 * 60});
                 axios.defaults.headers = {
-                    token: res.data
+                    authorization: 'Bearer ' + res.data
                 };
+                this.props.history.push("/rooms");
             });
-    };
-
-    test = () => {
-        axios.get('/test')
-            .then((res) => {
-                console.log(res.data);
-            });
-    };
+    }
 
     render() {
         return (
@@ -58,10 +52,8 @@ class Auth extends Component {
                     <input onChange={this.onLoginChanged} name="login" placeholder="Login"/>
                     <input onChange={this.onPasswordChanged} name="password" type="password" placeholder="Password"/>
                     <input type="submit" value="Log in"/>
-                    {/*<Link to="/Rooms">Rooms</Link>*/}
                     <Link to="/registration">Registration</Link>
                 </form>
-                <div onClick={this.test}>TEST</div>
             </div>
         )
     }
@@ -71,13 +63,7 @@ const mapStateToProps = (state) => ({
     serverIp: state.serverIp
 });
 
-export default connect(
-    mapStateToProps,
-    null
+export default compose (
+    withCookies,
+    connect(mapStateToProps)
 )(Auth);
-
-{/*
-<Switch>
-    <Route exact path="/" component={Rooms}/>
-    <Route path="/dialog/:roomId" component={App}/>
-</Switch>*/}

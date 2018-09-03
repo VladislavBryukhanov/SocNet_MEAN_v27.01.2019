@@ -5,6 +5,10 @@ var messageSchema = mongoose.Schema({
     time: {
         type: Date,
         default: Date.now
+    },
+    roomId: {
+        type: String,
+        required: true
     }
 });
 module.exports = mongoose.model('Message', messageSchema);

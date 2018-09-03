@@ -17,7 +17,8 @@ class InputComponent extends Component {
         if(this.state.messageContent.trim().length > 0) {
             let message = {
                 username: this.state.username,
-                content: this.state.messageContent
+                content: this.state.messageContent,
+                roomId: this.props.roomId
             };
             this.props.socket.emit("message", message);
             this.setState({messageContent: ''});
@@ -49,7 +50,4 @@ const mapStateToProps = (state) => ({
    socket: state.socket
 });
 
-export default connect(
-    mapStateToProps,
-    null
-)(InputComponent);
+export default connect(mapStateToProps)(InputComponent);

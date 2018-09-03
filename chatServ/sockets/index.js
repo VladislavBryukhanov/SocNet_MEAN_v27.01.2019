@@ -1,7 +1,7 @@
 var Message = require('../models/message');
 
-var getMessages = (clientSocket) => {
-    Message.find({}, (err, data) => {
+var getMessages = (clientSocket, roomId) => {
+    Message.find({roomId: roomId}, (err, data) => {
         if (err) {
             console.log(err);
         }
@@ -30,7 +30,7 @@ module.exports = (server) => {
             client.join(roomId);
             client.room = roomId;
             io.to(roomId).emit('newConnection', ++onlineCounter);
-            getMessages(client);//, roomId);
+            getMessages(client, roomId);//, roomId);
 
             // client.on('disconnect', _ => {
                 // io.emit('newConnection', --onlineCounter);
