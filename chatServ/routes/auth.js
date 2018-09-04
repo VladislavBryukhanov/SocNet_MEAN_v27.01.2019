@@ -1,9 +1,9 @@
-var express = require('express');
-var router = express.Router();
-var User = require('../models/user');
+const express = require('express');
+const router = express.Router();
+const User = require('../models/user');
 
-var secret = require('../secret');
-var jwt = require('jsonwebtoken');
+const secret = require('../secret');
+const jwt = require('jsonwebtoken');
 
 const addUser = (userData) => {
     let user = new User(userData);
@@ -11,37 +11,47 @@ const addUser = (userData) => {
 };
 
 const searchUser = (auth) => {
-    return User.findOne(auth);
+    User.findOne(auth)
+        .populate('username', 'name')
+        .exec();
+};
+
+const authPayload = (user) => {
+    let sessionPayload = {
+        role: user.role,
+        id: user._id
+    };
+    let token = jwt.sign(sessionPayload, secret, {expiresIn: 365 * 24 * 60 * 60});
+
+    delete user.password;
+    delete user._id;
+    delete user.role;
+
+    let res = {
+        token: token,
+        user: user
+    };
+    return res;
 };
 
 router.post('/signIn', async (request, response) => {
-    let res = await searchUser(request.body);
-    if(res) {
-        let sessionPayload = {
-            role: res.role,
-            id: res._id
-        };
-        let token = jwt.sign(sessionPayload, secret, { expiresIn: 365 * 24 * 60 * 60 });
-        console.log(res);
-        response.send(token);
+    let user = await searchUser(request.body);
+    if(user) {
+        response.send(authPayload(user));
     } else {
-        response.sendStatus(401);
+        response.sendStatus(404);
     }
 });
 
 router.post('/signUp', async (request, response) => {
-    let res = await addUser(request.body);
-    if(res) {
-        let sessionPayload = {
-            role: res.role,
-            id: res._id
-        };
-        let token = jwt.sign(sessionPayload, secret, { expiresIn: 365 * 24 * 60 * 60 });
-        response.send(token);
+    let user = await addUser(request.body);
+    if(user) {
+        response.send(authPayload(user));
     } else {
-        response.sendStatus(500);
+        response.sendStatus(404);
     }
 });
+
 
 /*router.get('/test', (request, response) => {
     // console.log(request);

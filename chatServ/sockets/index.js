@@ -1,6 +1,6 @@
-var Message = require('../models/message');
+const Message = require('../models/message');
 
-var getMessages = (clientSocket, roomId) => {
+const getMessages = (clientSocket, roomId) => {
     Message.find({roomId: roomId}, (err, data) => {
         if (err) {
             console.log(err);
@@ -9,17 +9,17 @@ var getMessages = (clientSocket, roomId) => {
     });
 };
 
-var saveMessages = (msg, callback) => {
+const saveMessages = (msg, callback) => {
     let message = Message(msg);
     message.save(callback);
 };
 
 module.exports = (server) => {
-    var io = require('socket.io')(server, {
+    const io = require('socket.io')(server, {
         path: '/chat',
         pingInterval: 10000,
         pingTimeout: 5000,
-        orogons: '*:*'
+        origins: '*:*'
     });
 
     let onlineCounter = 0;
@@ -50,27 +50,5 @@ module.exports = (server) => {
             client.leave(roomId);
             io.emit('newConnection', --onlineCounter);
         });
-
-/*
-        console.log('con');
-        getMessages(client);
-        io.emit('newConnection', ++onlineCounter);
-
-        client.on('disconnect', _ => {
-            io.emit('newConnection', --onlineCounter);
-        });
-
-        client.on('message', (msg) => {
-            saveMessages(io, msg);
-        });
-*/
-
-/*        client.on('messageRoom', (msg) => {
-            io.to('WWW').emit('cb', msg);
-        });
-
-        client.on('join', (msg) => {
-            client.join('WWW');
-        });*/
     })
 };

@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var Room = require('../models/room');
+const express = require('express');
+const router = express.Router();
+const Room = require('../models/room');
 
 router.get("/getRooms", (request, response) => {
     Room.find({}, (err, data) => {

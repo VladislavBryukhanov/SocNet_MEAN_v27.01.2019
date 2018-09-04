@@ -1,11 +1,11 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var cors = require('cors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const cors = require('cors');
 
-var exjwt = require('express-jwt');
-var secret = require('./secret');
+const exjwt = require('express-jwt');
+const secret = require('./secret');
 
 const jwtMW = exjwt({secret: secret})
     .unless({path: [
@@ -13,11 +13,11 @@ const jwtMW = exjwt({secret: secret})
         '/signUp'
     ]});
 
-var romsRouter = require('./routes/rooms');
-var authRouter = require('./routes/auth');
+const romsRouter = require('./routes/rooms');
+const authRouter = require('./routes/auth');
 
-var app = express();
-var mongoose = require('mongoose');
+const app = express();
+const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost:27017/chat', { useNewUrlParser: true });
 
 app.use(jwtMW);

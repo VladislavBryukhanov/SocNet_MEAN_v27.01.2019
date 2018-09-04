@@ -21,7 +21,7 @@ class App extends Component {
             this.props.history.push("/");
         } else {
             axios.defaults.headers = {
-                authorization: 'Bearer ' + this.props.cookies.get('token').data
+                authorization: 'Bearer ' + this.props.cookies.get('token')
             };
             // this.props.history.push("/rooms");
         }
@@ -35,7 +35,7 @@ class App extends Component {
                     <Route exact path="/" component={Auth}/>
                     <Route path="/registration" component={Registration}/>
                     <Route path="/rooms" component={Rooms}/>
-                    <Route path="/dialog/:roomId" component={Chat}/>
+                    <Route path="/chat/:roomId" component={Chat}/>
                 </Switch>
             </div>
         );
@@ -44,7 +44,6 @@ class App extends Component {
 
 const mapStateToProps = (state) => ({
     socket: state.socket,
-    messages: state.messages,
     serverIp: state.serverIp
 });
 

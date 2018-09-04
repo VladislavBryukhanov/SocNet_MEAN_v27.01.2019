@@ -32,6 +32,11 @@ const Reducer = (state = initState, action) => {
                 ]
             }
         }
+        case "authorize": {
+            return {
+                ...state, profile: action.profile
+            }
+        }
         default: {
             return {
                 ...state

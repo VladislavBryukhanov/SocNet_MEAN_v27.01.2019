@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import { connect } from 'react-redux';
+import { withCookies } from 'react-cookie';
+import signIn from '../Components/signIn';
 
 class Registration extends Component {
     constructor(props) {
@@ -10,22 +11,6 @@ class Registration extends Component {
             login: '',
             password: ''
         }
-    }
-
-    onSignUp = (e) => {
-        e.preventDefault();
-        let user = {
-            username: this.state.username,
-            login: this.state.login,
-            password: this.state.password
-        };
-        axios.defaults.baseURL = this.props.serverIp;
-        axios.post('/signUp', user)
-            .then((res) => {
-                // this.props.ma
-                console.log(res.data);
-                this.props.history.push('/rooms');
-        });
     }
 
     onUsernameChanged = (e) => {
@@ -40,6 +25,19 @@ class Registration extends Component {
         this.setState({password: e.target.value});
     }
 
+    onSignUp = (e) => {
+        e.preventDefault();
+        let user = {
+            username: this.state.username,
+            login: this.state.login,
+            password: this.state.password
+        };
+        axios.post('/signUp', user)
+            .then((res) => {
+                signIn(res.data, this.props);
+            });
+    }
+
     render() {
         return (
             <form onSubmit={this.onSignUp}>
@@ -51,11 +49,5 @@ class Registration extends Component {
         )
     }
 }
-const mapStateToProps = (state) => ({
-    serverIp: state.serverIp
-});
 
-export default connect(
-    mapStateToProps,
-    null
-)(Registration);
+export default withCookies(Registration);

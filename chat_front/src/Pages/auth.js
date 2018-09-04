@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import { connect } from 'react-redux'
 import { Link } from 'react-router-dom';
-import { compose } from 'redux';
 import { withCookies } from 'react-cookie';
+import signIn from '../Components/signIn';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
 
 class Auth extends Component {
     constructor(props) {
@@ -14,12 +15,11 @@ class Auth extends Component {
         }
     }
 
-/*    componentWillMount() {
-        axios.defaults.baseURL = this.props.serverIp;
-        axios.defaults.headers = {
-            authorization: 'Bearer ' + this.props.cookies.get('token')
-        };
-    }*/
+    componentWillMount() {
+        if(this.props.cookies.get('token')) {
+            this.props.history.push("/rooms");
+        }
+    }
 
     onLoginChanged = (e) => {
         this.setState({login: e.target.value});
@@ -37,11 +37,8 @@ class Auth extends Component {
         };
         axios.post('/signIn', user)
             .then((res) => {
-                this.props.cookies.set('token', res, {path: '/', expiresIn: 365 * 24 * 60 * 60});
-                axios.defaults.headers = {
-                    authorization: 'Bearer ' + res.data
-                };
-                this.props.history.push("/rooms");
+                signIn(res.data.token, this.props);
+                this.props.authorize(res.data.user);
             });
     }
 
@@ -59,11 +56,13 @@ class Auth extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    serverIp: state.serverIp
+const mapDispatchToProps = (dispatch) => ({
+    authorize: (profile) => {
+        dispatch({type: "authorize", profile: profile})
+    }
 });
 
-export default compose (
+export default compose(
     withCookies,
-    connect(mapStateToProps)
+    connect(null, mapDispatchToProps)
 )(Auth);

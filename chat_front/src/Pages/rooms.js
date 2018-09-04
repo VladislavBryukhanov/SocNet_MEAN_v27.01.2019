@@ -47,7 +47,7 @@ class Rooms extends Component {
                     this.state.rooms.map(item => {
                         return (
                             <p key={item._id}>
-                                <Link to={`/dialog/${item._id}`}>
+                                <Link to={`/chat/${item._id}`}>
                                     {item.name}
                                 </Link>
                             </p>
