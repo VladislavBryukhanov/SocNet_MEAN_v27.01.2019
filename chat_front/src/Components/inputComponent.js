@@ -16,7 +16,7 @@ class InputComponent extends Component {
     onSendMessage = () => {
         if(this.state.messageContent.trim().length > 0) {
             let message = {
-                username: this.state.username,
+                username: this.props.profile.username,
                 content: this.state.messageContent,
                 roomId: this.props.roomId
             };
@@ -47,7 +47,8 @@ class InputComponent extends Component {
 }
 
 const mapStateToProps = (state) => ({
-   socket: state.socket
+   socket: state.socket,
+   profile: state.profile
 });
 
 export default connect(mapStateToProps)(InputComponent);

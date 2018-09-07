@@ -1,13 +1,8 @@
 const mongoose = require('mongoose');
 const roomSchema = mongoose.Schema({
-    _id: {
-        type: mongoose.Schema.Types.ObjectId,
-        select: false
-    },
     username: String,
     login: {
         type: String,
-        unique: true,
         // required: true
     },
     password: {
@@ -16,7 +11,7 @@ const roomSchema = mongoose.Schema({
     },
     role: {
         type: String,
-        default: 'user'
+        default: 'user',
     },
     __v: {
         type: Number,

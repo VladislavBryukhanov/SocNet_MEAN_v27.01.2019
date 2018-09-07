@@ -4,7 +4,7 @@ import registerServiceWorker from './registerServiceWorker';
 import { createStore } from 'redux';
 import { Provider,  } from 'react-redux';
 import io from 'socket.io-client';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { Switch, BrowserRouter, Route } from 'react-router-dom';
 import App from './App';
 // const socketIp = "192.168.0.103:31315";
 // var socketIp = "192.168.1.220:31315";
@@ -15,7 +15,7 @@ const initState = {
     socket: io(ip, {
         path: "/chat"
     }),
-    messages: []
+    messages: [],
 };
 
 const Reducer = (state = initState, action) => {
@@ -50,7 +50,7 @@ const store = createStore(Reducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window
 ReactDOM.render(
     <Provider store = {store}>
         <BrowserRouter>
-            <Route path="/" component={App}/>
+            <App/>
         </BrowserRouter>
     </Provider>,
     document.getElementById('root')

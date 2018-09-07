@@ -15,11 +15,11 @@ class Auth extends Component {
         }
     }
 
-    componentWillMount() {
+/*    componentWillMount() {
         if(this.props.cookies.get('token')) {
             this.props.history.push("/rooms");
         }
-    }
+    }*/
 
     onLoginChanged = (e) => {
         this.setState({login: e.target.value});

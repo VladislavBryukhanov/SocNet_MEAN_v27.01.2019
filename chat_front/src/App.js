@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -13,6 +13,9 @@ import Chat from './Pages/chat';
 class App extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            isAuthorized: false
+        }
     }
 
     componentWillMount() {
@@ -23,21 +26,27 @@ class App extends Component {
             axios.defaults.headers = {
                 authorization: 'Bearer ' + this.props.cookies.get('token')
             };
+            axios.post('/getProfile')
+                .then(res => {
+                    this.props.authorize(res.data);
+                    this.setState({isAuthorized:true});
+                });
             // this.props.history.push("/rooms");
         }
     }
 
     render() {
         return (
-            <div>
-                {/*<NavBar/>*/}
-                <Switch>
-                    <Route exact path="/" component={Auth}/>
-                    <Route path="/registration" component={Registration}/>
-                    <Route path="/rooms" component={Rooms}/>
-                    <Route path="/chat/:roomId" component={Chat}/>
-                </Switch>
-            </div>
+            <Switch>
+                <Route exact path="/" render={() => (
+                    this.state.isAuthorized ?
+                        <Redirect from='/' to='/chat_list'/>
+                        :
+                        <Auth/>
+                )}/>
+                <Route path="/registration" render={()=><Registration/>}/>
+                <Route path="/chat_list" render={()=><NavBar/>}/>
+            </Switch>
         );
     }
 }
@@ -47,7 +56,13 @@ const mapStateToProps = (state) => ({
     serverIp: state.serverIp
 });
 
+const mapDispatchToProps = (dispatch) => ({
+    authorize: (profile) => {
+        dispatch({type: "authorize", profile: profile})
+    }
+});
+
 export default compose (
     withCookies,
-    connect(mapStateToProps)
+    connect(mapStateToProps, mapDispatchToProps)
 )(App);

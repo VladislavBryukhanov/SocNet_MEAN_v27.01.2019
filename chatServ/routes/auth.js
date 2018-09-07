@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const _ = require('lodash');
 const User = require('../models/user');
 
 const secret = require('../secret');
@@ -11,21 +12,19 @@ const addUser = (userData) => {
 };
 
 const searchUser = (auth) => {
-    User.findOne(auth)
-        .populate('username', 'name')
-        .exec();
+    return User.findOne(auth);
 };
 
 const authPayload = (user) => {
-    let sessionPayload = {
-        role: user.role,
-        id: user._id
+    let payload = {
+        "role": user.role,
+        "_id": user._id
     };
-    let token = jwt.sign(sessionPayload, secret, {expiresIn: 365 * 24 * 60 * 60});
+    let token = jwt.sign(payload, secret, {expiresIn: 365 * 24 * 60 * 60});
 
-    delete user.password;
+/*    user = user.toObject();
     delete user._id;
-    delete user.role;
+    delete user.role;*/
 
     let res = {
         token: token,
@@ -33,6 +32,19 @@ const authPayload = (user) => {
     };
     return res;
 };
+
+router.post('/getProfile', async (request, response) => {
+    let user = await searchUser({
+        _id: request.user._id,
+        role: request.user.role
+    });
+    if (user) {
+       response.send(user);
+    } else {
+       response.sendStatus(404);
+    }
+
+});
 
 router.post('/signIn', async (request, response) => {
     let user = await searchUser(request.body);
@@ -51,18 +63,5 @@ router.post('/signUp', async (request, response) => {
         response.sendStatus(404);
     }
 });
-
-
-/*router.get('/test', (request, response) => {
-    // console.log(request);
-    console.log(request.user);
-    response.send("Test");
-    // console.log(request.headers);
-    // console.log(request.headers.token);
-/!*    jwt.verify(request.headers.token, 'password1234', (er, res) => {
-        console.log(er);
-        console.log(res);
-    })*!/
-});*/
 
 module.exports = router;

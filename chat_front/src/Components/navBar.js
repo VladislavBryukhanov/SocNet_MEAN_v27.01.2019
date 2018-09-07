@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-
+import Registration from "../Pages/registration";
+import Rooms from '../Pages/rooms';
+import Chat from '../Pages/chat';
+import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 
 class NavBar extends Component {
     constructor(props) {
@@ -21,6 +24,10 @@ class NavBar extends Component {
                     onChange={this.onUsernameChange}
                     placeholder="Nickname"/>
                 <hr/>
+                <Switch>
+                    <Route path="/chat_list" render={()=><Rooms/>}/>
+                    <Route path="/chat/:roomId" render={()=><Chat/>}/>
+                </Switch>
             </div>
         )
     }

@@ -70,6 +70,5 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(
-    mapStateToProps,
-    null
+    mapStateToProps
 )(Rooms)
