@@ -3,34 +3,40 @@ import Registration from "../Pages/registration";
 import Rooms from '../Pages/rooms';
 import Chat from '../Pages/chat';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { signOut } from '../Components/authorization'
 
 class NavBar extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            username: 'USER',
-        }
     }
 
-    onUsernameChange = (e) => {
-        this.setState({username: e.target.value});
-    };
+    signOut = () => {
+        signOut(this.props);
+    }
 
     render() {
+        console.log('1');
         return (
             <div>
-                <input
-                    value={this.state.username}
-                    onChange={this.onUsernameChange}
-                    placeholder="Nickname"/>
+                <p>{this.props.profile.username}</p>
+                <button onClick={this.signOut}>Log out</button>
                 <hr/>
                 <Switch>
-                    <Route path="/chat_list" render={()=><Rooms/>}/>
-                    <Route path="/chat/:roomId" render={()=><Chat/>}/>
+                    <Route path="/chat_list" component={Rooms}/>
+                    {/*<Route path="/chat_list" render={()=><NavBar/>}/>*/}
+                    <Route path="/chat/:roomId" component={Chat}/>
                 </Switch>
+                {/*<Redirect from='/' to='/chat_list'/>*/}
             </div>
         )
     }
 }
 
-export default NavBar;
+const mapStateToProps = (state) => ({
+    profile: state.profile
+});
+
+export default connect (
+    mapStateToProps
+)(NavBar);

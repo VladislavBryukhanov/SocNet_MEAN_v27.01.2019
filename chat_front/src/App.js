@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { withCookies } from 'react-cookie';
 import NavBar from './Components/navBar';
-import Auth from "./Pages/auth";
+import SignIn from "./Pages/signIn";
 import Registration from "./Pages/registration";
 import Rooms from './Pages/rooms';
 import Chat from './Pages/chat';
@@ -20,6 +20,7 @@ class App extends Component {
 
     componentWillMount() {
         axios.defaults.baseURL = this.props.serverIp;
+        // console.log(this.props.history);
         if(!this.props.cookies.get('token')) {
             this.props.history.push("/");
         } else {
@@ -29,7 +30,11 @@ class App extends Component {
             axios.post('/getProfile')
                 .then(res => {
                     this.props.authorize(res.data);
-                    this.setState({isAuthorized:true});
+                    // this.props.history.push("/rooms");
+                    this.setState({isAuthorized:true}, () => {
+                        // this.props.history.push("/chat_list");
+                        // console.log(this.props);
+                    });
                 });
             // this.props.history.push("/rooms");
         }
@@ -37,16 +42,20 @@ class App extends Component {
 
     render() {
         return (
-            <Switch>
-                <Route exact path="/" render={() => (
-                    this.state.isAuthorized ?
-                        <Redirect from='/' to='/chat_list'/>
-                        :
-                        <Auth/>
-                )}/>
-                <Route path="/registration" render={()=><Registration/>}/>
-                <Route path="/chat_list" render={()=><NavBar/>}/>
-            </Switch>
+            <div>
+                <Switch>
+                    <Route path="/" render={(props) => (
+                        this.state.isAuthorized ?
+                            <NavBar {...props} />
+                            :
+                            <Switch>
+                                <Route exact path="/" component={SignIn}/>
+                                <Route path="/registration" component={Registration}/>
+                            </Switch>
+                    )}/>
+                </Switch>
+            </div>
+
         );
     }
 }

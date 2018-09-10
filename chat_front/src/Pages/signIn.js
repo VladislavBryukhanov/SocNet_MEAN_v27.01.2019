@@ -1,12 +1,10 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { withCookies } from 'react-cookie';
-import signIn from '../Components/signIn';
+import { signIn } from '../Components/authorization';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
 
-class Auth extends Component {
+class SignIn extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -62,7 +60,4 @@ const mapDispatchToProps = (dispatch) => ({
     }
 });
 
-export default compose(
-    withCookies,
-    connect(null, mapDispatchToProps)
-)(Auth);
+export default connect(null, mapDispatchToProps)(SignIn);

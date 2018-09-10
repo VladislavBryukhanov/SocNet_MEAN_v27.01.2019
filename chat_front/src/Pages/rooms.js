@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom'
 
 class Rooms extends Component {
@@ -13,7 +12,6 @@ class Rooms extends Component {
     }
 
     componentWillMount() {
-        axios.defaults.baseURL = this.props.serverIp;
         axios.get("/rooms/getRooms")
             .then((res) => {
                 this.setState({rooms: res.data});
@@ -65,10 +63,5 @@ class Rooms extends Component {
         )
     }
 }
-const mapStateToProps = (state) => ({
-    serverIp: state.serverIp
-});
 
-export default connect(
-    mapStateToProps
-)(Rooms)
+export default Rooms

@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import { withCookies } from 'react-cookie';
-import signIn from '../Components/signIn';
+import { signIn } from '../Components/authorization';
 
 class Registration extends Component {
     constructor(props) {
@@ -50,4 +49,4 @@ class Registration extends Component {
     }
 }
 
-export default withCookies(Registration);
+export default Registration;
