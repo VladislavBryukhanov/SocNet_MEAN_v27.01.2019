@@ -13,12 +13,6 @@ class SignIn extends Component {
         }
     }
 
-/*    componentWillMount() {
-        if(this.props.cookies.get('token')) {
-            this.props.history.push("/rooms");
-        }
-    }*/
-
     onLoginChanged = (e) => {
         this.setState({login: e.target.value});
     }
@@ -35,7 +29,7 @@ class SignIn extends Component {
         };
         axios.post('/signIn', user)
             .then((res) => {
-                signIn(res.data.token, this.props);
+                signIn(res.data.token);
                 this.props.authorize(res.data.user);
             });
     }

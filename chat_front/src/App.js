@@ -13,9 +13,6 @@ import Chat from './Pages/chat';
 class App extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            isAuthorized: false
-        }
     }
 
     componentWillMount() {
@@ -30,13 +27,8 @@ class App extends Component {
             axios.post('/getProfile')
                 .then(res => {
                     this.props.authorize(res.data);
-                    // this.props.history.push("/rooms");
-                    this.setState({isAuthorized:true}, () => {
-                        // this.props.history.push("/chat_list");
-                        // console.log(this.props);
-                    });
+                    // this.props.history.push("/chat_list");
                 });
-            // this.props.history.push("/rooms");
         }
     }
 
@@ -45,7 +37,7 @@ class App extends Component {
             <div>
                 <Switch>
                     <Route path="/" render={(props) => (
-                        this.state.isAuthorized ?
+                        this.props.profile ?
                             <NavBar {...props} />
                             :
                             <Switch>
@@ -62,12 +54,21 @@ class App extends Component {
 
 const mapStateToProps = (state) => ({
     socket: state.socket,
-    serverIp: state.serverIp
+    serverIp: state.serverIp,
+    profile: state.profile
 });
 
 const mapDispatchToProps = (dispatch) => ({
     authorize: (profile) => {
         dispatch({type: "authorize", profile: profile})
+    },
+    test: () => {
+        return dispatch => {
+            setTimeout(()=>{
+                console.log('tetets');
+                dispatch({type: "addMessage", message: "eeeeeee"});
+            }, 3000)
+        }
     }
 });
 

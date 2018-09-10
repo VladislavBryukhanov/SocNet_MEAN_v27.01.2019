@@ -3,15 +3,15 @@ import axios from 'axios';
 import { Cookies } from 'react-cookie';
 
 const cookie = new Cookies();
-export function signIn (token, props) {
+export function signIn (token) {
     cookie.set('token', token, {path: '/', expiresIn: 365 * 24 * 60 * 60});
     axios.defaults.headers = {
         authorization: 'Bearer ' + token
     };
-    props.history.push("/chat_list");
+    // props.history.push("/chat_list");
 }
 
-export function signOut (props) {
+export function signOut () {
     cookie.remove('token');
     axios.defaults.headers = {
         authorization: ''
