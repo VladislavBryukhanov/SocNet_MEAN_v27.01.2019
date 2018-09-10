@@ -6,7 +6,7 @@ function signIn (token, props) {
     axios.defaults.headers = {
         authorization: 'Bearer ' + token
     };
-    props.history.push("/rooms");
+    props.history.push("/chat_list");
 }
 
 export default signIn;
