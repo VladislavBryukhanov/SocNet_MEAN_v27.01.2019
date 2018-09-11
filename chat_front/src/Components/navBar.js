@@ -15,9 +15,9 @@ class NavBar extends Component {
         return (
             <div>
                 <Link to="/chat_list">Home</Link>
-                <span>___</span>
+                <span>+++</span>
                 <Link to="/edit_profile">{this.props.profile.username}</Link>
-                <span>___</span>
+                <span>+++</span>
                 <button onClick={signOut}>Log out</button>
                 <hr/>
                 <Switch>

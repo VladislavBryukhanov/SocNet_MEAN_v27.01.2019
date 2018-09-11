@@ -12,7 +12,7 @@ class EditProfile extends Component {
     }
 
     componentWillMount() {
-        this.setState(_.clone(this.props.profile.username);
+        this.setState(this.props.profile);
     }
 
     onUsernameChanged = (e) => {
@@ -26,8 +26,8 @@ class EditProfile extends Component {
     render() {
         return (
             <form>
-                <input onChange={this.onUsernameChanged} value={this.props.profile.username} type="text" placeholder="username"/>
-                <input onChange={this.onLoginChanged} value={this.props.profile.login} type="text" placeholder="login"/>
+                <input onChange={this.onUsernameChanged} value={this.state.username} type="text" placeholder="username"/>
+                <input onChange={this.onLoginChanged} value={this.state.login} type="text" placeholder="login"/>
                 <input type="password" placeholder="password"/>
                 <input type="submit" value="save"/>
             </form>

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import { signIn } from '../Components/authorization';
+import { connect } from 'react-redux';
 
 class Registration extends Component {
     constructor(props) {
@@ -33,7 +34,7 @@ class Registration extends Component {
         };
         axios.post('/signUp', user)
             .then((res) => {
-                signIn(res.data, this.props);
+                signIn(res.data);
             });
     }
 

@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { signIn } from '../Components/authorization';
-import { connect } from 'react-redux';
 
 class SignIn extends Component {
     constructor(props) {
@@ -29,8 +28,7 @@ class SignIn extends Component {
         };
         axios.post('/signIn', user)
             .then((res) => {
-                signIn(res.data.token);
-                this.props.authorize(res.data.user);
+                signIn(res.data);
             });
     }
 
@@ -48,10 +46,4 @@ class SignIn extends Component {
     }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-    authorize: (profile) => {
-        dispatch({type: "authorize", profile: profile})
-    }
-});
-
-export default connect(null, mapDispatchToProps)(SignIn);
+export default SignIn;
