@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import Rooms from '../Pages/rooms';
 import Chat from '../Pages/chat';
-import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
+import { Switch, Route, Redirect, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { signOut } from '../Components/authorization'
+import EditProfile from '../Pages/editProfile';
 
 class NavBar extends Component {
     constructor(props) {
@@ -13,11 +14,15 @@ class NavBar extends Component {
     render() {
         return (
             <div>
-                <p>{this.props.profile.username}</p>
+                <Link to="/chat_list">Home</Link>
+                <span>___</span>
+                <Link to="/edit_profile">{this.props.profile.username}</Link>
+                <span>___</span>
                 <button onClick={signOut}>Log out</button>
                 <hr/>
                 <Switch>
                     <Route path="/chat_list" component={Rooms}/>
+                    <Route path="/edit_profile" component={EditProfile}/>
                     <Route path="/chat/:roomId" component={Chat}/>
                     <Redirect from='/' to='/chat_list'/>
                 </Switch>
