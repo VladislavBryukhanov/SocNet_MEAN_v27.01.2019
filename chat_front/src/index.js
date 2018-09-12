@@ -6,9 +6,8 @@ import { Provider,  } from 'react-redux';
 import io from 'socket.io-client';
 import {  BrowserRouter, Route } from 'react-router-dom';
 import App from './App';
-// const socketIp = "192.168.0.103:31315";
-// var socketIp = "192.168.1.220:31315";
-const ip = "http://192.168.1.204:31315";
+
+const ip = "http://192.168.1.4:31315";
 
 const initState = {
     serverIp: ip,

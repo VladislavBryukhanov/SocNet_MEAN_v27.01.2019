@@ -33,7 +33,7 @@ const authPayload = (user) => {
     return res;
 };
 
-router.post('/getProfile', async (request, response) => {
+router.post('/autoSignIn', async (request, response) => {
     let user = await searchUser({
         _id: request.user._id,
         role: request.user.role

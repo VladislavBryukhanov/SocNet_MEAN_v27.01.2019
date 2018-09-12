@@ -3,12 +3,16 @@ import Rooms from '../Pages/rooms';
 import Chat from '../Pages/chat';
 import { Switch, Route, Redirect, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import axios from 'axios';
 import { signOut } from '../Components/authorization'
 import EditProfile from '../Pages/editProfile';
 
 class NavBar extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            avatar: `${this.props.serverIp}/avatars/2.png`
+        }
     }
 
     render() {
@@ -17,6 +21,8 @@ class NavBar extends Component {
                 <Link to="/chat_list">Home</Link>
                 <span>+++</span>
                 <Link to="/edit_profile">{this.props.profile.username}</Link>
+                <span>+++</span>
+                <img src={this.state.avatar} width="100px"/>
                 <span>+++</span>
                 <button onClick={signOut}>Log out</button>
                 <hr/>
@@ -32,7 +38,8 @@ class NavBar extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    profile: state.profile
+    profile: state.profile,
+    serverIp: state.serverIp
 });
 
 export default connect (

@@ -24,7 +24,7 @@ class App extends Component {
             axios.defaults.headers = {
                 authorization: 'Bearer ' + this.props.cookies.get('token')
             };
-            axios.post('/getProfile')
+            axios.post('/autoSignIn')
                 .then(res => {
                     this.props.authorize(res.data);
                     // this.props.history.push("/chat_list");
