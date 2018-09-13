@@ -6,8 +6,12 @@ import { Provider,  } from 'react-redux';
 import io from 'socket.io-client';
 import {  BrowserRouter, Route } from 'react-router-dom';
 import App from './App';
+import './styles/navBar.css';
+import './styles/body.css';
+import './styles/rooms.css';
+import './styles/chat.css';
 
-const ip = "http://192.168.1.4:31315";
+const ip = "http://192.168.1.200:31315";
 
 const initState = {
     serverIp: ip,

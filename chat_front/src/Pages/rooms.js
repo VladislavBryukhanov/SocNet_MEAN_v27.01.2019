@@ -7,7 +7,8 @@ class Rooms extends Component {
         super(props);
         this.state = {
             rooms: [],
-            roomName: ''
+            roomName: '',
+            showCreateForm: false
         }
     }
 
@@ -29,6 +30,7 @@ class Rooms extends Component {
         };
         axios.post('/rooms/addRoom', room)
             .then((res) => {
+                this.addNewRoom();
                 this.setState({
                     rooms : [
                         ...this.state.rooms, res.data
@@ -38,21 +40,26 @@ class Rooms extends Component {
             })
     }
 
+    addNewRoom = () => {
+        this.setState({showCreateForm: !this.state.showCreateForm});
+    }
+
     render() {
         return (
-            <div>
+            <div className="chatList">
+                <div onClick={this.addNewRoom} className="newRoom">
+                    +
+                </div>
                 {
                     this.state.rooms.map(item => {
                         return (
-                            <p key={item._id}>
-                                <Link to={`/chat/${item._id}`}>
-                                    {item.name}
-                                </Link>
-                            </p>
+                            <Link  key={item._id} to={`/chat/${item._id}`} className="chat">
+                                {item.name}
+                            </Link>
                         )
                     })
                 }
-                <div>
+                <div className={`newRoomForm ${ this.state.showCreateForm ? "show" : "hide"}`}>
                     <input
                         value={this.state.roomName}
                         onChange={this.onRoomNameChanged}

@@ -39,16 +39,16 @@ class Chat extends Component {
 
     render() {
         return (
-            <div>
-                <div>Online: {this.state.onlineCounter}</div>
-                <div>
+            <div className="chat">
+                <div className="onlineCounter">Online: {this.state.onlineCounter}</div>
                     {this.props.messages.map((item) => {
-                        return  <p key={item._id}>
-                            {item.username}: {item.content} | {item.time}
-                        </p>
+                        let time = item.time.toLocaleString();
+                        return  <div key={item._id} className="message">
+                            <span className="sender">{item.username}></span>
+                            <span className="content">{item.content}</span>
+                            <span className="time">{time}</span>
+                        </div>
                     })}
-                </div>
-                <hr/>
                 <InputComponent roomId={this.state.roomId} />
             </div>
 

@@ -1,0 +1,29 @@
+.chat {
+  .onlineCounter {
+
+  }
+  .message {
+    padding: 10px;
+    display: block;
+    font-size: 20px;
+    //color: #335871;
+    text-decoration: none;
+    border-bottom: 1px solid #ebebeb;
+
+    .time {
+      margin-left: 10px;
+      color: #9f9f9f;
+      font-size: 17px;
+      font-weight: 200;
+    }
+  }
+
+  //.message:nth-last-child(0) {
+  //  border: 0;
+  //}
+
+  .chat:hover {
+    color: #326080;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}

@@ -23,18 +23,27 @@ module.exports = (server) => {
     });
 
     let onlineCounter = 0;
+
+    const leaveRoom = (client) => {
+        client.leave(client.room);
+        delete client.room;
+        io.emit('newConnection', --onlineCounter);
+    };
+
     io.on('connection', (client) => {
 
-        client.on('joinRoom', (roomId) => {
+    /*    const getRoomOnline = (io, roomId) => {
+            console.log(io.sockets.adapter);
+            let onlineCounter = (io.sockets.adapter.rooms[roomId]).length;
+            io.to(roomId).emit('newConnection', onlineCounter);
+        };*/
 
+        client.on('joinRoom', (roomId) => {
             client.join(roomId);
             client.room = roomId;
             io.to(roomId).emit('newConnection', ++onlineCounter);
             getMessages(client, roomId);//, roomId);
-
-            // client.on('disconnect', _ => {
-                // io.emit('newConnection', --onlineCounter);
-            // });
+            // getRoomOnline(roomId);
         });
 
         client.on('message', (msg) => {
@@ -46,9 +55,24 @@ module.exports = (server) => {
             });
         });
 
-        client.on('leaveRoom', (roomId) => {
-            client.leave(roomId);
-            io.emit('newConnection', --onlineCounter);
+        // client.on('disconnect', client => {
+            // getRoomOnline(client.room);
+            // console.log(io.sockets.clients(client.roomId));
+        // });
+
+        client.on('disconnecting', () => {
+            console.log(client.room);
+            if(client.room) {
+                leaveRoom(client);
+            }
         });
-    })
+
+        client.on('leaveRoom', () => {
+            leaveRoom(client);
+     /*       client.leave(roomId);
+            delete client.room;
+            io.emit('newConnection', --onlineCounter);*/
+        });
+
+    });
 };
