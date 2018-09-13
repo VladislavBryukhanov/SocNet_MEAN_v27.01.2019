@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 const roomSchema = mongoose.Schema({
+    avatar: {
+        type: String,
+        default: 'avatars/2.png'
+    },
     username: String,
     login: {
         type: String,

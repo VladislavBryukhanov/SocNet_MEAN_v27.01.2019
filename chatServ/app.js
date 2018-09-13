@@ -16,19 +16,7 @@ const jwtMW = exjwt({secret: secret})
         '/signUp'
     ]});
 
-const multer = require('multer');
-const storage = multer.diskStorage({
-   destination: function(req, file, cb) {
-       cb(null, '/avatars')
-   },
-    filename: function(req, file, cb) {
-       cb(null, `${file.filename} - ${Date.now()}`)
-    }
-});
-const upload = multer({
-    storage: storage,
-    limits: {fileSize: 5 * 1024 * 1024}
-});
+
 
 const romsRouter = require('./routes/rooms');
 const authRouter = require('./routes/auth');

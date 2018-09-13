@@ -8,6 +8,8 @@ class EditProfile extends Component {
         this.state = {
             username: '',
             login: '',
+            password: '',
+            avatar: null
         }
     }
 
@@ -23,22 +25,33 @@ class EditProfile extends Component {
         this.setState({login: e.target.value});
     }
 
+    onAvatarChanged = (e) => {
+        this.setState({avatar: e.target.files[0]});
+    }
+
     onSaveChanges = (e) => {
         e.preventDefault();
-        let user = {
-            username: this.state.username,
-            login: this.state.login,
-            password: this.state.password
-        };
+        let user = new FormData();
+        user.append('username', this.state.username);
+        user.append('login', this.state.login);
+        user.append('avatar', this.state.avatar);
+        user.append('password', this.state.password);
+        // let user = {
+        //     username: this.state.username,
+        //     login: this.state.login,
+        //     avatar: this.state.avatar,
+        //     password: this.state.password
+        // };
         axios.post('/users/editProfile', user)
             .then((res) => {
-            console.log(res.data);
+                this.props.editProfile(res.data);
             })
     }
 
     render() {
         return (
             <form onSubmit = {this.onSaveChanges}>
+                <input onChange={this.onAvatarChanged} type="file"/>
                 <input onChange={this.onUsernameChanged} value={this.state.username} type="text" placeholder="username"/>
                 <input onChange={this.onLoginChanged} value={this.state.login} type="text" placeholder="login"/>
                 <input type="password" placeholder="password"/>
@@ -52,6 +65,14 @@ const mapStateToProps = (state) => ({
    profile: state.profile,
 });
 
+const mapDispatchToProps = (dispatch) => ({
+   editProfile: (profile) => {
+       dispatch({type: 'authorize', profile: profile})
+
+   }
+});
+
 export default connect(
-    mapStateToProps
+    mapStateToProps,
+    mapDispatchToProps
 )(EditProfile);

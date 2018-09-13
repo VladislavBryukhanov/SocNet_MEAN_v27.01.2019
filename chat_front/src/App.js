@@ -61,14 +61,6 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
     authorize: (profile) => {
         dispatch({type: "authorize", profile: profile})
-    },
-    test: () => {
-        return dispatch => {
-            setTimeout(()=>{
-                console.log('tetets');
-                dispatch({type: "addMessage", message: "eeeeeee"});
-            }, 3000)
-        }
     }
 });
 

@@ -1,1 +1,6 @@
 secret.pem
+.idea
+.idea/*
+public
+node_modules
+node_modules/*

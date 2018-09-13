@@ -7,8 +7,10 @@ const secret = require('../secret');
 const jwt = require('jsonwebtoken');
 
 const addUser = (userData) => {
-    let user = new User(userData);
-    return user.save();
+    // let user = new User(userData);
+    // console.log(user);
+    // return user.save();
+    return User.create(userData);
 };
 
 const searchUser = (auth) => {
@@ -57,6 +59,7 @@ router.post('/signIn', async (request, response) => {
 
 router.post('/signUp', async (request, response) => {
     let user = await addUser(request.body);
+    user = await searchUser(user);
     if(user) {
         response.send(authPayload(user));
     } else {

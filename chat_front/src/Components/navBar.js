@@ -10,20 +10,14 @@ import EditProfile from '../Pages/editProfile';
 class NavBar extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            avatar: `${this.props.serverIp}/avatars/2.png`
-        }
     }
 
     render() {
         return (
             <div>
-                <Link to="/chat_list">Home</Link>
-                <span>+++</span>
-                <Link to="/edit_profile">{this.props.profile.username}</Link>
-                <span>+++</span>
-                <img src={this.state.avatar} width="100px"/>
-                <span>+++</span>
+                <Link to="/chat_list">|Home|</Link>
+                <Link to="/edit_profile">[{this.props.profile.username}]</Link>
+                <img src={`${this.props.serverIp}/${this.props.profile.avatar}`} width="100px"/>
                 <button onClick={signOut}>Log out</button>
                 <hr/>
                 <Switch>
