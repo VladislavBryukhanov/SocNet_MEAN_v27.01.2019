@@ -14,15 +14,16 @@ class Profile extends Component {
         // console.log(this.props.match.params.userId);
         axios.get(`users/getUser/${this.props.match.params.userId}`)
             .then((res) => {
+                res.data.avatar = `${this.props.serverIp}/${res.data.avatar}`;
                 this.setState(res.data);
         });
     }
 
     render() {
         return (
-            <div>
-                <img src={`${this.props.serverIp}/${this.state.avatar}`}/>
-                <h2>{this.state.username}</h2>
+            <div className="profile">
+                <img src={this.state.avatar} className="avatar"/>
+                <h1 className="username">{this.state.username}</h1>
             </div>
         )
     }

@@ -9,12 +9,12 @@ class EditProfile extends Component {
             username: '',
             login: '',
             password: '',
-            avatar: null
+            navatar: null
         }
     }
 
     componentWillMount() {
-        this.setState(this.props.profile);
+        this.setState({username: this.props.profile.username, login: this.props.profile.login});
     }
 
     onUsernameChanged = (e) => {
@@ -23,6 +23,10 @@ class EditProfile extends Component {
 
     onLoginChanged = (e) => {
         this.setState({login: e.target.value});
+    }
+
+    onPasswordChanged = (e) => {
+        this.setState({password: e.target.value});
     }
 
     onAvatarChanged = (e) => {
@@ -34,14 +38,12 @@ class EditProfile extends Component {
         let user = new FormData();
         user.append('username', this.state.username);
         user.append('login', this.state.login);
-        user.append('avatar', this.state.avatar);
+
+        if(this.state.avatar)
+            user.append('avatar', this.state.avatar);
+        if(this.state.password)
         user.append('password', this.state.password);
-        // let user = {
-        //     username: this.state.username,
-        //     login: this.state.login,
-        //     avatar: this.state.avatar,
-        //     password: this.state.password
-        // };
+
         axios.post('/users/editProfile', user)
             .then((res) => {
                 this.props.editProfile(res.data);
@@ -54,7 +56,7 @@ class EditProfile extends Component {
                 <input onChange={this.onAvatarChanged} type="file"/>
                 <input onChange={this.onUsernameChanged} value={this.state.username} type="text" placeholder="username"/>
                 <input onChange={this.onLoginChanged} value={this.state.login} type="text" placeholder="login"/>
-                <input type="password" placeholder="password"/>
+                <input onChange={this.onPasswordChanged} type="password" placeholder="password"/>
                 <input type="submit" value="save"/>
             </form>
         )

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import InputComponent from '../Components/inputComponent';
-
+import moment from 'moment';
 
 class Chat extends Component {
     constructor(props) {
@@ -41,14 +41,22 @@ class Chat extends Component {
         return (
             <div className="chat">
                 <div className="onlineCounter">Online: {this.state.onlineCounter}</div>
-                    {this.props.messages.map((item) => {
-                        let time = item.time.toLocaleString();
-                        return  <div key={item._id} className="message">
-                            <span className="sender">{item.username}></span>
-                            <span className="content">{item.content}</span>
-                            <span className="time">{time}</span>
-                        </div>
-                    })}
+                <table className="chatBody">
+                    <tbody>
+                        {this.props.messages.map((item) => {
+                            // let time = item.time.toLocaleString();
+                            let time = moment(item.time).format('hh:mm:ss DD-MM-YYYY');
+                            return  <tr key={item._id} className="message">
+                                <td className="sender">
+                                    {item.username}
+                                </td>
+                                <td className="content">{item.content}</td>
+                                <td className="time">{time}</td>
+                            </tr>
+                        })}
+                    </tbody>
+                </table>
+
                 <InputComponent roomId={this.state.roomId} />
             </div>
 

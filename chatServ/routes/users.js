@@ -18,8 +18,14 @@ const upload = multer({
 });
 
 router.post('/editProfile', upload.single('avatar'), async (request, response) => {
-    request.body.avatar = `avatars/${request.file.filename}`;
-    let newProfile = await User.findOneAndUpdate({_id: request.user._id}, request.body, {new: true});
+    if(request.file) {
+        request.body.avatar = `avatars/${request.file.filename}`;
+    }
+    // else {
+    //     delete request.body.avatar;
+    // }
+    console.log(request.body);
+    let newProfile = await User.findOneAndUpdate({_id: request.user._id}, request.body, {new: true, runValidators: true});
     if(newProfile) {
         response.send(newProfile);
     } else {
