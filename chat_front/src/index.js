@@ -9,6 +9,7 @@ import App from './App';
 import './styles/navBar.css';
 import './styles/body.css';
 import './styles/rooms.css';
+import './styles/userList.css';
 import './styles/chat.css';
 
 const ip = "http://192.168.1.200:31315";
@@ -19,6 +20,7 @@ const initState = {
         path: "/chat"
     }),
     messages: [],
+    users: [],
     profile: null
 };
 
@@ -37,8 +39,17 @@ const Reducer = (state = initState, action) => {
             }
         }
         case "authorize": {
+            action.profile.avatar = `${ip}/${action.profile.avatar}`;
             return {
                 ...state, profile: action.profile
+            }
+        }
+        case "loadUsers": {
+            action.users.map((user) => {
+                return user.avatar = `${ip}/${user.avatar}`;
+            });
+            return {
+                ...state, users: action.users
             }
         }
         default: {

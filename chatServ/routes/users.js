@@ -27,4 +27,18 @@ router.post('/editProfile', upload.single('avatar'), async (request, response) =
     }
 });
 
+router.get('/getUsers', async(request, response) => {
+    let users = await User.find({});
+    response.send(users);
+});
+
+router.get('/getUser/:id', async(request, response) => {
+    let user = await User.findOne({_id: request.params.id});
+    if(user) {
+        response.send(user);
+    } else {
+        response.sendStatus(404);
+    }
+});
+
 module.exports = router;
