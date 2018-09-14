@@ -12,6 +12,7 @@ import './styles/rooms.css';
 import './styles/userList.css';
 import './styles/chat.css';
 import './styles/profile.css';
+import './styles/sideMenu.css';
 
 const ip = "http://192.168.1.200:31315";
 

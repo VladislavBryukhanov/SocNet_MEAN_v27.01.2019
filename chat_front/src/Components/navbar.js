@@ -36,8 +36,6 @@ const mapStateToProps = (state) => ({
 });
 
 export default compose (
-    connect (
-        mapStateToProps
-    ),
+    connect (mapStateToProps),
     withRouter
 )(NavBar);

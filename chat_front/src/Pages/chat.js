@@ -45,7 +45,7 @@ class Chat extends Component {
                     <tbody>
                         {this.props.messages.map((item) => {
                             // let time = item.time.toLocaleString();
-                            let time = moment(item.time).format('hh:mm:ss DD-MM-YYYY');
+                            let time = moment(item.time).format('HH:mm:ss DD.MM.YYYY');
                             return  <tr key={item._id} className="message">
                                 <td className="sender">
                                     {item.username}

@@ -17,7 +17,7 @@ render() {
         return (
             <div>
                 <NavBar/>
-                {/*<SideMenu/>*/}
+                <SideMenu/>
                 <div className="body">
                     <Switch>
                         <Route path="/chat_list" component={Rooms}/>
