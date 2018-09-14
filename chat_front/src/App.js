@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
-import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { withCookies } from 'react-cookie';
-import NavBar from './Components/navBar';
+import Application from './Components/application';
 import SignIn from "./Pages/signIn";
 import Registration from "./Pages/registration";
-import Rooms from './Pages/rooms';
-import Chat from './Pages/chat';
 
 class App extends Component {
     constructor(props) {
@@ -17,7 +15,6 @@ class App extends Component {
 
     componentWillMount() {
         axios.defaults.baseURL = this.props.serverIp;
-        // console.log(this.props.history);
         if(!this.props.cookies.get('token')) {
             this.props.history.push("/");
         } else {
@@ -38,7 +35,7 @@ class App extends Component {
                 <Switch>
                     <Route path="/" render={(props) => (
                         this.props.profile ?
-                            <NavBar {...props} />
+                            <Application {...props} />
                             :
                             <Switch>
                                 <Route exact path="/" component={SignIn}/>
