@@ -37,6 +37,14 @@ class SideMenu extends Component {
                         <span className="counter">7231</span>
                     </td>
                 </tr>
+                <tr className="menuItem">
+                    <td className="menuLink">
+                        <Link to="/">#Your top blogs</Link>
+                    </td>
+                    <td>
+                        <span className="counter">-1</span>
+                    </td>
+                </tr>
             </table>
         )
     }

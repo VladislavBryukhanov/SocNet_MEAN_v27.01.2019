@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
+import BlogContructor from "../Components/blogContructor";
 
 class Profile extends Component {
     constructor(props) {
@@ -21,10 +22,14 @@ class Profile extends Component {
 
     render() {
         return (
-            <div className="profile">
-                <img src={this.state.avatar} className="avatar"/>
-                <h1 className="username">{this.state.username}</h1>
+            <div>
+                <div className="profile">
+                    <img src={this.state.avatar} className="avatar"/>
+                    <h1 className="username">{this.state.username}</h1>
+                </div>
+                <BlogContructor/>
             </div>
+
         )
     }
 }

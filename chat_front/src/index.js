@@ -13,6 +13,7 @@ import './styles/userList.css';
 import './styles/chat.css';
 import './styles/profile.css';
 import './styles/sideMenu.css';
+import './styles/blogConstructor.css';
 
 const ip = "http://192.168.1.200:31315";
 
