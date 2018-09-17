@@ -21,6 +21,7 @@ const jwtMW = exjwt({secret: secret})
 const romsRouter = require('./routes/rooms');
 const authRouter = require('./routes/auth');
 const usersRouter = require('./routes/users');
+const blogsRouter = require('./routes/blogs');
 
 
 // app.use(jwtMW);
@@ -35,6 +36,7 @@ app.use(jwtMW);
 app.use('/', authRouter);
 app.use('/rooms', romsRouter);
 app.use('/users', usersRouter);
+app.use('/blogs', blogsRouter);
 
 
 module.exports = app;

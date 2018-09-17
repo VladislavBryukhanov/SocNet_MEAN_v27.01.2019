@@ -6,18 +6,28 @@ class BlogContructor extends Component {
         super(props);
         this.state = {
             content: "",
-            files: []
+            picture: null
         }
     }
 
+    onContentChanged = (e) => {
+        this.setState({content: e.target.value});
+    }
+
+    onPictureChanged = (e) => {
+        this.setState({picture: e.target.files[0]});
+    }
+
     onSubmitPost = (e) => {
+        console.log(this.state.picture);
+        console.log(this.state.content);
         e.preventDefault();
         let data = new FormData();
         data.append('content', this.state.content);
         // MB get user from token ?
         // data.append('owner', this.state.content);
-        data.append('files', files);
-        axios.post('', data)
+        data.append('picture', this.state.picture);
+        axios.post('/blogs/postBlog', data)
             .then((res) => {
                 console.log(res.data);
             })
@@ -26,8 +36,8 @@ class BlogContructor extends Component {
     render() {
         return (
             <form onSubmit={this.onSubmitPost} className="blogConstructor">
-                <textarea className="blogContent"/>
-                <input type="file" multiple />
+                <textarea onChange={this.onContentChanged} className="blogContent"/>
+                <input onChange={this.onPictureChanged} type="file" />
                 <input type="submit"/>
             </form>
         )
