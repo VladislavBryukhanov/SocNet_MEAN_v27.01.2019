@@ -14,17 +14,19 @@ import './styles/chat.css';
 import './styles/profile.css';
 import './styles/sideMenu.css';
 import './styles/blogConstructor.css';
+import './styles/blogs.css';
 
-const ip = "http://192.168.1.200:31315";
+const ip = "http://192.168.1.3:31315";
 
 const initState = {
     serverIp: ip,
     socket: io(ip, {
         path: "/chat"
     }),
+    profile: null,
     messages: [],
     users: [],
-    profile: null
+    blogs: []
 };
 
 const Reducer = (state = initState, action) => {
@@ -53,6 +55,26 @@ const Reducer = (state = initState, action) => {
             });
             return {
                 ...state, users: action.users
+            }
+        }
+        case "loadBlogs": {
+            action.blogs.map((blog) => {
+                blog.attachedFiles = blog.attachedFiles.map((file) => {
+                    return `${ip}/${file}`;
+                });
+            });
+            return {
+                ...state, blogs: action.blogs
+            }
+        }
+        case "addBlog": {
+            action.blog.attachedFiles = action.blog.attachedFiles.map((file) => {
+                return `${ip}/${file}`;
+            });
+            return {
+                ...state, blogs: [
+                    ...state.blogs, action.blog
+                ]
             }
         }
         default: {

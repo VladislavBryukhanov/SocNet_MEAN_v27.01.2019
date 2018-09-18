@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import BlogContructor from "../Components/blogContructor";
+import Blogs from "../Components/blogs";
 
 class Profile extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-
-        }
+        this.state = {}
     }
 
     componentWillMount() {
@@ -27,7 +26,8 @@ class Profile extends Component {
                     <img src={this.state.avatar} className="avatar"/>
                     <h1 className="username">{this.state.username}</h1>
                 </div>
-                <BlogContructor/>
+                <Blogs/>
+                {this.props.match.params.userId === this.props.profile._id ? <BlogContructor/> : ''}
             </div>
 
         )
@@ -35,7 +35,8 @@ class Profile extends Component {
 }
 
 const mapStateToProps = (state) => ({
-   serverIp: state.serverIp
+   serverIp: state.serverIp,
+   profile: state.profile
 });
 
 export default connect(

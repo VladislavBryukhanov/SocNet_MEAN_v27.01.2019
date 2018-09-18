@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 const blogSchema = mongoose.Schema({
     owner: String,
-    content: String,
-    files: [String]
+    textContent: String,
+    attachedFiles: [String]
 });
 
-module.exports = blogSchema;
+module.exports = mongoose.model("Blog", blogSchema);

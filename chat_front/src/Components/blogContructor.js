@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { connect } from 'react-redux';
 
 class BlogContructor extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            resetKey: '_',
             content: "",
-            picture: null
+            files: []
         }
     }
 
@@ -15,33 +17,43 @@ class BlogContructor extends Component {
     }
 
     onPictureChanged = (e) => {
-        this.setState({picture: e.target.files[0]});
+        this.setState({files: [...(e.target.files)]});
     }
 
     onSubmitPost = (e) => {
-        console.log(this.state.picture);
-        console.log(this.state.content);
         e.preventDefault();
         let data = new FormData();
         data.append('content', this.state.content);
         // MB get user from token ?
         // data.append('owner', this.state.content);
-        data.append('picture', this.state.picture);
+        this.state.files.map((file) => {
+            data.append('files', file);
+        });
         axios.post('/blogs/postBlog', data)
             .then((res) => {
-                console.log(res.data);
+                this.props.addBlog(res.data);
+                this.setState({content:'', resetKey: res.data._id});
             })
     }
 
     render() {
         return (
             <form onSubmit={this.onSubmitPost} className="blogConstructor">
-                <textarea onChange={this.onContentChanged} className="blogContent"/>
-                <input onChange={this.onPictureChanged} type="file" />
+                <textarea value={this.state.content} onChange={this.onContentChanged} className="blogContent"/>
+                <input key={this.state.resetKey} onChange={this.onPictureChanged} type="file" multiple/>
                 <input type="submit"/>
             </form>
         )
     }
 }
 
-export default BlogContructor;
+const mapDispatchToProps = (dispatch) => ({
+    addBlog: (blog) => {
+        dispatch({type: 'addBlog', blog: blog})
+    }
+});
+
+
+export default connect(
+    null, mapDispatchToProps
+)(BlogContructor);
