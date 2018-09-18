@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
-import BlogContructor from "../Components/blogContructor";
-import Blogs from "../Components/blogs";
+import BlogContructor from "../Components/blogComoponents/blogContructor";
+import Blogs from "../Components/blogComoponents/blogs";
 
 class Profile extends Component {
     constructor(props) {

@@ -29,9 +29,9 @@ class BlogContructor extends Component {
         this.state.files.map((file) => {
             data.append('files', file);
         });
-        axios.post('/blogs/postBlog', data)
+        axios.post('/blogs/addPost', data)
             .then((res) => {
-                this.props.addBlog(res.data);
+                this.props.addPost(res.data);
                 this.setState({content:'', resetKey: res.data._id});
             })
     }
@@ -48,8 +48,8 @@ class BlogContructor extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-    addBlog: (blog) => {
-        dispatch({type: 'addBlog', blog: blog})
+    addPost: (blog) => {
+        dispatch({type: 'addPost', blog: blog})
     }
 });
 

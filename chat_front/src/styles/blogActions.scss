@@ -1,0 +1,16 @@
+.blogActions {
+  //display: none;
+  //padding-bottom: 10px;
+  //margin: -14px -14px 0 -14px;
+  .editBlog {
+    cursor: pointer;
+    display: inline-block;
+    width: 50%;
+  }
+  .deleteBlog {
+    cursor: pointer;
+    display: inline-block;
+    width: 50%;
+    text-align: right;
+  }
+}

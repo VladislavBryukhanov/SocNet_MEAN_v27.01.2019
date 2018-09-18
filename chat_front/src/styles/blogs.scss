@@ -3,18 +3,38 @@
   //.username {
   //  font-weight: 500;
   //}
-  > div {
+  .blogBody {
     width: 80%;
     margin: 5vw auto;
-    padding: 15px;
-    box-shadow: 0px 0px 31px 1px black;
+    padding: 24px;
+    box-shadow: 0px 0px 31px 1px grey;
     .attachedImage {
-      width: calc(100% - 16px);
-      //box-shadow: 0px 0px 31px 1px black;
-      border: 8px solid white;
+      width: 100%;
     }
     .textContent {
       font-size: 19px;
+    }
+
+    .actions {
+      //display: none;
+      //padding-bottom: 10px;
+      //margin: -14px -14px 0 -14px;
+      .editBlog {
+        cursor: pointer;
+        display: inline-block;
+        width: 50%;
+      }
+      .deleteBlog {
+        cursor: pointer;
+        display: inline-block;
+        width: 50%;
+        text-align: right;
+      }
+    }
+  }
+  .blogBody:hover {
+    .actions {
+      display: inherit;
     }
   }
 }

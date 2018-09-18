@@ -17,7 +17,7 @@ const upload = multer({
     limits: {fileSize: 5 * 1024 * 1024}
 });
 
-router.get('/getBlogs/:userId', async(request, response) => {
+router.get('/getBlog/:userId', async(request, response) => {
     let blogs = await Blog.find({owner: request.params.userId});
     if (blogs) {
         response.send(blogs);
@@ -26,7 +26,7 @@ router.get('/getBlogs/:userId', async(request, response) => {
     }
 });
 
-router.post('/postBlog', upload.array('files', 12), async(request, response) => {
+router.post('/addPost', upload.array('files', 12), async(request, response) => {
     let post = {
         attachedFiles: [],
         textContent: request.body.content,
@@ -49,8 +49,10 @@ router.post('/postBlog', upload.array('files', 12), async(request, response) => 
 
 });
 
-router.delete('/removeBlog', async(request, response) => {
-
+router.delete('/deletePost/:_id', async(request, response) => {
+    response.send(await Blog.findOneAndRemove({
+        _id: request.params._id, owner: request.user._id
+    }));
 });
 
 module.exports = router;

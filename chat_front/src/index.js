@@ -6,6 +6,7 @@ import { Provider,  } from 'react-redux';
 import io from 'socket.io-client';
 import {  BrowserRouter, Route } from 'react-router-dom';
 import App from './App';
+
 import './styles/navBar.css';
 import './styles/body.css';
 import './styles/rooms.css';
@@ -15,6 +16,7 @@ import './styles/profile.css';
 import './styles/sideMenu.css';
 import './styles/blogConstructor.css';
 import './styles/blogs.css';
+import './styles/blogActions.css';
 
 const ip = "http://192.168.1.3:31315";
 
@@ -67,13 +69,20 @@ const Reducer = (state = initState, action) => {
                 ...state, blogs: action.blogs
             }
         }
-        case "addBlog": {
+        case "addPost": {
             action.blog.attachedFiles = action.blog.attachedFiles.map((file) => {
                 return `${ip}/${file}`;
             });
             return {
                 ...state, blogs: [
                     ...state.blogs, action.blog
+                ]
+            }
+        }
+        case "deletePost": {
+            return {
+                ...state, blogs: [
+                    ...state.blogs.filter(b => b._id !== action._id)
                 ]
             }
         }
