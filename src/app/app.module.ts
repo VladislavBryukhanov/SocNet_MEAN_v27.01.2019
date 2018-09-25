@@ -9,9 +9,11 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RoutingModule} from './routing/routing.module';
 import {AuthInterceptor} from './modules/authInterceptor';
 import { UserListComponent } from './pages/user-list/user-list.component';
+import { ImagePathPipe } from './pipes/image-path.pipe';
 
 @NgModule({
   declarations: [
+    ImagePathPipe,
     AppComponent,
     SignInComponent,
     SignUpComponent,
