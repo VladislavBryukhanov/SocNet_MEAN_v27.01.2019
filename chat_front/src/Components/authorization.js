@@ -5,7 +5,7 @@ import { store } from '../index';
 
 const cookie = new Cookies();
 export function signIn (data) {
-    cookie.set('token', data.token, {path: '/', expiresIn: 365 * 24 * 60 * 60});
+    cookie.set('token', data.token, {path: '/', maxAge: 365 * 24 * 60 * 60});
     axios.defaults.headers = {
         authorization: 'Bearer ' + data.token
     };
