@@ -5,21 +5,22 @@ import {AuthService} from '../services/auth.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
+  public static url = 'http://192.168.1.5:31315';
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const url = 'http://192.168.1.214:31315';
     const token = AuthService.getAuthToken();
     if (token) {
       req = req.clone({
-        url: url + req.url,
+        url: AuthInterceptor.url + req.url,
         headers: new HttpHeaders({
           authorization: token
         })
       });
     } else {
       req = req.clone({
-        url: url + req.url
+        url: AuthInterceptor.url + req.url
       });
     }
+    console.log(req.url);
     return next.handle(req);
   }
 }
