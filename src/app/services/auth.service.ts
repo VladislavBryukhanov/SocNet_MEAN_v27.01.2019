@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import {Observable, of} from 'rxjs/index';
+import {Observable, of, throwError} from 'rxjs/index';
 import {HttpClient} from '@angular/common/http';
 import {User} from '../models/user';
 import {Router} from '@angular/router';
-import {catchError, map} from 'rxjs/internal/operators';
+import { map} from 'rxjs/internal/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -55,7 +55,8 @@ export class AuthService {
 
   autoSignIn(): Observable<void> {
     if (!this.getAuthToken()) {
-      return of(null);
+      const err = {status: 401};
+      return throwError(err);
     }
     this._authToken = this.getAuthToken();
     return this.http.get<User>('/autoSignIn').pipe(

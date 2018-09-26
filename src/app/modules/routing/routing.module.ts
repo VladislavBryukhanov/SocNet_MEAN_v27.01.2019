@@ -5,15 +5,19 @@ import {SignInComponent} from '../../pages/sign-in/sign-in.component';
 import {SignUpComponent} from '../../pages/sign-up/sign-up.component';
 import {UserListComponent} from '../../pages/user-list/user-list.component';
 import {AuthGuardService} from '../../services/auth-guard.service';
+import {AnonGuardService} from '../../services/anon-guard.service';
 
 const routes: Routes = [
   {
     path: '',
-    component: SignInComponent
+    component: SignInComponent,
+    canActivate: [AnonGuardService],
+    pathMatch: 'full'
   },
   {
     path: 'sign_up',
-    component: SignUpComponent
+    component: SignUpComponent,
+    canActivate: [AnonGuardService]
   },
   {
     path: 'user_list',
