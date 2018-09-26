@@ -28,7 +28,8 @@ export class SignInComponent implements OnInit {
       .subscribe(res => {
         console.log(res);
         this.authService.setAuthToken(res['token']);
-        this.router.navigate(['/']);
+        const redirectUrl = this.authService.redirectUrl ? this.authService.redirectUrl : '/user_list';
+        this.router.navigate([redirectUrl]);
       });
   }
 

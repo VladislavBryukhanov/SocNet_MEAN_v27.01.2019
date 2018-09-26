@@ -8,6 +8,11 @@ import {User} from '../models/user';
 })
 export class AuthService {
 
+  public isAuthenticated = false;
+  public user: User;
+  public authToken: String;
+  public redirectUrl: String;
+
   constructor (private http: HttpClient) { }
 
   static getAuthToken() {
@@ -32,7 +37,8 @@ export class AuthService {
   setAuthToken(token: String) {
     const maxAge: String = `Max-Age=${365 * 24 * 60 * 60};`;
     document.cookie = `AuthToken=${token}; ${maxAge}`;
-    console.log(AuthService.getAuthToken());
+    // console.log(AuthService.getAuthToken());
+    this.isAuthenticated = true;
   }
 
   getProfile(): Observable<User> {
