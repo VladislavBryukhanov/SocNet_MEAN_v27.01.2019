@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
-import {Observable} from 'rxjs/index';
 import {AuthService} from './auth.service';
 
 @Injectable({
@@ -14,9 +13,19 @@ export class AuthGuardService implements CanActivate {
     if (this.authService.isAuthenticated) {
       return true;
     } else {
-      this.authService.redirectUrl = state.url;
-      this.router.navigate(['']);
-      return false;
+      // TODO try to autoSignIn before redirect
+      this.authService.autoSignIn()
+        .subscribe(res => {
+          // console.log(res);
+          return true;
+        }, err => {
+          // console.log(err);
+          if (err.status === 401) {
+            this.authService.redirectUrl = state.url;
+            this.router.navigate(['']);
+            return false;
+          }
+        });
     }
   }
 }

@@ -14,7 +14,7 @@ export class SignInComponent implements OnInit {
   public login: String;
   public password: String;
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService) { }
 
   ngOnInit() {
   }
@@ -24,13 +24,7 @@ export class SignInComponent implements OnInit {
       login: this.login,
       password: this.password
     };
-    this.authService.signIn(authData)
-      .subscribe(res => {
-        console.log(res);
-        this.authService.setAuthToken(res['token']);
-        const redirectUrl = this.authService.redirectUrl ? this.authService.redirectUrl : '/user_list';
-        this.router.navigate([redirectUrl]);
-      });
+    this.authService.signIn(authData);
   }
 
 }

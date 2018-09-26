@@ -13,7 +13,7 @@ export class SignUpComponent implements OnInit {
 
   public formGroup: FormGroup;
 
-  constructor(private authService: AuthService, private formBuilder: FormBuilder, private router: Router) { }
+  constructor(private authService: AuthService, private formBuilder: FormBuilder) { }
 
   ngOnInit() {
     this.formGroup = this.formBuilder.group({
@@ -42,13 +42,7 @@ export class SignUpComponent implements OnInit {
       this.formGroup.get('username').value,
       this.formGroup.get('password').value
     );
-    this.authService.signUp(newUser)
-      .subscribe(res => {
-        console.log(res);
-        this.authService.setAuthToken(res['token']);
-        const redirectUrl = this.authService.redirectUrl ? this.authService.redirectUrl : '/user_list';
-        this.router.navigate([redirectUrl]);
-      });
+    this.authService.signUp(newUser);
   }
 
 }
