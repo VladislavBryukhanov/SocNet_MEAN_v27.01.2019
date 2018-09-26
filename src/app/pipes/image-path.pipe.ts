@@ -7,7 +7,7 @@ import {AuthInterceptor} from '../modules/authInterceptor';
 export class ImagePathPipe implements PipeTransform {
 
   transform(value: String): String {
-    return `${AuthInterceptor.url}/${value}`;
+    return `${AuthInterceptor.hostUrl}/${value}`;
   }
 
 }
