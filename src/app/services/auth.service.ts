@@ -3,7 +3,7 @@ import {Observable, of, throwError} from 'rxjs/index';
 import {HttpClient} from '@angular/common/http';
 import {User} from '../models/user';
 import {Router} from '@angular/router';
-import { map} from 'rxjs/internal/operators';
+import {map} from 'rxjs/internal/operators';
 
 @Injectable({
   providedIn: 'root'

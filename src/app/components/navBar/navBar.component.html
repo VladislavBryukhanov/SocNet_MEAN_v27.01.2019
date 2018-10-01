@@ -17,7 +17,7 @@
         src={{this.authService.myUser.avatar|imagePath}}
         class="userAvatar"
         routerLink="/profile/{{this.authService.myUser._id}}"/>
-      <a (click)="signOut()" class="logOutBtn">Log out</a>
+      <a (click)="this.authService.signOut()" class="logOutBtn">Log out</a>
     </div>
   </ng-template>
 
