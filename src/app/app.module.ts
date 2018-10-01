@@ -10,6 +10,7 @@ import {RoutingModule} from './modules/routing/routing.module';
 import {AuthInterceptor} from './modules/authInterceptor';
 import { UserListComponent } from './pages/user-list/user-list.component';
 import { ImagePathPipe } from './pipes/image-path.pipe';
+import { ProfileComponent } from './pages/profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { ImagePathPipe } from './pipes/image-path.pipe';
     AppComponent,
     SignInComponent,
     SignUpComponent,
-    UserListComponent
+    UserListComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,

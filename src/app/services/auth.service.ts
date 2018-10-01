@@ -72,27 +72,21 @@ export class AuthService {
     payload.subscribe(res => {
       this.saveAuthToken(res['token']);
       this._authToken = this.getAuthToken();
-// this._authToken = res['token'];
       this._myUser = res['user'];
       this.isAuthenticated = true;
       this.router.navigate([this.redirectUrl]);
     });
   }
 
-  // TODO replace setAuth to signIn/up method
-
   saveAuthToken(token: String) {
-    const maxAge: String = `Max-Age=${365 * 24 * 60 * 60};`;
-    document.cookie = `AuthToken=${token}; ${maxAge}`;
+    localStorage.setItem(
+      'AuthToken',
+      `Bearer ${token}`
+    );
   }
 
   getAuthToken(): String {
-    const cookieName = 'AuthToken';
-    const matches = document.cookie.match(new RegExp(
-      `(?:^|; )${cookieName.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1')}=([^;]*)`
-    ));
-    return matches ? decodeURIComponent(`Bearer ${matches[1]}`) : undefined;
+    return localStorage.getItem('AuthToken');
   }
-
 
 }
