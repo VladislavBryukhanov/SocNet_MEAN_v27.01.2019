@@ -13,18 +13,14 @@ export class AuthGuardService implements CanActivate {
     if (this.authService.isAuthenticated) {
       return true;
     } else {
+      this.authService.redirectUrl = state.url;
       this.authService.autoSignIn()
-        .subscribe(_ => {
-          return true;
-        }, err => {
+        .subscribe(null, err => {
           console.log(err);
           if (err.status === 401) {
-            this.authService.redirectUrl = state.url;
             this.router.navigate(['/']);
-            return false;
           }
         });
-      return false;
     }
   }
 }
