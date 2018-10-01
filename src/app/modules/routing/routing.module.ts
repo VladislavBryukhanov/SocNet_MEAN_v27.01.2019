@@ -7,6 +7,7 @@ import {UserListComponent} from '../../pages/user-list/user-list.component';
 import {AuthGuardService} from '../../services/auth-guard.service';
 import {AnonGuardService} from '../../services/anon-guard.service';
 import {ProfileComponent} from '../../pages/profile/profile.component';
+import {EditProfileComponent} from '../../pages/edit-profile/edit-profile.component';
 
 const routes: Routes = [
   {
@@ -28,6 +29,11 @@ const routes: Routes = [
   {
     path: 'profile/:id',
     component: ProfileComponent,
+    canActivate: [AuthGuardService]
+  },
+  {
+    path: 'edit_profile',
+    component: EditProfileComponent,
     canActivate: [AuthGuardService]
   }
 ];

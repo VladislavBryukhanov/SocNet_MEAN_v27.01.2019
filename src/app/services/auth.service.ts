@@ -96,4 +96,11 @@ export class AuthService {
     return localStorage.getItem('AuthToken');
   }
 
+
+  editProfile(user: FormData) {
+    return this.http.put<User>('/users/editProfile', user)
+      .subscribe(res => {
+        this._myUser = <User>res;
+      });
+  }
 }
