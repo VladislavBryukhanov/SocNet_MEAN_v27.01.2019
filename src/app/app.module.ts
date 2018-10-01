@@ -12,6 +12,7 @@ import { UserListComponent } from './pages/user-list/user-list.component';
 import { ImagePathPipe } from './pipes/image-path.pipe';
 import { ProfileComponent } from './pages/profile/profile.component';
 import {NavBarComponent} from './components/navBar/navBar.component';
+import { EditProfileComponent } from './pages/edit-profile/edit-profile.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import {NavBarComponent} from './components/navBar/navBar.component';
     SignUpComponent,
     UserListComponent,
     ProfileComponent,
-    NavBarComponent
+    NavBarComponent,
+    EditProfileComponent
   ],
   imports: [
     BrowserModule,

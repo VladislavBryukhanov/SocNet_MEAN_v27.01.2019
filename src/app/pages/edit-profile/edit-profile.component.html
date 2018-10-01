@@ -1,0 +1,15 @@
+<form [formGroup]="formGroup" (ngSubmit)="onSaveChanges()">
+  <input formControlName="avatar" type="file" (change)="onAvatarChanged($event)"/>
+  <input formControlName="login" placeholder="login"/>
+  <input formControlName="username" placeholder="username"/>
+  <input formControlName="password" placeholder="password" type="password"/>
+  <input type="submit" value="save changes"/>
+</form>
+
+<!--<form onSubmit = {this.onSaveChanges}>-->
+  <!--<input onChange={this.onAvatarChanged} type="file"/>-->
+  <!--<input onChange={this.onUsernameChanged} value={this.state.username} type="text" placeholder="username"/>-->
+  <!--<input onChange={this.onLoginChanged} value={this.state.login} type="text" placeholder="login"/>-->
+  <!--<input onChange={this.onPasswordChanged} type="password" placeholder="password"/>-->
+  <!--<input type="submit" value="save"/>-->
+<!--</form>-->

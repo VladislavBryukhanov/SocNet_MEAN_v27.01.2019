@@ -33,10 +33,6 @@ export class SignUpComponent implements OnInit {
   }
 
   onSignUp() {
-    // const newUser = new FormData();
-    // newUser.append('username', this.formGroup.get('username').value);
-    // newUser.append('login', this.formGroup.get('login').value);
-    // newUser.append('password', this.formGroup.get('password').value);
     const newUser: User = new User(
       this.formGroup.get('login').value,
       this.formGroup.get('username').value,
