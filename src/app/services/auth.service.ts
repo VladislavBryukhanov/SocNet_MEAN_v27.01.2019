@@ -53,6 +53,13 @@ export class AuthService {
     );
   }
 
+  signOut() {
+    localStorage.removeItem('AuthToken');
+    this.isAuthenticated = false;
+    this._myUser = null;
+    this.router.navigate(['/']);
+  }
+
   autoSignIn(): Observable<void> {
     if (!this.getAuthToken()) {
       const err = {status: 401};
@@ -60,8 +67,8 @@ export class AuthService {
     }
     this._authToken = this.getAuthToken();
     return this.http.get<User>('/autoSignIn').pipe(
-        map(res => {
-          this._myUser = res['user'];
+        map(user => {
+          this._myUser = user;
           this.isAuthenticated = true;
           this.router.navigate([this.redirectUrl]);
         })

@@ -11,10 +11,22 @@ export class AnonGuardService implements CanActivate {
 
   canActivate(): boolean {
     if (this.authService.isAuthenticated) {
-      this.router.navigate(['/user_list']);
+      // this.router.navigate(['/user_list']);
+      this.router.navigate([this.authService.redirectUrl]);
       return false;
     } else {
-      return true;
+      this.authService.autoSignIn()
+        .subscribe(_ => {
+          // this.router.navigate(['/user_list']);
+          this.router.navigate([this.authService.redirectUrl]);
+          return false;
+        }, err => {
+          console.log(err);
+          if (err.status === 401) {
+            return true;
+          }
+        });
+      // return true;
     }
   }
 }

@@ -11,6 +11,7 @@ import {AuthInterceptor} from './modules/authInterceptor';
 import { UserListComponent } from './pages/user-list/user-list.component';
 import { ImagePathPipe } from './pipes/image-path.pipe';
 import { ProfileComponent } from './pages/profile/profile.component';
+import {NavBarComponent} from './components/navBar/navBar.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { ProfileComponent } from './pages/profile/profile.component';
     SignInComponent,
     SignUpComponent,
     UserListComponent,
-    ProfileComponent
+    ProfileComponent,
+    NavBarComponent
   ],
   imports: [
     BrowserModule,
