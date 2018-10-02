@@ -4,6 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {User} from '../models/user';
 import {Router} from '@angular/router';
 import {catchError, map} from 'rxjs/internal/operators';
+import {Location} from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +40,7 @@ export class AuthService {
   public _authToken: String;
   public isAuthenticated = false;
 
-  constructor (private http: HttpClient, private router: Router) { }
+  constructor (private http: HttpClient, private router: Router, private location: Location) { }
 
   signUp(user: User) {
     this.authentication(
@@ -111,6 +112,7 @@ export class AuthService {
         this.saveAuthToken(res['token']);
         this._authToken = this.getAuthToken();
         this._myUser = res['user'];
+        this.location.back();
       });
   }
 }

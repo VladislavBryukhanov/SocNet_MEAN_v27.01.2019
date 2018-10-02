@@ -13,6 +13,7 @@ import { ImagePathPipe } from './pipes/image-path.pipe';
 import { ProfileComponent } from './pages/profile/profile.component';
 import {NavBarComponent} from './components/navBar/navBar.component';
 import { EditProfileComponent } from './pages/edit-profile/edit-profile.component';
+import { BlogConstructorComponent } from './components/blog-constructor/blog-constructor.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { EditProfileComponent } from './pages/edit-profile/edit-profile.componen
     UserListComponent,
     ProfileComponent,
     NavBarComponent,
-    EditProfileComponent
+    EditProfileComponent,
+    BlogConstructorComponent
   ],
   imports: [
     BrowserModule,

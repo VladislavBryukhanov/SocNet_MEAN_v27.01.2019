@@ -1,15 +1,40 @@
-<form [formGroup]="formGroup" (ngSubmit)="onSaveChanges()">
-  <input formControlName="avatar" type="file" (change)="onAvatarChanged($event)"/>
-  <input formControlName="login" placeholder="login"/>
-  <input formControlName="username" placeholder="username"/>
-  <input formControlName="password" placeholder="password" type="password"/>
-  <input type="submit" value="save changes"/>
-</form>
-
-<!--<form onSubmit = {this.onSaveChanges}>-->
-  <!--<input onChange={this.onAvatarChanged} type="file"/>-->
-  <!--<input onChange={this.onUsernameChanged} value={this.state.username} type="text" placeholder="username"/>-->
-  <!--<input onChange={this.onLoginChanged} value={this.state.login} type="text" placeholder="login"/>-->
-  <!--<input onChange={this.onPasswordChanged} type="password" placeholder="password"/>-->
-  <!--<input type="submit" value="save"/>-->
-<!--</form>-->
+<div class="mainContent">
+  <form [formGroup]="formGroup" (ngSubmit)="onSaveChanges()" class="editProfileForm">
+    <div class="field">
+      <label>Avatar</label>
+      <input formControlName="avatar" type="file" (change)="onAvatarChanged($event)"/>
+    </div>
+    <div class="field">
+      <label>Username</label>
+      <input formControlName="username" placeholder="Username"/>
+    </div>
+    <div class="field">
+      <label>Login</label>
+      <input formControlName="login" placeholder="Login"/>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input formControlName="password" placeholder="New password" type="password"/>
+    </div>
+    <!---->
+    <div class="field">
+      <label>Bio</label>
+      <textarea></textarea>
+    </div>
+    <div class="field">
+      <label>Hobbies</label>
+      <div>
+        <label>Some text</label>
+        <input type="checkbox" />
+        <label>Some text</label>
+        <input type="checkbox" />
+        <label>Some text</label>
+        <input type="checkbox" />
+      </div>
+    </div>
+    <!---->
+    <div class="field">
+      <input type="submit" value="save changes"/>
+    </div>
+  </form>
+</div>

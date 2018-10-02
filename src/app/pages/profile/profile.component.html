@@ -1,6 +1,10 @@
-<div *ngIf="profile" >
-  <div class="profile">
-    <img src={{profile.avatar|imagePath}} class="avatar"/>
-    <h1 class="username">{{profile.username}}</h1>
+<div class="mainContent">
+  <div *ngIf="profile" >
+    <div class="profile">
+      <img src={{profile.avatar|imagePath}} class="avatar"/>
+      <h1 class="username">{{profile.username}}</h1>
+    </div>
   </div>
 </div>
+
+<app-blog-constructor></app-blog-constructor>
