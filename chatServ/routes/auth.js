@@ -1,62 +1,37 @@
 const express = require('express');
 const router = express.Router();
-const _ = require('lodash');
 const User = require('../models/user');
-
-const secret = require('../secret');
-const jwt = require('jsonwebtoken');
-
-const addUser = (userData) => {
-    return User.create(userData);
-};
-
-const searchUser = (auth) => {
-    return User.findOne(auth);
-};
-
-const authPayload = (user) => {
-    let payload = {
-        "role": user.role,
-        "_id": user._id
-    };
-    let token = jwt.sign(payload, secret, {expiresIn: 365 * 24 * 60 * 60});
-
-/*    user = user.toObject();
-    delete user._id;
-    delete user.role;*/
-
-    let res = {
-        token: token,
-        user: user
-    };
-    return res;
-};
+const crypto = require('crypto');
+const authPayload = require('../modules/tokenPayload');
 
 router.get('/autoSignIn', async (request, response) => {
-    let user = await searchUser({
+    let user = await User.findOne({
         _id: request.user._id,
-        role: request.user.role
+        role: request.user.role,
+        session_hash: request.user.session_hash
     });
     if (user) {
        response.send(user);
     } else {
-       response.sendStatus(404);
+       response.sendStatus(401);
     }
 
 });
 
 router.post('/signIn', async (request, response) => {
-    let user = await searchUser(request.body);
+    let user = await User.findOne(request.body);
     if(user) {
+        let session_hash_data = await User.findOne(request.body).select('session_hash');
+        user.session_hash = session_hash_data.session_hash;
         response.send(authPayload(user));
     } else {
-        response.sendStatus(404);
+        response.sendStatus(401);
     }
 });
 
 router.post('/signUp', async (request, response) => {
-    let user = await addUser(request.body);
-    user = await searchUser(user);
+    request.body.session_hash = crypto.randomBytes(20).toString('hex');
+    let user = await User.create(request.body);
     if(user) {
         response.send(authPayload(user));
     } else {
@@ -65,3 +40,4 @@ router.post('/signUp', async (request, response) => {
 });
 
 module.exports = router;
+module.authPayload = authPayload;

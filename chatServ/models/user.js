@@ -2,23 +2,28 @@ const mongoose = require('mongoose');
 const roomSchema = mongoose.Schema({
     avatar: {
         type: String,
-        default: 'avatars/giphy.gif'
+        required: true,
+        default: 'avatars/default.jpg'
     },
-    username: String,
+    username: {
+        type: String,
+        required: true
+    },
     login: {
         type: String,
         unique: true,
         required: true
     },
     password: {
-        required: true,
         type: String,
+        required: true,
         select: false
     },
-    // session_hash: {
-    //     type: String,
-    //     select: false
-    // },
+    session_hash: {
+        type: String,
+        required: true,
+        select: false
+    },
     role: {
         type: String,
         default: 'user',
