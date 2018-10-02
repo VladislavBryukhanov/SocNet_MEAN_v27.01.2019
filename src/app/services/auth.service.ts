@@ -3,7 +3,7 @@ import {Observable, of, throwError} from 'rxjs/index';
 import {HttpClient} from '@angular/common/http';
 import {User} from '../models/user';
 import {Router} from '@angular/router';
-import {map} from 'rxjs/internal/operators';
+import {catchError, map} from 'rxjs/internal/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -71,6 +71,14 @@ export class AuthService {
           this._myUser = user;
           this.isAuthenticated = true;
           this.router.navigate([this.redirectUrl]);
+        }),
+      catchError((err) => {
+          console.log(err.status);
+          if (err.status === 401) {
+            localStorage.removeItem('AuthToken');
+            // signOut();
+            return throwError(err);
+          }
         })
       );
   }
@@ -100,7 +108,9 @@ export class AuthService {
   editProfile(user: FormData) {
     return this.http.put<User>('/users/editProfile', user)
       .subscribe(res => {
-        this._myUser = <User>res;
+        this.saveAuthToken(res['token']);
+        this._authToken = this.getAuthToken();
+        this._myUser = res['user'];
       });
   }
 }
