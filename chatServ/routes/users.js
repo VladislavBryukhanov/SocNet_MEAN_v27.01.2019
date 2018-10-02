@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const path = require('path');
+const fs = require('fs');
+const crypto = require('crypto');
 
 const multer = require('multer');
 const storage = multer.diskStorage({
@@ -16,16 +18,24 @@ const upload = multer({
     storage: storage,
     limits: {fileSize: 5 * 1024 * 1024}
 });
-
-router.post('/editProfile', upload.single('avatar'), async (request, response) => {
+//
+router.put('/editProfile', upload.single('avatar'), async (request, response) => {
+    let oldProfile = await User.findOne({_id: request.user._id});
     if(request.file) {
         request.body.avatar = `avatars/${request.file.filename}`;
+        fs.unlink(`public/${oldProfile.avatar}`, err => console.log(err));
     }
     // else {
     //     delete request.body.avatar;
     // }
-    console.log(request.body);
-    let newProfile = await User.findOneAndUpdate({_id: request.user._id}, request.body, {new: true, runValidators: true});
+    // if(request.body.password) {
+    //     request.body.session_hash = crypto.randomBytes(20).toString('hex');
+    // }
+    let newProfile = await User.findOneAndUpdate(
+        {_id: request.user._id},
+        request.body,
+        {new: true, runValidators: true});
+
     if(newProfile) {
         response.send(newProfile);
     } else {

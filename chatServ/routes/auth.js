@@ -7,9 +7,6 @@ const secret = require('../secret');
 const jwt = require('jsonwebtoken');
 
 const addUser = (userData) => {
-    // let user = new User(userData);
-    // console.log(user);
-    // return user.save();
     return User.create(userData);
 };
 
