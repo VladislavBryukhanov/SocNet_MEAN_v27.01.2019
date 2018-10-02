@@ -1,0 +1,38 @@
+.blogConstructor {
+  margin: 3%;
+  width: 94%;
+
+  textarea {
+    padding: 6px;
+    width: 100%;
+    display: block;
+    height: 140px;
+  }
+  input {
+    margin-top: 8px
+  }
+  .submitPost {
+    float: right;
+    //margin: 8px -5px;
+    margin: 8px -12px;
+    font-weight: 100;
+    width: 153px;
+    height: 36px;
+    color: white;
+    font-size: 19px;
+    border: 0;
+    //background-color: #5682a3;
+    background-color: #6496C7;
+    cursor: pointer;
+    border-radius: 2px;
+    box-shadow: 1px 2px 1px 1px #56729a;
+    //box-shadow: 1px 1px 1px 1px #4f6
+  }
+  .submitPost:hover {
+    background-color: rgb(84, 136, 200);
+  }
+  .submitPost:active {
+    background-color: #417BBA;
+    box-shadow: 1px 2px 1px 1px #56729a;
+  }
+}

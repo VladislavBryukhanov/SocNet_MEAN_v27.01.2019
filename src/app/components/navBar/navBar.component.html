@@ -12,7 +12,7 @@
         <a routerLink="/user_list">list of users</a>
     </div>
     <div class="profile" *ngIf="this.authService.myUser">
-      <a routerLink="/edit_profile">{{this.authService.myUser.username}}</a>
+      <a class="username" routerLink="/edit_profile">{{this.authService.myUser.username}}</a>
       <img
         src={{this.authService.myUser.avatar|imagePath}}
         class="userAvatar"

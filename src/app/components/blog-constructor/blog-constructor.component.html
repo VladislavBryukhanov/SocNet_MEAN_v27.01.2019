@@ -1,0 +1,7 @@
+<div class="mainContent">
+  <form (ngSubmit)="publishPost()" class="blogConstructor">
+    <textarea [(ngModel)]="textContent" name="textContent"></textarea>
+    <input type="file" multiple (change)="onFilesAttached($event)"/>
+    <input type="submit" class="submitPost"/>
+  </form>
+</div>
