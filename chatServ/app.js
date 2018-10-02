@@ -11,11 +11,14 @@ const authTokenAccess = require('./middlewares/authTokenAccess');
 const exjwt = require('express-jwt');
 const secret = require('./secret');
 
+const unless = [
+    '/signIn',
+    '/signUp'
+];
+
 const jwtMW = exjwt({secret: secret})
-    .unless({path: [
-        '/signIn',
-        '/signUp'
-    ]});
+    .unless({path: unless});
+const authAccess = authTokenAccess(unless);
 
 const romsRouter = require('./routes/rooms');
 const authRouter = require('./routes/auth');
@@ -28,11 +31,12 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(jwtMW);
+app.use(authAccess);
 app.use('/', authRouter);
-app.use(authTokenAccess);
 app.use('/rooms', romsRouter);
 app.use('/users', usersRouter);
 app.use('/blogs', blogsRouter);
