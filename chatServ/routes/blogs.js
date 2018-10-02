@@ -37,9 +37,11 @@ router.post('/addPost', upload.array('files', 12), async(request, response) => {
             post.attachedFiles.push(`blogs/${file.filename}`);
         });
     }
-    // else {
-    //     delete request.body.picture;
-    // }
+
+    if(!post.textContent && post.attachedFiles.length === 0) {
+        response.sendStatus(404);
+    }
+
     let newBlogPost = await Blog.create(post);
     if(newBlogPost) {
         response.send(newBlogPost);
