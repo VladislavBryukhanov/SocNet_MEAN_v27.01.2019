@@ -38,8 +38,12 @@ router.post('/addPost', upload.array('files', 12), async(request, response) => {
         });
     }
 
+    if(!post.textContent) {
+        delete post.textContent;
+    }
+
     if(!post.textContent && post.attachedFiles.length === 0) {
-        response.sendStatus(404);
+        return response.sendStatus(404);
     }
 
     let newBlogPost = await Blog.create(post);
