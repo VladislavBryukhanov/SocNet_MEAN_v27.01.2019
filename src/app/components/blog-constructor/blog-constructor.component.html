@@ -1,7 +1,7 @@
 <div class="mainContent">
-  <form (ngSubmit)="publishPost()" class="blogConstructor">
-    <textarea [(ngModel)]="textContent" name="textContent"></textarea>
-    <input type="file" multiple (change)="onFilesAttached($event)"/>
+  <form [formGroup]="formGroup" (ngSubmit)="publishPost()" class="blogConstructor">
+    <textarea formControlName="textContent" name="textContent"></textarea>
+    <input formControlName="files" type="file" multiple (change)="onFilesAttached($event)"/>
     <input type="submit" class="submitPost"/>
   </form>
 </div>

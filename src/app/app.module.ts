@@ -14,6 +14,7 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import {NavBarComponent} from './components/navBar/navBar.component';
 import { EditProfileComponent } from './pages/edit-profile/edit-profile.component';
 import { BlogConstructorComponent } from './components/blog-constructor/blog-constructor.component';
+import { BlogComponent } from './components/blog/blog.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { BlogConstructorComponent } from './components/blog-constructor/blog-con
     ProfileComponent,
     NavBarComponent,
     EditProfileComponent,
-    BlogConstructorComponent
+    BlogConstructorComponent,
+    BlogComponent
   ],
   imports: [
     BrowserModule,

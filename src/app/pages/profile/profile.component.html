@@ -1,10 +1,11 @@
-<div class="mainContent">
-  <div *ngIf="profile" >
+<ng-template [ngIf]="profile">
+  <div class="mainContent">
     <div class="profile">
       <img src={{profile.avatar|imagePath}} class="avatar"/>
       <h1 class="username">{{profile.username}}</h1>
     </div>
   </div>
-</div>
 
-<app-blog-constructor></app-blog-constructor>
+  <app-blog-constructor *ngIf="profile._id == authService.myUser._id"></app-blog-constructor>
+  <app-blog></app-blog>
+</ng-template>
