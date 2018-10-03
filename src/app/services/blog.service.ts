@@ -24,4 +24,11 @@ export class BlogService {
         this.blog.unshift(<Blog>res);
       });
   }
+
+  deletePost(postId: string) {
+    this.http.delete(`/blogs/deletePost/${postId}`)
+      .subscribe(res => {
+        this.blog = this.blog.filter(item => item._id !== res._id);
+      });
+  }
 }

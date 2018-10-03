@@ -6,6 +6,6 @@
     </div>
   </div>
 
-  <app-blog-constructor *ngIf="profile._id == authService.myUser._id"></app-blog-constructor>
-  <app-blog></app-blog>
+  <app-blog-constructor *ngIf="isMyPage"></app-blog-constructor>
+  <app-blog [isMyPage]="isMyPage"></app-blog>
 </ng-template>
