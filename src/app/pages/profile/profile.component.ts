@@ -12,6 +12,7 @@ import {AuthService} from '../../services/auth.service';
 export class ProfileComponent implements OnInit {
 
   public profile: User;
+  public isMyPage = false;
 
   constructor(private userService: UsersService,
               private router: ActivatedRoute,
@@ -28,8 +29,11 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit() {
+    const profileId = this.router.snapshot.params['id'];
+    this.isMyPage = profileId === this.authService.myUser._id;
+
     this.router.url.subscribe(_ => {
-      this.userService.getUserById(this.router.snapshot.params['id'])
+      this.userService.getUserById(profileId)
         .subscribe(res => {
           this.profile = res;
         });
