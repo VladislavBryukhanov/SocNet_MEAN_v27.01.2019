@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {BlogService} from '../../services/blog.service';
+import {FormBuilder, FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'app-blog-constructor',
@@ -8,22 +9,31 @@ import {BlogService} from '../../services/blog.service';
 })
 export class BlogConstructorComponent implements OnInit {
 
+  public formGroup: FormGroup;
   private attachedFiles: File[] = [];
-  public textContent: string;
 
-  constructor(private blogService: BlogService) { }
+  constructor(private blogService: BlogService, private formBuilder: FormBuilder) { }
 
   ngOnInit() {
+    this.formGroup = this.formBuilder.group({
+      files: [],
+      textContent: ''
+    });
   }
 
   publishPost() {
-    const newPost = new FormData();
-    newPost.append('content', this.textContent);
+    const textContent = this.formGroup.get('textContent').value;
 
-    console.log(this.attachedFiles);
+    const newPost = new FormData();
+    newPost.append('content', textContent);
+
     this.attachedFiles.forEach(file =>
       newPost.append('files', file));
-    this.blogService.publishPost(newPost);
+
+    if (this.attachedFiles.length > 0 || textContent.length > 0) {
+      this.blogService.publishPost(newPost);
+      this.formGroup.reset();
+    }
   }
 
   onFilesAttached(e) {

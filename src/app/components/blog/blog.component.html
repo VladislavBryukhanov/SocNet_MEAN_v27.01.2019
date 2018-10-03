@@ -1,0 +1,10 @@
+<div class="blog">
+  <div class="blogBody" *ngFor="let post of blogService.blog">
+    <div class="post">
+      <img *ngIf="post.attachedFiles[0]"
+           src={{post.attachedFiles[0]|imagePath}}
+           class="attachedImage"/>
+      <p class="textContent">{{post.textContent}}</p>
+    </div>
+  </div>
+</div>

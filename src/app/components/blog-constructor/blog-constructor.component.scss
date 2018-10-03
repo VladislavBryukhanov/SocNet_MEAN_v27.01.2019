@@ -1,10 +1,13 @@
 .blogConstructor {
-  margin: 3%;
-  width: 94%;
+  //margin: 3%;
+  //width: 94%;
+  //width: 100%;
+  max-width: 100%;
+  margin: 9px;
 
   textarea {
     padding: 6px;
-    width: 100%;
+    width: calc(100% - 12px);
     display: block;
     height: 140px;
   }
@@ -13,8 +16,8 @@
   }
   .submitPost {
     float: right;
-    //margin: 8px -5px;
-    margin: 8px -12px;
+    margin: 8px 0;
+    //margin: 8px -12px;
     font-weight: 100;
     width: 153px;
     height: 36px;
