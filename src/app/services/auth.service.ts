@@ -11,11 +11,11 @@ import {Location} from '@angular/common';
 })
 export class AuthService {
 
-  get authToken(): String {
+  get authToken(): string {
     return this._authToken;
   }
 
-  set authToken(value: String) {
+  set authToken(value: string) {
     this._authToken = value;
   }
 
@@ -27,17 +27,17 @@ export class AuthService {
     this._myUser = value;
   }
 
-  get redirectUrl(): String {
+  get redirectUrl(): string {
     return this._redirectUrl;
   }
 
-  set redirectUrl(value: String) {
+  set redirectUrl(value: string) {
     this._redirectUrl = value;
   }
 
-  private _redirectUrl: String = '/user_list';
+  private _redirectUrl: string = '/user_list';
   private _myUser: User;
-  public _authToken: String;
+  public _authToken: string;
   public isAuthenticated = false;
 
   constructor (private http: HttpClient, private router: Router, private location: Location) { }
@@ -94,14 +94,14 @@ export class AuthService {
     });
   }
 
-  saveAuthToken(token: String) {
+  saveAuthToken(token: string) {
     localStorage.setItem(
       'AuthToken',
       `Bearer ${token}`
     );
   }
 
-  getAuthToken(): String {
+  getAuthToken(): string {
     return localStorage.getItem('AuthToken');
   }
 

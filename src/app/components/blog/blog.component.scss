@@ -23,6 +23,13 @@
       .attachedImage {
         width: 100%;
       }
+      .attachment{
+        width: 120px;
+        height: 120px;
+        border-radius: 3px;
+        margin: 10px 20px 10px 0;
+        display: inline-block;
+      }
       .textContent {
         font-size: 19px;
       }
@@ -58,8 +65,8 @@
     //display: inline-block;
     display: none;
     vertical-align: top;
-    margin-left: -1px;
-    min-width: 78px;
+    margin-left: -2px;
+    min-width: 80px;
 
     .editBlog {
       text-align: center;
@@ -69,7 +76,7 @@
       margin-bottom: 3px;
       box-shadow: 0px 5px 23px 1px grey;
       clip-path: inset(-10px -15px -3px 2px);
-      margin-left: -1px;
+      margin-left: -2px;
     }
     .deleteBlog {
       text-align: center;

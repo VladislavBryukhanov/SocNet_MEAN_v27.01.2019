@@ -1,16 +1,21 @@
 <div class="blog">
   <div *ngFor="let post of blogService.blog">
-    <div class="blogBody">
+    <div class="blogBody" *ngIf="post._id != editFormOpened">
       <div class="post">
-        <img *ngIf="post.attachedFiles[0]"
-             src={{post.attachedFiles[0]|imagePath}}
-             class="attachedImage"/>
+        <div>
+          <img *ngFor="let img of post.attachedFiles; let i = index"
+               src={{img|imagePath}}
+               [ngClass]="(i == 0) ? 'attachedImage' : 'attachment'"/>
+        </div>
         <p class="textContent">{{post.textContent}}</p>
       </div>
     </div>
-    <div class="actions" *ngIf="isMyPage">
-      <div class="editBlog">Edit</div>
-      <div class="deleteBlog" (click)="deletePost(post._id)">Delete</div>
-    </div>
+    <ng-container *ngIf="isMyPage">
+      <div class="actions" *ngIf="post._id != editFormOpened">
+        <div class="editBlog" (click)="editPost(post._id)">Edit</div>
+        <div class="deleteBlog" (click)="deletePost(post._id)">Delete</div>
+      </div>
+      <app-blog-constructor [editId]="post._id" *ngIf="post._id == editFormOpened"></app-blog-constructor>
+    </ng-container>
   </div>
 </div>
