@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {BlogService} from '../../services/blog.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Blog} from '../../models/blog';
@@ -10,6 +10,8 @@ import {Blog} from '../../models/blog';
 })
 export class BlogConstructorComponent implements OnInit {
 
+  @Output()
+  public closeEditForm = new EventEmitter<void>();
   @Input()
   public editId: string;
   public existsPost: Blog;
@@ -38,14 +40,13 @@ export class BlogConstructorComponent implements OnInit {
 
   editPost(newPost: FormData, textContent: string) {
     newPost.append('_id', this.existsPost._id);
-    if (textContent !== this.existsPost.textContent) {
-      newPost.append('content', textContent);
-    }
+    newPost.append('content', textContent);
     this.existsPost.attachedFiles.forEach(file =>
       newPost.append('existsFiles[]', file));
 
     if (this.attachedFiles.length > 0 || textContent.trim().length > 0) {
       this.blogService.editPost(newPost);
+      this.closeEditForm.emit();
     }
   }
 
