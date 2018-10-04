@@ -39,31 +39,26 @@ router.post('/addPost', upload.array('files', 12), async(request, response) => {
         });
     }
 
-    if(!post.textContent) {
-        delete post.textContent;
-    }
-
     if(!post.textContent && post.attachedFiles.length === 0) {
         return response.sendStatus(404);
     }
 
-    let newBlogPost = await Blog.create(post);
-    if(newBlogPost) {
-        response.send(newBlogPost);
-    } else {
-        response.sendStatus(404);
-    }
+    response.send(await Blog.create(post));
 });
 
 router.put('/editPost', upload.array('files', 12), async(request, response) => {
     let post = {
-        attachedFiles: [],
+        attachedFiles: request.body.existsFiles ? request.body.existsFiles : [],
         textContent: request.body.content,
         owner: request.user._id
     };
-    if(request.body.existsFiles) {
-        post.attachedFiles = request.body.existsFiles;
-    }
+
+    let existsPost = await Blog.findOne({_id: request.body._id, owner: request.user._id});
+    existsPost.attachedFiles.forEach(file => {
+       if(!post.attachedFiles.includes(file)) {
+           fs.unlink(`public/${file}`, err => console.log(err));
+       }
+    });
 
     if(request.files.length > 0) {
         request.files.forEach((file) => {
@@ -71,21 +66,12 @@ router.put('/editPost', upload.array('files', 12), async(request, response) => {
         });
     }
 
-    if(!post.textContent) {
-        delete post.textContent;
-    }
-
     if(!post.textContent && post.attachedFiles.length === 0) {
         return response.sendStatus(404);
     }
 
-    let newBlogPost = await Blog.findOneAndUpdate({
-        _id: request.body._id, owner: request.user._id}, post);
-    if(newBlogPost) {
-        response.send(newBlogPost);
-    } else {
-        response.sendStatus(404);
-    }
+    response.send(await Blog.findOneAndUpdate({
+        _id: request.body._id, owner: request.user._id}, post, { "new": true }));
 });
 
 router.delete('/deletePost/:_id', async(request, response) => {
