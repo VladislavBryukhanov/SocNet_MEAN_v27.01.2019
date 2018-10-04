@@ -31,14 +31,35 @@
     input[type="checkbox"] {
       width: auto;
     }
-    input[type="submit"] {
-      width: 160px;
-      height: 30px;
-      color: white;
-      font-size: 20px;
-      border: 0;
-      background-color: #5682a3;
-      cursor: pointer;
-    }
+    //input[type="submit"] {
+    //  width: 160px;
+    //  height: 30px;
+    //  color: white;
+    //  font-size: 20px;
+    //  border: 0;
+    //  background-color: #5682a3;
+    //  cursor: pointer;
+    //}
+  }
+
+  .saveChanges {
+    margin: 8px 0;
+    font-weight: 100;
+    width: 153px;
+    height: 36px;
+    color: white;
+    font-size: 19px;
+    border: 0;
+    background-color: #6496C7;
+    cursor: pointer;
+    border-radius: 2px;
+    box-shadow: 1px 2px 1px 1px #56729a;
+  }
+  .saveChanges:hover {
+    background-color: rgb(84, 136, 200);
+  }
+  .saveChanges:active {
+    background-color: #417BBA;
+    box-shadow: 1px 2px 1px 1px #56729a;
   }
 }

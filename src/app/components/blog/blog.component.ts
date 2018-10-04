@@ -13,7 +13,7 @@ export class BlogComponent implements OnInit {
 
   @Input()
   public isMyPage: boolean;
-
+  public editFormOpened: string;
   public blog: Blog[] = [];
 
   constructor(public blogService: BlogService, private router: ActivatedRoute, public authService: AuthService) { }
@@ -26,4 +26,7 @@ export class BlogComponent implements OnInit {
     this.blogService.deletePost(id);
   }
 
+  editPost(id: string) {
+    this.editFormOpened = id;
+  }
 }

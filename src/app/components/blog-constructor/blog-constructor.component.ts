@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {BlogService} from '../../services/blog.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
+import {Blog} from '../../models/blog';
 
 @Component({
   selector: 'app-blog-constructor',
@@ -9,8 +10,13 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 })
 export class BlogConstructorComponent implements OnInit {
 
+  @Input()
+  public editId: string;
+  public existsPost: Blog;
+
   public formGroup: FormGroup;
-  private attachedFiles: File[] = [];
+  public attachedFiles: File[] = [];
+  public filesPreview = [];
 
   constructor(private blogService: BlogService, private formBuilder: FormBuilder) { }
 
@@ -19,25 +25,76 @@ export class BlogConstructorComponent implements OnInit {
       files: [],
       textContent: ''
     });
+
+    if (this.editId) {
+      this.blogService.getPost(this.editId)
+        .subscribe((res: Blog) => {
+            this.formGroup.patchValue({'textContent': res.textContent});
+            this.existsPost = res;
+          }
+        );
+    }
+  }
+
+  editPost(newPost: FormData, textContent: string) {
+    newPost.append('_id', this.existsPost._id);
+    if (textContent !== this.existsPost.textContent) {
+      newPost.append('content', textContent);
+    }
+    this.existsPost.attachedFiles.forEach(file =>
+      newPost.append('existsFiles', file));
+
+    if (this.attachedFiles.length > 0 || textContent.trim().length > 0) {
+      this.blogService.editPost(newPost);
+    }
   }
 
   publishPost() {
-    const textContent = this.formGroup.get('textContent').value;
-
     const newPost = new FormData();
-    newPost.append('content', textContent);
-
     this.attachedFiles.forEach(file =>
       newPost.append('files', file));
+    const textContent = this.formGroup.get('textContent').value;
 
-    if (this.attachedFiles.length > 0 || textContent.length > 0) {
-      this.blogService.publishPost(newPost);
-      this.formGroup.reset();
+    if (this.editId) {
+      this.editPost(newPost, textContent);
+    } else {
+      if (textContent) {
+        newPost.append('content', textContent);
+      }
+      if (this.attachedFiles.length > 0 || textContent.trim().length > 0) {
+        this.blogService.publishPost(newPost);
+      }
     }
+
+    this.attachedFiles = [];
+    this.filesPreview = [];
+    this.formGroup.reset();
   }
 
   onFilesAttached(e) {
     this.attachedFiles = Array.from(e.target.files);
+    this.attachedFiles.forEach((file, index) => this.getFileUrl(file, index));
+  }
+
+  getFileUrl(file: File, index: number) {
+    const fileReader = new FileReader();
+    fileReader.onload = _ => {
+      if (this.editId) {
+        this.filesPreview[index] = fileReader.result;
+      } else {
+        this.filesPreview.push(fileReader.result);
+      }
+    };
+    fileReader.readAsDataURL(file);
+  }
+
+  removeFileLocal(index: number) {
+    this.attachedFiles.splice(index, 1);
+    this.filesPreview.splice(index, 1);
+  }
+
+  removeFileExists(url: string) {
+    this.existsPost.attachedFiles = this.existsPost.attachedFiles.filter(item => item !== url);
   }
 
 }

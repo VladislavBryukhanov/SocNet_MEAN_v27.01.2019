@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Blog} from '../models/blog';
+import {Observable} from "rxjs/index";
 
 @Injectable({
   providedIn: 'root'
@@ -11,9 +12,13 @@ export class BlogService {
 
   constructor(private http: HttpClient) { }
 
+  getPost(postId): Observable<Blog> {
+    return this.http.get<Blog>(`/blogs/getPost/${postId}`);
+  }
+
   getBlog(userId) {
     return this.http.get<Blog[]>(`/blogs/getBlog/${userId}`)
-      .subscribe( res =>
+      .subscribe( (res: Blog[]) =>
         this.blog = res.reverse()
       );
   }
@@ -26,9 +31,20 @@ export class BlogService {
   }
 
   deletePost(postId: string) {
-    this.http.delete(`/blogs/deletePost/${postId}`)
-      .subscribe(res => {
+    this.http.delete<Blog>(`/blogs/deletePost/${postId}`)
+      .subscribe((res: Blog) => {
         this.blog = this.blog.filter(item => item._id !== res._id);
+      });
+  }
+
+  editPost(post: FormData) {
+    this.http.put('/blogs/editPost', post)
+      .subscribe((res: Blog) => {
+        this.blog.forEach((item: Blog) => {
+          if (item._id === res._id) {
+            this.blog[item] = res;
+          }
+        });
       });
   }
 }

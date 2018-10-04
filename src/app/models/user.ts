@@ -1,12 +1,12 @@
 export class User {
-  _id: String;
-  login: String;
-  username: String;
-  password: String;
-  avatar: String;
-  bio: String;
+  _id: string;
+  login: string;
+  username: string;
+  password: string;
+  avatar: string;
+  bio: string;
 
-  constructor(login: String, username: String, password: String) {
+  constructor(login: string, username: string, password: string) {
     this.login = login;
     this.username = username;
     this.password = password;

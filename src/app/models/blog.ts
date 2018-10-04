@@ -1,6 +1,6 @@
 export class Blog {
-  _id: String;
-  textContent: String;
-  attachedFiles: String[];
-  owner: String;
+  _id: string;
+  textContent: string;
+  attachedFiles: string[];
+  owner: string;
 }

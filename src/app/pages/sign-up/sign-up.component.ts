@@ -39,6 +39,14 @@ export class SignUpComponent implements OnInit {
       this.formGroup.get('password').value
     );
     this.authService.signUp(newUser);
+    // for (let i = 39; i < 81; i++) {
+    //   const user: User = new User(
+    //     this.formGroup.get('login').value + i,
+    //     this.formGroup.get('username').value + i,
+    //     this.formGroup.get('password').value + i
+    //   );
+    //   this.authService.signUp(user);
+    // }
   }
 
 }
