@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Blog} from '../models/blog';
-import {Observable} from "rxjs/index";
+import {Observable} from 'rxjs/index';
 
 @Injectable({
   providedIn: 'root'
@@ -40,11 +40,8 @@ export class BlogService {
   editPost(post: FormData) {
     this.http.put('/blogs/editPost', post)
       .subscribe((res: Blog) => {
-        this.blog.forEach((item: Blog) => {
-          if (item._id === res._id) {
-            this.blog[item] = res;
-          }
-        });
+        const index = this.blog.findIndex(item => item._id === res._id);
+        this.blog[index] = res;
       });
   }
 }
