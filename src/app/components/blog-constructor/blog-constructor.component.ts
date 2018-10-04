@@ -42,7 +42,7 @@ export class BlogConstructorComponent implements OnInit {
       newPost.append('content', textContent);
     }
     this.existsPost.attachedFiles.forEach(file =>
-      newPost.append('existsFiles', file));
+      newPost.append('existsFiles[]', file));
 
     if (this.attachedFiles.length > 0 || textContent.trim().length > 0) {
       this.blogService.editPost(newPost);
