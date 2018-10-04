@@ -29,4 +29,8 @@ export class BlogComponent implements OnInit {
   editPost(id: string) {
     this.editFormOpened = id;
   }
+
+  closeEditForm() {
+    this.editFormOpened = null;
+  }
 }

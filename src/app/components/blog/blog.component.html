@@ -15,7 +15,11 @@
         <div class="editBlog" (click)="editPost(post._id)">Edit</div>
         <div class="deleteBlog" (click)="deletePost(post._id)">Delete</div>
       </div>
-      <app-blog-constructor [editId]="post._id" *ngIf="post._id == editFormOpened"></app-blog-constructor>
+      <app-blog-constructor
+        *ngIf="post._id == editFormOpened"
+        [editId]="post._id"
+        (closeEditForm)="closeEditForm()">
+      </app-blog-constructor>
     </ng-container>
   </div>
 </div>
