@@ -61,9 +61,8 @@ router.put('/editPost', upload.array('files', 12), async(request, response) => {
         textContent: request.body.content,
         owner: request.user._id
     };
-
     if(request.body.existsFiles) {
-        post.attachedFiles.concat(request.body.existsFiles);
+        post.attachedFiles = request.body.existsFiles;
     }
 
     if(request.files.length > 0) {
