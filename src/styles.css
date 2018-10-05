@@ -1,9 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
+@font-face {
+  font-family: myFirstFont;
+  src: url(assets/fonts/blood.ttf);
+}
+
 body {
   background-color: #efefef;
+  /*font-family: myFirstFont;*/
+  /*color: brown;*/
 }
 .mainContent {
-  width: 60%;
+  width: 45%;
   display: inline-block;
   background-color: white;
   box-shadow: 0px 5px 23px 1px grey;
@@ -13,3 +20,7 @@ body {
   display: block;
   margin: 20px auto;
 }
+
+/*body.modal-open {*/
+  /*overflow: hidden;*/
+/*}*/

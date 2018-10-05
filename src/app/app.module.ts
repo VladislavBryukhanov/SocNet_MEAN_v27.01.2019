@@ -15,6 +15,7 @@ import {NavBarComponent} from './components/navBar/navBar.component';
 import { EditProfileComponent } from './pages/edit-profile/edit-profile.component';
 import { BlogConstructorComponent } from './components/blog-constructor/blog-constructor.component';
 import { BlogComponent } from './components/blog/blog.component';
+import { ModalComponentComponent } from './components/modal-component/modal-component.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { BlogComponent } from './components/blog/blog.component';
     NavBarComponent,
     EditProfileComponent,
     BlogConstructorComponent,
-    BlogComponent
+    BlogComponent,
+    ModalComponentComponent
   ],
   imports: [
     BrowserModule,

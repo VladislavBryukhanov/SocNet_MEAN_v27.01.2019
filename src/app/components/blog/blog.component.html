@@ -7,13 +7,13 @@
                src={{img|imagePath}}
                [ngClass]="(i == 0) ? 'attachedImage' : 'attachment'"/>
         </div>
-        <p class="textContent">{{post.textContent}}</p>
+        <article class="textContent">{{post.textContent}}</article>
       </div>
     </div>
     <ng-container *ngIf="isMyPage">
       <div class="actions" *ngIf="post._id != editFormOpened">
         <div class="editBlog" (click)="editPost(post._id)">Edit</div>
-        <div class="deleteBlog" (click)="deletePost(post._id)">Delete</div>
+        <div class="deleteBlog" (click)="confirmRemoving(post._id)">Delete</div>
       </div>
       <app-blog-constructor
         *ngIf="post._id == editFormOpened"
@@ -23,3 +23,13 @@
     </ng-container>
   </div>
 </div>
+
+<app-modal-component [id]="modalId">
+  <h1 class="modalTitle">Are you sure?</h1>
+  <p class="modalTextContent">This post will removed</p>
+  <div class="btnBlock">
+    <button (click)="deletePost()" class="modalBtn">Ok</button>
+    <button (click)="modalService.close(modalId)" class="modalBtn">Cancel</button>
+  </div>
+</app-modal-component>
+
