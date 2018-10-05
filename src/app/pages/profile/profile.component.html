@@ -1,8 +1,12 @@
 <ng-template [ngIf]="profile">
   <div class="mainContent">
     <div class="profile">
-      <img src={{profile.avatar|imagePath}} class="avatar"/>
-      <h1 class="username">{{profile.username}}</h1>
+      <div class="leftBlock">
+        <img src={{profile.avatar|imagePath}} class="avatar"/>
+      </div>
+      <div class="rightBlock">
+        <h1 class="username">{{profile.username}}</h1>
+      </div>
     </div>
   </div>
 

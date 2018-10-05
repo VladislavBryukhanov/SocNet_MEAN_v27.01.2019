@@ -6,6 +6,10 @@
 
   a:hover {
     //text-decoration: underline;
+    color: brown;
+    font-style: inherit;
+    text-decoration: line-through;
+    cursor: pointer;
   }
   a {
     text-decoration: none;

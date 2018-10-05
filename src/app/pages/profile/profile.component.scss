@@ -1,11 +1,25 @@
 .profile {
   margin: 15px;
-  .username {
-    font-weight: 500;
+  .leftBlock {
+    width: 50%;
+    display: inline-block;
+    .avatar {
+      width: calc(100% - 16px);
+      box-shadow: 0px 0px 31px 1px grey;
+      border: 8px solid white;
+      display: inline-block;
+    }
   }
-  .avatar {
-    width: 60%;
-    box-shadow: 0px 0px 31px 1px grey;
-    border: 8px solid white;
+  .rightBlock {
+    display: inline-block;
+    vertical-align: top;
+    width: 45%;
+    margin-left: 5%;
+    .username {
+      font-weight: 500;
+      vertical-align: top;
+    }
   }
+
+
 }

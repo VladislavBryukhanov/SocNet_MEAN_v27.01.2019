@@ -5,17 +5,17 @@
   width: 100%;
 
   .blogBody {
-    width: 60%;
+    width: 45%;
     background-color: white;
     box-shadow: 0px 5px 23px 1px grey;
     padding: 15px;
-    margin-bottom: 20px;
-
+    //margin-bottom: 20px;
+    min-height: 81px;
     //display: block;
     margin: 20px auto;
 
     display: inline-block;
-    margin-left: calc(20% - 15px);
+    margin-left: calc(27.5% - 15px);
 
     .post {
       padding: 9px;
@@ -74,7 +74,7 @@
       padding: 18px;
       background-color: white;
       margin-bottom: 3px;
-      box-shadow: 0px 5px 23px 1px grey;
+      box-shadow: 0px 7px 23px 1px grey;
       clip-path: inset(-10px -15px -3px 2px);
       margin-left: -2px;
     }
@@ -83,10 +83,10 @@
       cursor: pointer;
       padding: 18px;
       background-color: white;
-      box-shadow: 0px 5px 23px 1px grey;
+      box-shadow: 0px 0px 16px 1px grey;
       //box-shadow: 0 0 5px rgba(0,0,0,0.8);
       //clip-path: inset(-5px 0px -5px -5px);
-      clip-path: inset(0px -15px -19px 2px);
+      clip-path: inset(0px -15px -23px 2px);
       margin-left: -1px;
     }
     .editBlog:hover {
@@ -101,4 +101,33 @@
     }
   }
 
+}
+
+.modalTitle {
+  margin-top: 0;
+}
+.modalTextContent {
+  font-size: 18px;
+}
+.btnBlock {
+  margin: auto;
+  text-align: center;
+  .modalBtn {
+    padding: 8px 15px;
+    background-color: white;
+    width: 120px;
+    border-radius: 5px;
+    margin: 16px 6px;
+    cursor: pointer;
+    font-size: 15px;
+  }
+  >:nth-child(1):hover {
+    //color: #335871;
+    background-color: brown;
+    color: white;
+  }
+  >:nth-child(2):hover {
+    background-color: #326080;
+    color: white;
+  }
 }
