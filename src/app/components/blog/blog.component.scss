@@ -32,6 +32,7 @@
       }
       .textContent {
         font-size: 19px;
+        white-space: pre-line
       }
 
       //.actions {
@@ -58,6 +59,10 @@
 
   .actions:hover{
     display: inline-block;
+  }
+
+  .activedActions {
+    display: inline-block !important;
   }
 
   .actions {
