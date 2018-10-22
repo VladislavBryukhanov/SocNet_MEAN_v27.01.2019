@@ -6,8 +6,8 @@
 
 body {
   background-color: #efefef;
-  /*font-family: myFirstFont;*/
-  /*color: brown;*/
+  font-family: myFirstFont;
+  color: brown;
 }
 .mainContent {
   width: 45%;

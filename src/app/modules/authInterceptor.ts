@@ -7,7 +7,8 @@ import {AuthService} from '../services/auth.service';
 export class AuthInterceptor implements HttpInterceptor {
 
   // public static hostUrl = 'http://192.168.0.102:31315';
-  public static hostUrl = 'http://10.1.1.234:31315';
+  // public static hostUrl = 'http://10.1.1.234:31315';
+  public static hostUrl = 'http://127.0.0.1:31315';
 
   constructor(private authService: AuthService) {}
 
