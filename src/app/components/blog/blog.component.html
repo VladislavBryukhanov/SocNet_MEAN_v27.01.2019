@@ -2,12 +2,13 @@
   <div *ngFor="let post of blogService.blog">
     <div class="blogBody" *ngIf="post._id != editFormOpened">
       <div class="post">
-        <div>
+        <div class="imageBlock">
           <img *ngFor="let img of post.attachedFiles; let i = index"
                src={{img|imagePath}}
                [ngClass]="(i == 0) ? 'attachedImage' : 'attachment'"/>
         </div>
         <article class="textContent">{{post.textContent}}</article>
+        <p class="postDate">{{post.date|date:'dd MMM yyyy, HH:mm:ss'}}</p>
       </div>
     </div>
     <ng-container *ngIf="isMyPage">

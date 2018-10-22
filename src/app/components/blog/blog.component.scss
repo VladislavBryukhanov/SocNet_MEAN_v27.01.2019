@@ -20,15 +20,18 @@
     .post {
       padding: 9px;
 
-      .attachedImage {
-        width: 100%;
-      }
-      .attachment{
-        width: 120px;
-        height: 120px;
-        border-radius: 3px;
-        margin: 10px 20px 10px 0;
-        display: inline-block;
+      .imageBlock {
+        margin-bottom: 9px;
+        .attachedImage {
+          width: 100%;
+        }
+        .attachment{
+          width: 120px;
+          height: 120px;
+          border-radius: 3px;
+          margin: 10px 20px 10px 0;
+          display: inline-block;
+        }
       }
       .textContent {
         font-size: 19px;
@@ -95,7 +98,7 @@
       margin-left: -1px;
     }
     .editBlog:hover {
-      clip-path: inset(-15px -15px -15px -15px);
+      clip-path: inset(-15px -15px -4px -15px);
       margin-left: 1px;
       background-color: rgba(255, 255, 255, 0.6)
     }
@@ -105,7 +108,11 @@
       background-color: rgba(255, 255, 255, 0.6)
     }
   }
-
+  .postDate {
+    color: grey;
+    float: right;
+    margin: 9px;
+  }
 }
 
 .modalTitle {
@@ -128,11 +135,12 @@
   }
   >:nth-child(1):hover {
     //color: #335871;
-    background-color: brown;
+    background-color: #c36e6e;
+    //background-color: black;
     color: white;
   }
   >:nth-child(2):hover {
-    background-color: #326080;
+    background-color: #82b2d4;
     color: white;
   }
 }
