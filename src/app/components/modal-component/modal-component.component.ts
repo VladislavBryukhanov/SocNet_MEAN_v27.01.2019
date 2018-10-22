@@ -19,9 +19,8 @@ export class ModalComponentComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.modalService.add(this);
     document.body.appendChild(this.element);
-    // this.open();
 
-    this.element.style.display = 'none';
+    this.close();
     this.element.addEventListener('click', e => {
       if (e.target.className === 'modalBackground') {
         this.close();
@@ -30,8 +29,8 @@ export class ModalComponentComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // this.modalService.remove(this.id);
-    // this.element.remove();
+    this.modalService.remove(this.id);
+    this.element.remove();
     // document.body.removeChild(this.element);
   }
 
