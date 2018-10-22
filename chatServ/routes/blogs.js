@@ -19,12 +19,11 @@ const upload = multer({
 });
 
 router.get('/getBlog/:userId', async(request, response) => {
-    response.send(await Blog.find({owner: request.params.userId}));
+    response.send(await Blog.find({owner: request.params.userId}).sort({date: 1}));
 });
 
 router.get('/getPost/:postId', async(request, response) => {
     response.send(await Blog.findOne({_id: request.params.postId}));
-
 });
 
 router.post('/addPost', upload.array('files', 12), async(request, response) => {
