@@ -9,6 +9,8 @@ export class InfiniteScrollDirective implements AfterViewInit {
 
   @Input()
   private scrollCallback;
+  @Input()
+  private minItemSize: number;
   private scrollEvent$;
 
   constructor(private elemRef: ElementRef) {}
@@ -17,6 +19,13 @@ export class InfiniteScrollDirective implements AfterViewInit {
     console.log(this.elemRef);
     this.scrollEvent$ = fromEvent(this.elemRef.nativeElement, 'scroll');
     console.log(this.scrollEvent$);
+
+    if (!this.isScreenFilled(this.elemRef.nativeElement)) {
+      const countOfItems = Math.floor(this.elemRef.nativeElement.clientHeight / this.minItemSize * 1.5);
+      this.scrollCallback(countOfItems)
+        .subscribe();
+    }
+
     this.scrollEvent$
       .pipe(
         map((e: any) => ({
@@ -39,8 +48,13 @@ export class InfiniteScrollDirective implements AfterViewInit {
   }
 
   isScrollOutOfRange(position): boolean {
-    console.log(position);
     return position.scrollHeight - (position.scrollTop + position.clientHeight) < position.clientHeight;
+  }
+
+  isScreenFilled(position): boolean {
+    console.log(position.scrollHeight);
+    console.log(position.clientHeight);
+    return position.scrollHeight > position.clientHeight;
   }
 
 }

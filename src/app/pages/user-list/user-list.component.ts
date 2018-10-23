@@ -15,20 +15,18 @@ export class UserListComponent implements OnInit {
   constructor(private usersService: UsersService) { }
 
   private currentPage = 0;
-  private maxCount = 20;
+  private maxCount = 10;
   public scrollCallback;
 
   ngOnInit() {
     this.scrollCallback = this.nextPage.bind(this);
-    this.nextPage()
-      .subscribe();
   }
 
-  nextPage() {
-    return this.usersService.getUserList(this.maxCount, this.currentPage)
+  nextPage(maxCount: number = this.maxCount) {
+    return this.usersService.getUserList(maxCount, this.currentPage)
       .pipe(
         map(res => {
-        this.users = this.users.concat(res);
+          this.users = this.users.concat(res);
           this.currentPage++;
         }));
   }
