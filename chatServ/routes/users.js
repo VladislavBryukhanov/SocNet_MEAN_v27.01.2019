@@ -37,7 +37,8 @@ router.put('/editProfile', upload.single('avatar'), async (request, response) =>
     let newProfile = await User.findOneAndUpdate(
         {_id: request.user._id},
         request.body,
-        {new: true, runValidators: true});
+        {new: true, runValidators: true}
+    );
     if(newProfile) {
         let session_hash_data = await User.findOne(request.body).select('session_hash');
         newProfile.session_hash = session_hash_data.session_hash;
@@ -47,9 +48,12 @@ router.put('/editProfile', upload.single('avatar'), async (request, response) =>
     }
 });
 
-router.get('/getUsers', async(request, response) => {
-    let users = await User.find({});
-    response.send(users);
+router.get('/getUsers/:count&:page', async(request, response) => {
+    let maxCount = request.params.count;
+    let currentPage = request.params.page;
+    let users = await User.find({}, [], {skip: currentPage * maxCount, limit: maxCount});
+    users.length > 0 ? response.send(users) : response.sendStatus(404);
+
 });
 
 router.get('/getUser/:id', async(request, response) => {
