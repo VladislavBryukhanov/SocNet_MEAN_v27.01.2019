@@ -16,6 +16,7 @@ import { EditProfileComponent } from './pages/edit-profile/edit-profile.componen
 import { BlogConstructorComponent } from './components/blog-constructor/blog-constructor.component';
 import { BlogComponent } from './components/blog/blog.component';
 import { ModalComponentComponent } from './components/modal-component/modal-component.component';
+import { InfiniteScrollDirective } from './directives/infinite-scroll.directive';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { ModalComponentComponent } from './components/modal-component/modal-comp
     EditProfileComponent,
     BlogConstructorComponent,
     BlogComponent,
-    ModalComponentComponent
+    ModalComponentComponent,
+    InfiniteScrollDirective
   ],
   imports: [
     BrowserModule,

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {UsersService} from '../../services/users.service';
 import {User} from '../../models/user';
+import {map} from 'rxjs/internal/operators';
 
 @Component({
   selector: 'app-user-list',
@@ -9,16 +10,27 @@ import {User} from '../../models/user';
 })
 export class UserListComponent implements OnInit {
 
-  public users: User[];
+  public users: User[] = [];
 
   constructor(private usersService: UsersService) { }
 
+  private currentPage = 0;
+  private maxCount = 20;
+  public scrollCallback;
+
   ngOnInit() {
-    this.usersService.getUserList()
-      .subscribe(res => {
-        // console.log(res);
-        this.users = res;
-      });
+    this.scrollCallback = this.nextPage.bind(this);
+    this.nextPage()
+      .subscribe();
+  }
+
+  nextPage() {
+    return this.usersService.getUserList(this.maxCount, this.currentPage)
+      .pipe(
+        map(res => {
+        this.users = this.users.concat(res);
+          this.currentPage++;
+        }));
   }
 
 }
