@@ -1,3 +1,8 @@
+.userListComponent {
+  height: 500px;
+  //overflow: scroll;
+  overflow: auto;
+}
 .userList {
   .user {
     cursor: pointer;
