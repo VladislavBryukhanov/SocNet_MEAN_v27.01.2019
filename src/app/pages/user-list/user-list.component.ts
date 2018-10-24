@@ -12,17 +12,16 @@ export class UserListComponent implements OnInit {
 
   public users: User[] = [];
 
-  constructor(private usersService: UsersService) { }
-
   private currentPage = 0;
-  private maxCount = 10;
   public scrollCallback;
+
+  constructor(private usersService: UsersService) { }
 
   ngOnInit() {
     this.scrollCallback = this.nextPage.bind(this);
   }
 
-  nextPage(maxCount: number = this.maxCount) {
+  nextPage(maxCount: number) {
     return this.usersService.getUserList(maxCount, this.currentPage)
       .pipe(
         map(res => {

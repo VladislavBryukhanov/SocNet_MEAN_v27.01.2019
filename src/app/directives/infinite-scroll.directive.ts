@@ -1,6 +1,6 @@
 import {AfterViewInit, Directive, ElementRef, Input} from '@angular/core';
-import {fromEvent} from 'rxjs/index';
-import {exhaustMap, filter, map, pairwise} from 'rxjs/internal/operators';
+import {fromEvent, of, throwError} from 'rxjs/index';
+import {catchError, exhaustMap, filter, map, pairwise} from 'rxjs/internal/operators';
 
 @Directive({
   selector: '[appInfiniteScroll]'
@@ -11,20 +11,19 @@ export class InfiniteScrollDirective implements AfterViewInit {
   private scrollCallback;
   @Input()
   private minItemSize: number;
+  @Input()
+  private initDataSize: number;
+
   private scrollEvent$;
 
   constructor(private elemRef: ElementRef) {}
 
   ngAfterViewInit(): void {
-    console.log(this.elemRef);
     this.scrollEvent$ = fromEvent(this.elemRef.nativeElement, 'scroll');
-    console.log(this.scrollEvent$);
 
-    if (!this.isScreenFilled(this.elemRef.nativeElement)) {
-      const countOfItems = Math.floor(this.elemRef.nativeElement.clientHeight / this.minItemSize * 1.5);
-      this.scrollCallback(countOfItems)
-        .subscribe();
-    }
+    const countOfItems = Math.floor(this.elemRef.nativeElement.clientHeight / this.minItemSize * this.initDataSize);
+    this.scrollCallback(countOfItems)
+      .subscribe();
 
     this.scrollEvent$
       .pipe(
@@ -37,7 +36,15 @@ export class InfiniteScrollDirective implements AfterViewInit {
         pairwise(),
         filter(position => this.isScrollingDown(position) && this.isScrollOutOfRange(position[1])),
         exhaustMap(_ => {
-          return this.scrollCallback();
+          return this.scrollCallback(countOfItems)
+            .pipe(
+              catchError(err => {
+                if (err.status === 404) {
+                  console.log('full data was loaded');
+                }
+                return throwError(err);
+              })
+            );
         })
       )
       .subscribe();
@@ -49,12 +56,6 @@ export class InfiniteScrollDirective implements AfterViewInit {
 
   isScrollOutOfRange(position): boolean {
     return position.scrollHeight - (position.scrollTop + position.clientHeight) < position.clientHeight;
-  }
-
-  isScreenFilled(position): boolean {
-    console.log(position.scrollHeight);
-    console.log(position.clientHeight);
-    return position.scrollHeight > position.clientHeight;
   }
 
 }

@@ -1,21 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {UsersService} from '../../services/users.service';
 import {User} from '../../models/user';
-import {ActivatedRoute, NavigationEnd, Route, Router} from '@angular/router';
+import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {AuthService} from '../../services/auth.service';
+import {BlogService} from '../../services/blog.service';
+import {map} from 'rxjs/internal/operators';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
 
   public profile: User;
   public isMyPage = false;
 
+  private currentPage = 0;
+  public scrollCallback;
+
   constructor(private userService: UsersService,
               private router: ActivatedRoute,
+              public blogService: BlogService,
               public authService: AuthService,
               private _router: Router) {
 
@@ -38,6 +44,21 @@ export class ProfileComponent implements OnInit {
           this.profile = res;
         });
     });
+    this.scrollCallback = this.nextPage.bind(this);
+  }
+
+  ngOnDestroy() {
+    this.blogService.destroy();
+  }
+
+  nextPage(maxCount: number) {
+    return this.blogService.getBlog(this.router.snapshot.params['id'], maxCount, this.currentPage)
+      .pipe(
+        map(res => {
+          this.blogService.blog = this.blogService.blog.concat(res);
+          this.currentPage++;
+        })
+      );
   }
 
 }
