@@ -15,8 +15,13 @@
 
   </div>
   <form [formGroup]="formGroup" (ngSubmit)="publishPost()" class="blogConstructor">
-    <textarea formControlName="textContent" name="textContent"></textarea>
-    <input formControlName="files" type="file" multiple (change)="onFilesAttached($event)"/>
+    <textarea formControlName="textContent" name="textContent" (keydown)="textContentChanged()"></textarea>
+    <span class="image-upload">
+      <label for="attachments">
+        <img src="../../../assets/staticLayout/attach.png">
+      </label>
+      <input id="attachments" formControlName="files" type="file" multiple (change)="onFilesAttached($event)"/>
+    </span>
     <input type="submit" class="submitPost"/>
   </form>
 </div>
