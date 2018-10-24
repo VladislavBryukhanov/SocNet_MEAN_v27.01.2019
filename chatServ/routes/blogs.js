@@ -18,8 +18,15 @@ const upload = multer({
     limits: {fileSize: 5 * 1024 * 1024}
 });
 
-router.get('/getBlog/:userId', async(request, response) => {
-    response.send(await Blog.find({owner: request.params.userId}).sort({date: 1}));
+router.get('/getBlog/:userId&:count&:page', async(request, response) => {
+    let maxCount = request.params.count;
+    let currentPage = request.params.page;
+    let blog = await Blog.find(
+            {owner: request.params.userId},
+            [],
+            {skip: currentPage * maxCount, limit: maxCount}
+        ).sort({date: -1});
+    blog.length > 0 ? response.send(blog) : response.sendStatus(404);
 });
 
 router.get('/getPost/:postId', async(request, response) => {

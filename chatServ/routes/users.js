@@ -53,7 +53,6 @@ router.get('/getUsers/:count&:page', async(request, response) => {
     let currentPage = request.params.page;
     let users = await User.find({}, [], {skip: currentPage * maxCount, limit: maxCount});
     users.length > 0 ? response.send(users) : response.sendStatus(404);
-
 });
 
 router.get('/getUser/:id', async(request, response) => {
