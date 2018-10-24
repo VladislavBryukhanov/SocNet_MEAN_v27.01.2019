@@ -1,6 +1,5 @@
 <div class="mainContent">
   <div class="attachedImages">
-
       <ng-template [ngIf]="editId && existsPost">
         <div *ngFor="let image of existsPost.attachedFiles" class="fileBlock">
           <img src="{{image|imagePath}}" class="attachment"/>
@@ -12,15 +11,15 @@
         <img src="{{image}}" class="attachment"/>
         <button (click)="removeFileLocal(i)" class="removeFile">X</button>
       </div>
-
   </div>
+
   <form [formGroup]="formGroup" (ngSubmit)="publishPost()" class="blogConstructor">
-    <textarea formControlName="textContent" name="textContent" (keydown)="textContentChanged()"></textarea>
+    <textarea formControlName="textContent" name="textContent" (change)="textContentChanged()"></textarea>
     <span class="image-upload">
-      <label for="attachments">
+      <label>
         <img src="../../../assets/staticLayout/attach.png">
+        <input formControlName="files" type="file" multiple (change)="onFilesAttached($event)"/>
       </label>
-      <input id="attachments" formControlName="files" type="file" multiple (change)="onFilesAttached($event)"/>
     </span>
     <input type="submit" class="submitPost"/>
   </form>

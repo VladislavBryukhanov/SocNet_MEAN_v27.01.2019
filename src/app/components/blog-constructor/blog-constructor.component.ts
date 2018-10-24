@@ -84,15 +84,15 @@ export class BlogConstructorComponent implements OnInit {
   onFilesAttached(e) {
     const newFiles: File[] = Array.from(e.target.files);
     this.attachedFiles = this.attachedFiles.concat(newFiles);
-    newFiles.forEach((file, index) => {
-      this.getFileUrl(file, index);
+    newFiles.forEach(file => {
+      this.getFileUrl(file);
     });
   }
 
-  async getFileUrl(file: File, index: number) {
+  async getFileUrl(file: File) {
     const fileReader = new FileReader();
     fileReader.onload = _ => {
-      this.filesPreview[index] = (fileReader.result);
+      this.filesPreview.push(fileReader.result);
     };
     fileReader.readAsDataURL(file);
   }
