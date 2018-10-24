@@ -35,7 +35,7 @@ export class AuthService {
     this._redirectUrl = value;
   }
 
-  private _redirectUrl: string = '/user_list';
+  private _redirectUrl = '/user_list';
   private _myUser: User;
   public _authToken: string;
   public isAuthenticated = false;

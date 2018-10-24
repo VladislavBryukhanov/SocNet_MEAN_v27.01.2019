@@ -17,6 +17,7 @@ import { BlogConstructorComponent } from './components/blog-constructor/blog-con
 import { BlogComponent } from './components/blog/blog.component';
 import { ModalComponentComponent } from './components/modal-component/modal-component.component';
 import { InfiniteScrollDirective } from './directives/infinite-scroll.directive';
+import {RateComponent} from './components/rate/rate.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { InfiniteScrollDirective } from './directives/infinite-scroll.directive'
     BlogConstructorComponent,
     BlogComponent,
     ModalComponentComponent,
-    InfiniteScrollDirective
+    InfiniteScrollDirective,
+    RateComponent
   ],
   imports: [
     BrowserModule,
