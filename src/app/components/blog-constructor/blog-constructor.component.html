@@ -14,7 +14,7 @@
   </div>
 
   <form [formGroup]="formGroup" (ngSubmit)="publishPost()" class="blogConstructor">
-    <textarea formControlName="textContent" name="textContent" (change)="textContentChanged()"></textarea>
+    <textarea formControlName="textContent" name="textContent" (keydown)="textContentChanged()"></textarea>
     <span class="image-upload">
       <label>
         <img src="../../../assets/staticLayout/attach.png">
