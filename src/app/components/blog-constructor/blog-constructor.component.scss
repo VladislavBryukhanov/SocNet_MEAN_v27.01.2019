@@ -14,17 +14,32 @@
       padding: 6px;
       width: calc(100% - 12px);
       display: block;
-      min-height: 140px;
       font-family: inherit;
       font-size: 19px;
+      //min-height: 140px;
+      overflow: hidden;
+      min-height: 74px;
+      height: 0;
     }
     input {
       margin-top: 8px
     }
+    .image-upload {
+      label {
+        cursor: pointer;
+        img {
+          padding-top: 10px;
+          width: 34px;
+        }
+      }
+      input {
+        display: none;
+      }
+    }
     .submitPost {
       font-family: inherit;
       float: right;
-      margin: 8px 0;
+      margin-top: 10px;
       //margin: 8px -12px;
       font-weight: 100;
       width: 153px;

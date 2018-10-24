@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {BlogService} from '../../services/blog.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Blog} from '../../models/blog';
@@ -15,23 +15,25 @@ export class BlogConstructorComponent implements OnInit {
   @Input()
   public editId: string;
   public existsPost: Blog;
+  public textarea;
 
   public formGroup: FormGroup;
   public attachedFiles: File[] = [];
   public filesPreview = [];
 
-  constructor(private blogService: BlogService, private formBuilder: FormBuilder) { }
+  constructor(private blogService: BlogService, private formBuilder: FormBuilder, private elemRef: ElementRef) { }
 
   ngOnInit() {
     this.formGroup = this.formBuilder.group({
       files: [],
       textContent: ''
     });
-
+    this.textarea = this.elemRef.nativeElement.querySelector('textarea');
     if (this.editId) {
       this.blogService.getPost(this.editId)
         .subscribe((res: Blog) => {
             this.formGroup.patchValue({'textContent': res.textContent});
+            this.textContentChanged();
             this.existsPost = res;
           }
         );
@@ -70,6 +72,13 @@ export class BlogConstructorComponent implements OnInit {
     this.attachedFiles = [];
     this.filesPreview = [];
     this.formGroup.reset();
+    this.textarea.style.height = '140 px';
+  }
+
+  textContentChanged() {
+    if (this.textarea.scrollHeight > this.textarea.clientHeight) {
+      this.textarea.style.height = this.textarea.scrollHeight + 'px';
+    }
   }
 
   onFilesAttached(e) {
