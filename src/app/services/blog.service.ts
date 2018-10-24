@@ -7,8 +7,15 @@ import {Observable} from 'rxjs/index';
   providedIn: 'root'
 })
 export class BlogService {
+  get blog(): Blog[] {
+    return this._blog;
+  }
 
-  public blog: Blog[] = [];
+  set blog(value: Blog[]) {
+    this._blog = value;
+  }
+
+  private _blog: Blog[] = [];
 
   constructor(private http: HttpClient) { }
 
@@ -16,32 +23,33 @@ export class BlogService {
     return this.http.get<Blog>(`/blogs/getPost/${postId}`);
   }
 
-  getBlog(userId) {
-    return this.http.get<Blog[]>(`/blogs/getBlog/${userId}`)
-      .subscribe( (res: Blog[]) =>
-        this.blog = res.reverse()
-      );
+  getBlog(userId: string, maxCount: number = 1, currentPage: number = 0): Observable<Blog[]> {
+    return this.http.get<Blog[]>(`/blogs/getBlog/${userId}&${maxCount}&${currentPage}`);
   }
 
   publishPost(post: FormData) {
     this.http.post('/blogs/addPost', post)
       .subscribe(res => {
-        this.blog.unshift(<Blog>res);
+        this._blog.unshift(<Blog>res);
       });
   }
 
   deletePost(postId: string) {
     this.http.delete<Blog>(`/blogs/deletePost/${postId}`)
       .subscribe((res: Blog) => {
-        this.blog = this.blog.filter(item => item._id !== res._id);
+        this._blog = this._blog.filter(item => item._id !== res._id);
       });
   }
 
   editPost(post: FormData) {
     this.http.put('/blogs/editPost', post)
       .subscribe((res: Blog) => {
-        const index = this.blog.findIndex(item => item._id === res._id);
-        this.blog[index] = res;
+        const index = this._blog.findIndex(item => item._id === res._id);
+        this._blog[index] = res;
       });
+  }
+
+  destroy() {
+    this.blog = [];
   }
 }

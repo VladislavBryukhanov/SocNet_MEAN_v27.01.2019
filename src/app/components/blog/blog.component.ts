@@ -1,6 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {BlogService} from '../../services/blog.service';
-import {ActivatedRoute} from '@angular/router';
 import {Blog} from '../../models/blog';
 import {AuthService} from '../../services/auth.service';
 import {ModalService} from '../../services/modal.service';
@@ -10,7 +9,7 @@ import {ModalService} from '../../services/modal.service';
   templateUrl: './blog.component.html',
   styleUrls: ['./blog.component.scss']
 })
-export class BlogComponent implements OnInit {
+export class BlogComponent {
 
   @Input()
   public isMyPage: boolean;
@@ -20,13 +19,8 @@ export class BlogComponent implements OnInit {
   private postId: string;
 
   constructor(public blogService: BlogService,
-              private router: ActivatedRoute,
               public authService: AuthService,
               public modalService: ModalService) { }
-
-  ngOnInit() {
-    this.blogService.getBlog(this.router.snapshot.params['id']);
-  }
 
   editPost(id: string) {
     this.editFormOpened = id;

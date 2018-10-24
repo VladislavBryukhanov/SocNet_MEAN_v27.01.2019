@@ -1,25 +1,33 @@
-.profile {
-  margin: 15px;
-  .leftBlock {
-    width: 50%;
-    display: inline-block;
-    .avatar {
-      width: calc(100% - 16px);
-      box-shadow: 0px 0px 31px 1px grey;
-      border: 8px solid white;
-      display: inline-block;
+.profilePage {
+  height: calc(100vh - 70px);
+  overflow: auto;
+  margin-top: 70px;
+
+  .mainContent {
+    margin-top: 28px;
+
+    .profile {
+      margin: 15px;
+      .leftBlock {
+        width: 50%;
+        display: inline-block;
+        .avatar {
+          width: calc(100% - 16px);
+          box-shadow: 0px 0px 31px 1px grey;
+          border: 8px solid white;
+          display: inline-block;
+        }
+      }
+      .rightBlock {
+        display: inline-block;
+        vertical-align: top;
+        width: 45%;
+        margin-left: 5%;
+        .username {
+          font-weight: 500;
+          vertical-align: top;
+        }
+      }
     }
   }
-  .rightBlock {
-    display: inline-block;
-    vertical-align: top;
-    width: 45%;
-    margin-left: 5%;
-    .username {
-      font-weight: 500;
-      vertical-align: top;
-    }
-  }
-
-
 }
