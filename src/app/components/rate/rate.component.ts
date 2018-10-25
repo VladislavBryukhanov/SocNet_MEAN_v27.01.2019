@@ -16,6 +16,9 @@ export class RateComponent implements OnInit {
   public likeCounter: number;
   public dislikeCounter: number;
 
+  public meLike = false;
+  public meDislike = false;
+
   constructor(private rateService: RateService, private authService: AuthService) { }
 
   ngOnInit() {
@@ -26,18 +29,18 @@ export class RateComponent implements OnInit {
     this.rateService.postRate(new Rate(
       this.authService.myUser._id,
       true,
-      ItemsType.post,
       this.itemId
     ))
       .subscribe(res => {
-        if (res.lastState === null) {
-          this.likeCounter++;
-        } else if (res.lastState === false) {
-          this.likeCounter++;
-          this.dislikeCounter--;
-        } else {
-          this.likeCounter--;
-        }
+        this.getPostRate();
+        // if (res.lastState === null) {
+        //   this.likeCounter++;
+        // } else if (res.lastState === false) {
+        //   this.likeCounter++;
+        //   this.dislikeCounter--;
+        // } else {
+        //   this.likeCounter--;
+        // }
       });
   }
 
@@ -45,27 +48,30 @@ export class RateComponent implements OnInit {
     this.rateService.postRate(new Rate(
       this.authService.myUser._id,
       false,
-      ItemsType.post,
       this.itemId
     ))
       .subscribe(res => {
-        if (res.lastState === null) {
-          this.dislikeCounter++;
-        } else if (res.lastState === false) {
-          this.likeCounter--;
-          this.dislikeCounter++;
-        } else {
-          this.likeCounter--;
-        }
+        this.getPostRate();
+        // if (res.lastState === null) {
+        //   this.dislikeCounter++;
+        // } else if (res.lastState === false) {
+        //   this.likeCounter--;
+        //   this.dislikeCounter++;
+        // } else {
+        //   this.likeCounter--;
+        // }
       });
   }
 
   getPostRate() {
-    this.rateService.getRate(ItemsType.post, this.itemId)
+    this.rateService.getRate(this.itemId)
       .subscribe(res => {
           this.likeCounter = res.filter((item: Rate) => item.isPositive).length;
           this.dislikeCounter = res.length - this.likeCounter;
+          this.meLike = !!res.find((item: Rate) => item.isPositive && item.userId === this.authService.myUser._id);
+          this.meDislike = !!res.find((item: Rate) => !item.isPositive && item.userId === this.authService.myUser._id);
       }, err => {
+        console.log('err');
         if (err.status === 404) {
           this.likeCounter = 0;
           this.dislikeCounter = 0;
