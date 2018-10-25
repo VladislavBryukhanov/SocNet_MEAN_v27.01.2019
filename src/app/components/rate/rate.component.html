@@ -1,10 +1,10 @@
 <div class="rate">
   <!--<img class="views" src="../../../assets/views.png"/>-->
-  <span class="likePost" (click)="likePost()">
+  <span class="likePost" (click)="likePost()" [ngClass]="meLike ? 'active' : ''">
     <img src="../../../assets/staticLayout/like.png"/>
     <span>{{likeCounter}}</span>
   </span>
-  <span class="dislikePost" (click)="dislikePost()">
+  <span class="dislikePost" (click)="dislikePost()" [ngClass]="meDislike ? 'active' : ''">
     <img src="../../../assets/staticLayout/dislike.png"/>
     <span>{{dislikeCounter}}</span>
   </span>
