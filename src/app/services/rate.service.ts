@@ -10,8 +10,8 @@ export class RateService {
 
   constructor(private http: HttpClient) { }
 
-  getRate(itemId: string): Observable<Rate[]> {
-    return this.http.get<Rate[]>(`/rate/getRate/${itemId}`);
+  getRate(itemId: string, userId: string): Observable<Object> {
+    return this.http.get(`/rate/getRateCounter/${itemId}&${userId}`);
   }
 
   postRate(rate: Rate): Observable<Rate> {
