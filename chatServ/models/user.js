@@ -29,6 +29,30 @@ const roomSchema = mongoose.Schema({
         default: 'user',
         required: true
     },
+    bio: {
+
+    },
+    gender: {
+
+    },
+    // age: {
+    //
+    // },
+    // languages: {
+    //
+    // },
+    // country: {
+    //
+    // },
+    // status: {
+    //
+    // },
+    // education: {
+    //
+    // },
+    // specialty: {
+    //
+    // },
     __v: {
         type: Number,
         select: false

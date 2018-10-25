@@ -24,6 +24,7 @@ const romsRouter = require('./routes/rooms');
 const authRouter = require('./routes/auth');
 const usersRouter = require('./routes/users');
 const blogsRouter = require('./routes/blogs');
+const rateRouter = require('./routes/rate');
 
 // app.use(jwtMW);
 app.use(cors({origins: 'localhost:3000'}));
@@ -40,6 +41,6 @@ app.use('/', authRouter);
 app.use('/rooms', romsRouter);
 app.use('/users', usersRouter);
 app.use('/blogs', blogsRouter);
-
+app.use('/rate', rateRouter);
 
 module.exports = app;
