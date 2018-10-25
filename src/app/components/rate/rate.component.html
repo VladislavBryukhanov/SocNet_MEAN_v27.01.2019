@@ -1,11 +1,21 @@
 <div class="rate">
   <!--<img class="views" src="../../../assets/views.png"/>-->
   <span class="likePost" (click)="likePost()" [ngClass]="meLike ? 'active' : ''">
-    <img src="../../../assets/staticLayout/like.png"/>
+    <span *ngIf="meLike; else nonLike" >
+      <img src="../../../assets/staticLayout/like.2.png"/>
+    </span>
+    <ng-template #nonLike>
+      <img src="../../../assets/staticLayout/like.1.png"/>
+    </ng-template>
     <span>{{likeCounter}}</span>
   </span>
   <span class="dislikePost" (click)="dislikePost()" [ngClass]="meDislike ? 'active' : ''">
-    <img src="../../../assets/staticLayout/dislike.png"/>
+    <span *ngIf="meDislike; else nonDislike" >
+      <img src="../../../assets/staticLayout/dislike.2.png"/>
+    </span>
+    <ng-template #nonDislike>
+    <img src="../../../assets/staticLayout/dislike.3.png"/>
+    </ng-template>
     <span>{{dislikeCounter}}</span>
   </span>
 </div>

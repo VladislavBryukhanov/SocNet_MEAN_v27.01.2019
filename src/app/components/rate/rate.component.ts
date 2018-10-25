@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {RateService} from '../../services/rate.service';
 import {AuthService} from '../../services/auth.service';
-import {ItemsType, Rate} from '../../models/rate';
+import {Rate} from '../../models/rate';
 
 @Component({
   selector: 'app-rate',

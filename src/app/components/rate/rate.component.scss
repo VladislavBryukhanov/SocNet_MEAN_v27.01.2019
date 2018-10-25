@@ -1,8 +1,8 @@
 .rate {
-  margin: 14px 0 9px 0;
+  margin-top: 14px;
   display: inline-block;
   font-size: 20px;
-  color: firebrick;
+  color: #5682a3;
 
   .likePost {
     cursor: pointer;
@@ -17,7 +17,7 @@
 
   .dislikePost {
     cursor: pointer;
-    color: black;
+    color: grey;
     img {
       height: 26px;
       vertical-align: bottom;
@@ -27,6 +27,6 @@
   }
 
   .active {
-    color: #5682a3;
+    color: firebrick;
   }
 }
