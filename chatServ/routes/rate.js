@@ -2,9 +2,21 @@ const express = require('express');
 const router = express.Router();
 const Rate = require('../models/rate');
 
-router.get('/getRate/:itemId', async (request, response) => {
+const actions = {
+  LIKE: 'like',
+  DISLIKE: 'dislike'
+};
+
+router.get('/getRateCounter/:itemId&:userId', async (request, response) => {
     let itemId = request.params.itemId;
-    response.send(await Rate.find({itemId}));
+    let userId = request.params.userId;
+
+    let likeCounter = await Rate.count({itemId, isPositive: true});
+    let dislikeCounter = await Rate.count({itemId, isPositive: false});
+    let myAction = await Rate.findOne({itemId, userId, isPositive: true}) ? actions.LIKE
+        : await Rate.findOne({itemId, userId, isPositive: false}) ? actions.DISLIKE : null;
+    
+    response.send({likeCounter, dislikeCounter, myAction});
 });
 
 router.post('/postRate', async (request, response) => {
