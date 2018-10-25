@@ -3,6 +3,11 @@ import {RateService} from '../../services/rate.service';
 import {AuthService} from '../../services/auth.service';
 import {Rate} from '../../models/rate';
 
+enum actions {
+  LIKE = 'like',
+  DISLIKE = 'dislike'
+}
+
 @Component({
   selector: 'app-rate',
   templateUrl: './rate.component.html',
@@ -30,17 +35,8 @@ export class RateComponent implements OnInit {
       this.authService.myUser._id,
       true,
       this.itemId
-    ))
-      .subscribe(res => {
+    )).subscribe(_ => {
         this.getPostRate();
-        // if (res.lastState === null) {
-        //   this.likeCounter++;
-        // } else if (res.lastState === false) {
-        //   this.likeCounter++;
-        //   this.dislikeCounter--;
-        // } else {
-        //   this.likeCounter--;
-        // }
       });
   }
 
@@ -49,33 +45,21 @@ export class RateComponent implements OnInit {
       this.authService.myUser._id,
       false,
       this.itemId
-    ))
-      .subscribe(res => {
+    )).subscribe(_ => {
         this.getPostRate();
-        // if (res.lastState === null) {
-        //   this.dislikeCounter++;
-        // } else if (res.lastState === false) {
-        //   this.likeCounter--;
-        //   this.dislikeCounter++;
-        // } else {
-        //   this.likeCounter--;
-        // }
       });
   }
 
   getPostRate() {
-    this.rateService.getRate(this.itemId)
+    this.rateService.getRate(this.itemId, this.authService.myUser._id)
       .subscribe(res => {
-          this.likeCounter = res.filter((item: Rate) => item.isPositive).length;
-          this.dislikeCounter = res.length - this.likeCounter;
-          this.meLike = !!res.find((item: Rate) => item.isPositive && item.userId === this.authService.myUser._id);
-          this.meDislike = !!res.find((item: Rate) => !item.isPositive && item.userId === this.authService.myUser._id);
-      }, err => {
-        console.log('err');
-        if (err.status === 404) {
-          this.likeCounter = 0;
-          this.dislikeCounter = 0;
-        }
+        this.likeCounter = res['likeCounter'];
+        this.dislikeCounter = res['dislikeCounter'];
+
+        res['myAction'] === actions.LIKE ?
+          this.meLike = true : this.meLike = false;
+        res['myAction'] === actions.DISLIKE ?
+          this.meDislike = true : this.meDislike = false;
       });
   }
 
