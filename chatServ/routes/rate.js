@@ -2,20 +2,27 @@ const express = require('express');
 const router = express.Router();
 const Rate = require('../models/rate');
 
-const itemTypes = {
-    post: 1,
-    photo: 2,
-    comment: 3
-};
-router.get('/getRate/:itemType&:itemId', async (request, response) => {
-    let itemType = request.params.itemType;
+router.get('/getRate/:itemId', async (request, response) => {
     let itemId = request.params.itemId;
-    response.send(await Rate.find({itemType, itemId}));
+    response.send(await Rate.find({itemId}));
 });
 
 router.post('/postRate', async (request, response) => {
-    await Rate.create(request.body.rate);
-    let itemType = request.params.itemType;
-    let itemId = request.params.itemId;
-    response.send(await Rate.find({itemType, itemId}));
+    let prevRate = await Rate.findOne({
+        userId: request.body.userId,
+        itemId: request.body.itemId
+    });
+    if (prevRate) {
+        if (prevRate.isPositive !== request.body.isPositive) {
+            request.body.lastState = prevRate.isPositive;
+            response.send(await Rate.findOneAndUpdate({_id: prevRate._id}, request.body,
+                { upsert: true, new: true, setDefaultsOnInsert: true }));
+        } else {
+            response.send(await Rate.findOneAndRemove({_id: prevRate._id}));
+        }
+    } else {
+        response.send(await Rate.create(request.body));
+    }
 });
+
+module.exports = router;

@@ -8,10 +8,6 @@ const rateSchema = mongoose.Schema({
         type: Boolean,
         required: true
     },
-    itemType: {
-        type: Number,
-        required: true
-    },
     itemId: {
         type: String,
         required: true
@@ -21,4 +17,4 @@ const rateSchema = mongoose.Schema({
     }
 });
 
-module.exports = rateSchema;
+module.exports = mongoose.model("Rate", rateSchema);
