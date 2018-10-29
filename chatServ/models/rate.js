@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const rateSchema = mongoose.Schema({
-    userId: {
-        type: String,
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
     isPositive: {
@@ -14,6 +15,10 @@ const rateSchema = mongoose.Schema({
     },
     lastState: {
         type: Boolean
+    },
+    date: {
+        type: Date,
+        default: Date.now
     }
 });
 
