@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
+const Rate = require('../models/rate');
 const Blog = require('../models/blog');
 const fs = require('fs');
 
@@ -88,6 +89,7 @@ router.delete('/deletePost/:_id', async(request, response) => {
         deletedItem.attachedFiles.forEach(file => {
             fs.unlink(`public/${file}`, err => console.log(err));
         });
+        await Rate.findOneAndDelete({itemId: deletedItem._id});
     }
     response.send(deletedItem);
 });

@@ -1,9 +1,18 @@
 const mongoose = require('mongoose');
 
 const blogSchema = mongoose.Schema({
-    owner: String,
-    textContent: String,
-    attachedFiles: [String],
+    owner: {
+        type: String,
+        required: true
+    },
+    textContent: {
+        type: String,
+        default: ''
+    },
+    attachedFiles: {
+        type: [String],
+        default: []
+    },
     date: {
         type: Date,
         default: Date.now
