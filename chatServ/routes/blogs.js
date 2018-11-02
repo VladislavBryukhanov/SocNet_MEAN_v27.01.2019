@@ -11,7 +11,7 @@ const storage = multer.diskStorage({
         cb(null, path.join(__dirname+ '/../', 'public/blogs'))
     },
     filename: function(req, file, cb) {
-        cb(null, `${file.fieldname}-${Date.now()} ${path.extname(file.originalname)}`)
+        cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`)
     }
 });
 const upload = multer({
@@ -67,11 +67,9 @@ router.put('/editPost', upload.array('files', 12), async(request, response) => {
        }
     });
 
-    if(request.files.length > 0) {
-        request.files.forEach((file) => {
-            post.attachedFiles.push(`blogs/${file.filename}`);
-        });
-    }
+    request.files.forEach((file) => {
+        post.attachedFiles.push(`blogs/${file.filename}`);
+    });
 
     if(!post.textContent && post.attachedFiles.length === 0) {
         return response.sendStatus(404);
