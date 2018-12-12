@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const authPayload = require('../modules/tokenPayload');
-
+// const jimp = require('jimp');
 const multer = require('multer');
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -20,6 +20,17 @@ const upload = multer({
     limits: {fileSize: 5 * 1024 * 1024}
 });
 
+/*let avatarFileSize = [
+    {
+        name: 'min',
+        size: 50
+    },
+    {
+        name: 'normal',
+        size: 240
+    },
+];*/
+
 router.put('/editProfile', upload.single('avatar'), async (request, response) => {
     let oldProfile = await User.findOne({_id: request.user._id});
     if(request.file) {
@@ -27,6 +38,14 @@ router.put('/editProfile', upload.single('avatar'), async (request, response) =>
         if(oldProfile.avatar !== 'avatars/default.jpg') {
             fs.unlink(`public/${oldProfile.avatar}`, err => console.log(err));
         }
+      /*  console.log(file);
+        jimp.read(request.body.avatar.body)
+            .then(img => {
+                avatarFileSize.forEach(sizeMode => {
+                    img.resize(jimp.AUTO, sizeMode.size);
+                    img.write(`public/blogs/${sizeMode.name}.${file.filename}`);
+                });
+            });*/
     }
     // else {
     //     delete request.body.avatar;

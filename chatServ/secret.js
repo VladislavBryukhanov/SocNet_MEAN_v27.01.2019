@@ -1,3 +1,2 @@
-const fs = require("fs");
-const secret = fs.readFileSync('./secret.pem');
-module.exports = secret;
+const fs = require('fs');
+module.exports = fs.readFileSync('./secret.pem', 'utf8');

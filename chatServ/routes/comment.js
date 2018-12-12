@@ -41,11 +41,14 @@ router.get('/getComments/:itemId&:count&:page', async(request, response) => {
     let maxCount = request.params.count;
     let currentPage = request.params.page;
     let comments = await Comment.find({itemId: request.params.itemId})
-        .sort({date: -1})
         .skip(currentPage * maxCount)
         .limit(maxCount)
         .populate('user');
-    comments.length > 0 ? response.send(comments) : response.sendStatus(404);
+    if(comments.length > 0) {
+        response.send(comments);
+    } else {
+        response.sendStatus(404);
+    }
 });
 
 router.post('/addComment', upload.array('files', 12), async (request, response) => {
@@ -59,7 +62,11 @@ router.post('/addComment', upload.array('files', 12), async (request, response) 
         comment.attachedFiles.push(`comments/${file.filename}`);
     });
     if(comment.textContent.length > 0 || comment.attachedFiles.length > 0) {
-        response.send(await Comment.create(comment));
+
+        //TODO populate user ? mb need add if (userId = myAuth.id) useMy session ?
+        let newComment = await Comment.create(comment);
+        await Comment.populate(newComment, 'user');
+        response.send(newComment);
     } else {
         response.sendStatus(404);
     }

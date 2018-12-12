@@ -4,20 +4,30 @@ const path = require('path');
 const Rate = require('../models/rate');
 const Blog = require('../models/blog');
 const fs = require('fs');
-
+const jimp = require('jimp');
 const multer = require('multer');
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, path.join(__dirname+ '/../', 'public/blogs'))
-    },
-    filename: function(req, file, cb) {
-        cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`)
-    }
-});
+// const storage = multer.diskStorage({
+//     destination: function(req, file, cb) {
+//         cb(null, path.join(__dirname+ '/../', 'public/blogs'))
+//     },
+//     filename: function(req, file, cb) {
+//         cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`)
+//     }
+// });
+
+// const getFileName = (file) => `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`;
+const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
     limits: {fileSize: 5 * 1024 * 1024}
 });
+
+let blogFileSize = [
+    {
+        name: 'min',
+        size: 350
+    }
+];
 
 router.get('/getBlog/:userId&:count&:page', async(request, response) => {
     let maxCount = request.params.count;
@@ -40,12 +50,31 @@ router.post('/addPost', upload.array('files', 12), async(request, response) => {
         textContent: request.body.content,
         owner: request.user._id
     };
+    const imageReading = [];
+    const imageUploading = [];
     if(request.files.length > 0) {
         request.files.forEach((file) => {
-            post.attachedFiles.push(`blogs/${file.filename}`);
+            const filename = `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`;
+            imageReading.push(
+                jimp.read(file.buffer)
+                    .then(img => {
+                        imageUploading.push(
+                            img.writeAsync(`public/blogs/${filename}`)
+                                .then(() => {
+                                    post.attachedFiles.push(`blogs/${filename}`);
+                                    console.log(post, 'hi')
+                                })
+                        );
+                        blogFileSize.forEach(async sizeMode => {
+                            img.resize(jimp.AUTO, sizeMode.size);
+                            img.writeAsync(`public/blogs/${sizeMode.name}.${filename}`);
+                        });
+                    })
+            );
         });
     }
-
+    await Promise.all(imageReading);
+    await Promise.all(imageUploading);
     if(!post.textContent && post.attachedFiles.length === 0) {
         return response.sendStatus(404);
     }
@@ -86,6 +115,9 @@ router.delete('/deletePost/:_id', async(request, response) => {
     if(deletedItem) {
         deletedItem.attachedFiles.forEach(file => {
             fs.unlink(`public/${file}`, err => console.log(err));
+            blogFileSize.forEach(async sizeMode => {
+                fs.unlink(`public/${sizeMode.name}.${file}`, err => console.log(err));
+            });
         });
         await Rate.findOneAndDelete({itemId: deletedItem._id});
     }
