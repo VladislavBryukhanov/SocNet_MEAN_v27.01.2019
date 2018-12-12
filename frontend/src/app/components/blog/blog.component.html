@@ -1,0 +1,48 @@
+<div class="blog">
+  <div *ngFor="let post of blogService.blog">
+    <div class="blogBody" *ngIf="post._id != editFormOpened">
+      <div class="post">
+        <div class="imageBlock">
+          <img *ngFor="let img of post.attachedFiles; let i = index"
+               (click)="openImageViewer(post.attachedFiles, i)"
+               src="{{img | imageResizer:'min' | imagePath}}"
+               [ngClass]="(i == 0) ? 'attachedImage' : 'attachment'"/>
+        </div>
+        <article class="textContent">{{post.textContent}}</article>
+
+        <app-rate [itemId]="post._id"></app-rate>
+        <app-comments [itemId]="post._id"></app-comments>
+
+        <p class="postDate">{{post.date|date:'dd MMM yyyy, HH:mm:ss'}}</p>
+      </div>
+    </div>
+
+    <ng-container *ngIf="isMyPage">
+      <div class="actions" *ngIf="post._id != editFormOpened">
+        <div class="editBlog" (click)="editPost(post._id)">Edit</div>
+        <div class="deleteBlog" (click)="confirmRemoving(post._id)">Delete</div>
+      </div>
+      <ng-template [ngIf]="post._id == editFormOpened">
+        <app-blog-constructor
+          [editId]="post._id"
+          (closeEditForm)="closeEditForm()">
+        </app-blog-constructor>
+        <div class="activedActions actions">
+          <div class="editBlog" (click)="closeEditForm()">Cancel</div>
+          <div class="deleteBlog" (click)="confirmRemoving(post._id)">Delete</div>
+        </div>
+      </ng-template>
+    </ng-container>
+  </div>
+</div>
+
+<app-modal-component [id]="modalRemovingId">
+  <div class="modalBody">
+    <h1 class="modalTitle">Are you sure?</h1>
+    <p class="modalTextContent">This post will be removed</p>
+    <div class="btnBlock">
+      <button (click)="deletePost()" class="modalBtn">Ok</button>
+      <button (click)="modalService.close(modalRemovingId)" class="modalBtn">Cancel</button>
+    </div>
+  </div>
+</app-modal-component>

@@ -1,0 +1,21 @@
+<div class="modalBody">
+
+  <div class="viewer">
+
+    <ng-template [ngIf]="imageViewerService.imagesList.length > 1">
+      <button class="prevBtn" (click)="prevImage()">
+        <img src="../../../assets/staticLayout/prev-arrow4.png"/>
+      </button>
+
+      <button class="nextBtn" (click)="nextImage()">
+        <img src="../../../assets/staticLayout/next-arrow4.png"/>
+      </button>
+    </ng-template>
+
+    <img class="imageView" src={{imageViewerService.currentImage|imagePath}}/>
+    <!--<ng-container *ngIf="imageViewerService.currentImage.length > 0">-->
+      <!--<app-rate [itemId]="imageViewerService.currentImage"></app-rate>-->
+    <!--</ng-container>-->
+  </div>
+
+</div>

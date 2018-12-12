@@ -1,0 +1,54 @@
+.likePost:hover > .likeBlock {
+  visibility: visible;
+  opacity: 1;
+}
+.dislikePost:hover > .dislikeBlock {
+  visibility: visible;
+  opacity: 1;
+}
+.dislikeBlock, .likeBlock:hover {
+  visibility: visible;
+  opacity: 1;
+}
+.dislikeBlock, .likeBlock {
+  margin-top: 30px;
+  position: absolute;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0.6s, opacity 0.6s linear;
+  width: 125*5px;
+}
+
+.rate {
+  margin-top: 14px;
+  display: inline-block;
+  font-size: 20px;
+  color: #5682a3;
+  position: relative;
+
+  .likePost {
+    cursor: pointer;
+    margin-right: 20px;
+    img {
+      height: 26px;
+      vertical-align: bottom;
+      padding-bottom: 4px;
+      padding-right: 7px;
+    }
+  }
+
+  .dislikePost {
+    cursor: pointer;
+    color: grey;
+    img {
+      height: 26px;
+      vertical-align: bottom;
+      padding-bottom: 4px;
+      padding-right: 7px;
+    }
+  }
+
+  .active {
+    color: firebrick;
+  }
+}

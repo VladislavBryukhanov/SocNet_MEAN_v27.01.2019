@@ -1,0 +1,179 @@
+.blog {
+  display: inline-block;
+  margin-bottom: 20px;
+
+  width: 100%;
+
+  .blogBody {
+    width: 45%;
+    background-color: white;
+    box-shadow: 0 5px 23px 1px grey;
+    padding: 15px;
+    //margin-bottom: 20px;
+    min-height: 81px;
+    //display: block;
+    margin: 20px auto;
+
+    display: inline-block;
+    margin-left: calc(27.5% - 15px);
+    padding-bottom: 9px;
+
+    .post {
+      padding: 9px;
+
+      .imageBlock {
+        margin-bottom: 9px;
+        img:hover {
+          box-shadow: 0 7px 23px 1px grey;
+
+        }
+        img {
+          cursor: pointer;
+        }
+        .attachedImage {
+          width: 100%;
+        }
+        .attachment{
+          width: 120px;
+          height: 120px;
+          border-radius: 3px;
+          margin: 10px 20px 10px 0;
+          display: inline-block;
+        }
+      }
+      .textContent {
+        font-size: 19px;
+        white-space: pre-line
+      }
+
+      //.actions {
+      //  .editBlog {
+      //    cursor: pointer;
+      //    display: inline-block;
+      //    width: 50%;
+      //  }
+      //  .deleteBlog {
+      //    cursor: pointer;
+      //    display: inline-block;
+      //    width: 50%;
+      //    text-align: right;
+      //  }
+      //}
+    }
+  }
+
+
+  .blogBody:hover + .actions{
+      //display: inherit;
+      display: inline-block;
+  }
+
+  .actions:hover{
+    display: inline-block;
+  }
+
+  .activedActions {
+    display: inline-block !important;
+  }
+
+  .actions {
+    margin-top: 20px;
+    //display: inline-block;
+    display: none;
+    vertical-align: top;
+    margin-left: -2px;
+    min-width: 80px;
+
+    .editBlog {
+      text-align: center;
+      cursor: pointer;
+      padding: 18px;
+      background-color: white;
+      margin-bottom: 3px;
+      box-shadow: 0 7px 23px 1px grey;
+      clip-path: inset(-10px -15px -3px 2px);
+      margin-left: -2px;
+    }
+    .deleteBlog {
+      text-align: center;
+      cursor: pointer;
+      padding: 18px;
+      background-color: white;
+      box-shadow: 0 0 16px 1px grey;
+      //box-shadow: 0 0 5px rgba(0,0,0,0.8);
+      //clip-path: inset(-5px 0px -5px -5px);
+      clip-path: inset(0px -15px -23px 2px);
+      margin-left: -1px;
+    }
+    .editBlog:hover {
+      clip-path: inset(-15px -15px -4px -15px);
+      margin-left: 1px;
+      background-color: rgba(255, 255, 255, 0.6)
+    }
+    .deleteBlog:hover {
+      clip-path: inset(-15px -15px -15px -15px);
+      margin-left: 1px;
+      background-color: rgba(255, 255, 255, 0.6)
+    }
+  }
+  .postDate {
+    color: grey;
+    float: right;
+    margin: 14px 0 9px 0;
+  }
+/*  .views {
+    height: 28px;
+    float: left;
+    margin: 14px 0 9px 0;
+  }*/
+}
+
+.modalTitle {
+  margin-top: 0;
+}
+.modalTextContent {
+  font-size: 18px;
+}
+.btnBlock {
+  margin: auto;
+  text-align: center;
+  .modalBtn {
+    padding: 8px 15px 0 15px;
+    background-color: white;
+    width: 120px;
+    border-radius: 5px;
+    margin: 16px 6px 0 6px;
+    cursor: pointer;
+    //font-size: 15px;
+    font-family: inherit;
+    border: navajowhite;
+    font-size: 22px;
+    color: #335871;
+  }
+  >*:hover {
+    //color: #82b2d4;
+    text-decoration: line-through;
+  }
+  //>:nth-child(1):hover {
+  //  //color: #335871;
+  //  background-color: #c36e6e;
+  //  //background-color: black;
+  //  color: white;
+  //}
+  //>:nth-child(2):hover {
+  //  background-color: #82b2d4;
+  //  color: white;
+  //}
+}
+
+.modalBody {
+  width: 440px;
+  background-color: white;
+  box-shadow: 0 5px 23px 1px grey;
+  padding: 25px;
+
+  display: block;
+  margin: auto;
+  text-align: left;
+}
+

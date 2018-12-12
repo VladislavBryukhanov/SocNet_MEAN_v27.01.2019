@@ -1,0 +1,89 @@
+.triangleWrapper {
+  position: absolute;
+  height: 12px;
+  min-width: 236px;
+  margin-left: -15px;
+  cursor: auto;
+  .triangle {
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 12px solid rgba(0, 0, 0, 0.8);
+    margin-left: 17px;
+    position: absolute;
+  }
+}
+
+.ratedUsers {
+  position: absolute;
+  background-color: rgba(0,0,0,.8);
+  //width: 550px;
+  //margin-left: -25px;
+  //width: 114px;
+  border-radius: 5px;
+  margin-top: 12px;
+  margin-left: -15px;
+  //height: 100px;
+  height: 142px;
+  min-width: 236px;
+  cursor: auto;
+
+  .userListModalLink {
+    cursor: pointer;
+    color: white;
+    margin: 15px 0 0 20px;
+    font-size: 18px;
+  }
+  .userListModalLink:hover {
+    //color: firebrick;
+    text-decoration: line-through;
+  }
+
+  .user {
+    cursor: pointer;
+    padding: 10px 2px 0 2px;
+    font-size: 22px;
+    color: #326080;
+    text-align: center;
+    display: inline-block;
+    //overflow: hidden;
+    //text-overflow: ellipsis;
+    //white-space: nowrap;
+    width: 19%;
+    min-width: 110px;
+    p {
+      margin: 4px;
+      max-width: 111px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .userAvatar {
+      height: 50px;
+      width: 50px;
+      border-radius: 45px;
+      vertical-align: middle;
+      box-shadow: 4px 6px 17px -1px black;
+    }
+  }
+  .user:hover {
+    color: firebrick;
+    //background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+
+
+.modalBody {
+  width: 45%;
+  margin: auto;
+  background-color: white;
+
+  .modalHeader {
+    font-size: 23px;
+    padding: 15px 0;
+    margin-bottom: 0;
+    box-shadow: 1px 5px 23px 1px grey;
+    border-bottom: 1px solid grey;
+  }
+
+}

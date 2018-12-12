@@ -1,0 +1,32 @@
+<div>
+  <div class="triangleWrapper">
+    <div class="triangle">
+    </div>
+  </div>
+  <div class="ratedUsers">
+    <p class="userListModalLink" (click)="userListModal(true)">
+      This post is {{action}} by
+    </p>
+    <div *ngFor="let user of users" class="user">
+      <img  class="userAvatar" src={{user.avatar|imagePath}} routerLink="/profile/{{user._id}}"/>
+      <p>{{user.username}}</p>
+    </div>
+  </div>
+</div>
+
+<ng-template [ngIf]="isUserListOpened">
+  <app-modal-component
+    [id]="modalId"
+    (userListModal)="userListModal($event)"
+    [disposable]="true">
+    <div class="modalBody">
+      <div class="modalHeader">
+        This post is {{action}} by
+      </div>
+      <app-user-list
+        [userSelectionMethod]="userSelectionMethod"
+        [isModal]="true">
+      </app-user-list>
+    </div>
+  </app-modal-component>
+</ng-template>
