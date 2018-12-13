@@ -3,6 +3,7 @@ const router = express.Router();
 const path = require('path');
 const Rate = require('../models/rate');
 const Blog = require('../models/blog');
+const Image = require('../models/image');
 const fs = require('fs');
 const jimp = require('jimp');
 const multer = require('multer');
@@ -37,12 +38,13 @@ router.get('/getBlog/:userId&:count&:page', async(request, response) => {
             {owner: request.params.userId},
             [],
             {skip: currentPage * maxCount, limit: maxCount}
-        ).sort({date: -1});
+        ).sort({date: -1}).populate('attachedFiles');
     blog.length > 0 ? response.send(blog) : response.sendStatus(404);
 });
 
 router.get('/getPost/:postId', async(request, response) => {
-    response.send(await Blog.findOne({_id: request.params.postId}));
+    response.send(await Blog.findOne({_id: request.params.postId})
+        .populate('attachedFiles'));
 });
 
 router.post('/addPost', upload.array('files', 12), async(request, response) => {
@@ -60,22 +62,22 @@ router.post('/addPost', upload.array('files', 12), async(request, response) => {
                 jimp.read(file.buffer)
                     .then(img => {
                         console.log(post, 'read');
-                        // imageUploading.push(
-                        //     img.writeAsync(`public/blogs/${filename}`)
-                        //         .then(() => {
-                        //             post.attachedFiles.push(`blogs/${filename}`);
-                        //             console.log(post, 'saved')
-                        //         })
-                        // );
+
                         imageUploading.push(
                            new Promise((resolve, reject) => {
                                fs.writeFile(`public/blogs/${filename}`, file.buffer, () => {
-                                   post.attachedFiles.push(`blogs/${filename}`);
+                                   // post.attachedFiles.push(`blogs/${filename}`);
                                    console.log(post, 'saved');
-                                   resolve();
+                                   // resolve();
+                                   Image.create({filePath: 'blogs/', fileName: filename})
+                                       .then((res) => {
+                                           post.attachedFiles.push(res._id);
+                                           resolve();
+                                       });
                                })
                            })
                         );
+
                         blogFileSize.forEach(async sizeMode => {
                             img.resize(jimp.AUTO, sizeMode.size);
                             img.writeAsync(`public/blogs/${sizeMode.name}.${filename}`);
@@ -92,7 +94,9 @@ router.post('/addPost', upload.array('files', 12), async(request, response) => {
         return response.sendStatus(404);
     }
 
-    response.send(await Blog.create(post));
+    let blog = await Blog.create(post);
+    blog = await Blog.populate(blog, 'attachedFiles');
+    response.send(blog);
 });
 
 router.put('/editPost', upload.array('files', 12), async(request, response) => {
@@ -117,8 +121,12 @@ router.put('/editPost', upload.array('files', 12), async(request, response) => {
         return response.sendStatus(404);
     }
 
-    response.send(await Blog.findOneAndUpdate({
-        _id: request.body._id, owner: request.user._id}, post, { "new": true }));
+    const blog = await Blog.findOneAndUpdate({
+        _id: request.body._id, owner: request.user._id},
+        post,
+        { "new": true }
+    ).populate('attachedFiles');
+    response.send(blog);
 });
 
 router.delete('/deletePost/:_id', async(request, response) => {

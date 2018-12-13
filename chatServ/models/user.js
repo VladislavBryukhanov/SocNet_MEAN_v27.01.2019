@@ -3,7 +3,8 @@ const roomSchema = mongoose.Schema({
     avatar: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Image',
-        required: true
+        default: "5c12c5b44ad0e0209b5e6f67"
+        // required: true
     },
     username: {
         type: String,

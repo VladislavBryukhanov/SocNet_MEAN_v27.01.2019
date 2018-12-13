@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
+const Image = require('../models/image');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
@@ -35,13 +36,10 @@ router.put('/editProfile', upload.single('avatar'), async (request, response) =>
     const oldProfile = await User.findOne({_id: request.user._id});
     if(request.file) {
         const avatar = {
-
-        };
-
-        request.body.avatar = {
-            filePath: 'avatars',
+            filePath: 'avatars/',
             fileName: request.file.filename
         };
+        request.body.avatar = await Image.create(avatar).then(avatar => avatar._id);
         // TODO default avatar
         if (oldProfile.avatar) {
             const {fileName, filePath} = oldProfile.avatar;
@@ -68,7 +66,7 @@ router.put('/editProfile', upload.single('avatar'), async (request, response) =>
         {_id: request.user._id},
         request.body,
         {new: true, runValidators: true}
-    );
+    ).populate('avatar');
     if(newProfile) {
         const session_hash_data = await User.findOne(request.body).select('session_hash');
         newProfile.session_hash = session_hash_data.session_hash;
@@ -81,12 +79,14 @@ router.put('/editProfile', upload.single('avatar'), async (request, response) =>
 router.get('/getUsers/:count&:page', async(request, response) => {
     const maxCount = Number(request.params.count);
     const currentPage = Number(request.params.page);
-    const users = await User.find({}, [], {skip: currentPage * maxCount, limit: maxCount});
+    const users = await User.find({}, [], {skip: currentPage * maxCount, limit: maxCount})
+        .populate('avatar');
     users.length > 0 ? response.send(users) : response.sendStatus(404);
 });
 
 router.get('/getUser/:id', async(request, response) => {
-    const user = await User.findOne({_id: request.params.id});
+    const user = await User.findOne({_id: request.params.id})
+        .populate('avatar');
     if(user) {
         response.send(user);
     } else {
