@@ -24,11 +24,11 @@ const upload = multer({
 //TDOO blogs and comments equals
 
 router.get('/getCommentsCounter/:itemId&:userId', async (request, response) => {
-    let itemId = request.params.itemId;
-    let user = mongoose.Types.ObjectId(request.params.userId);
+    const itemId = request.params.itemId;
+    const user = mongoose.Types.ObjectId(request.params.userId);
 
-    let commentsCounter = await Comment.count({itemId});
-    let isCommentedByMe = !!await Comment.findOne({itemId, user});
+    const commentsCounter = await Comment.count({itemId});
+    const isCommentedByMe = !!await Comment.findOne({itemId, user});
 
     response.send({commentsCounter, isCommentedByMe});
 });
@@ -38,9 +38,9 @@ router.get('/getComment/:commentId', async(request, response) => {
 });
 
 router.get('/getComments/:itemId&:count&:page', async(request, response) => {
-    let maxCount = request.params.count;
-    let currentPage = request.params.page;
-    let comments = await Comment.find({itemId: request.params.itemId})
+    const maxCount = Number(request.params.count);
+    const currentPage = Number(request.params.page);
+    const comments = await Comment.find({itemId: request.params.itemId})
         .skip(currentPage * maxCount)
         .limit(maxCount)
         .populate('user');
@@ -52,7 +52,7 @@ router.get('/getComments/:itemId&:count&:page', async(request, response) => {
 });
 
 router.post('/addComment', upload.array('files', 12), async (request, response) => {
-    let comment = {
+    const comment = {
         user: mongoose.Types.ObjectId(request.user._id),
         attachedFiles: [],
         itemId: request.body.itemId,
@@ -64,7 +64,7 @@ router.post('/addComment', upload.array('files', 12), async (request, response) 
     if(comment.textContent.length > 0 || comment.attachedFiles.length > 0) {
 
         //TODO populate user ? mb need add if (userId = myAuth.id) useMy session ?
-        let newComment = await Comment.create(comment);
+        const newComment = await Comment.create(comment);
         await Comment.populate(newComment, 'user');
         response.send(newComment);
     } else {
@@ -73,13 +73,13 @@ router.post('/addComment', upload.array('files', 12), async (request, response) 
 });
 
 router.put('/editComment', upload.array('files', 12), async(request, response) => {
-    let post = {
+    const post = {
         attachedFiles: request.body.existsFiles ? request.body.existsFiles : [],
         textContent: request.body.content,
         user: mongoose.Types.ObjectId(request.user._id),
     };
 
-    let existsPost = await Blog.findOne({_id: request.body._id, owner: request.user._id});
+    const existsPost = await Blog.findOne({_id: request.body._id, owner: request.user._id});
     existsPost.attachedFiles.forEach(file => {
         if(!post.attachedFiles.includes(file)) {
             fs.unlink(`public/${file}`, err => console.log(err));
@@ -101,7 +101,7 @@ router.put('/editComment', upload.array('files', 12), async(request, response) =
 });
 
 router.delete('/deleteComment/:_id', async(request, response) => {
-    let deletedItem = await Comment.findOneAndRemove({
+    const deletedItem = await Comment.findOneAndRemove({
         _id: request.params._id, owner: request.user._id
     });
     if(deletedItem) {

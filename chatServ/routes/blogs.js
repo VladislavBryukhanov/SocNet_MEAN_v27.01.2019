@@ -22,17 +22,18 @@ const upload = multer({
     limits: {fileSize: 5 * 1024 * 1024}
 });
 
-let blogFileSize = [
+const blogFileSize = [
     {
         name: 'min',
         size: 350
     }
 ];
 
+//TODO paging func
 router.get('/getBlog/:userId&:count&:page', async(request, response) => {
-    let maxCount = request.params.count;
-    let currentPage = request.params.page;
-    let blog = await Blog.find(
+    const maxCount = Number(request.params.count);
+    const currentPage = Number(request.params.page);
+    const blog = await Blog.find(
             {owner: request.params.userId},
             [],
             {skip: currentPage * maxCount, limit: maxCount}
@@ -45,7 +46,7 @@ router.get('/getPost/:postId', async(request, response) => {
 });
 
 router.post('/addPost', upload.array('files', 12), async(request, response) => {
-    let post = {
+    const post = {
         attachedFiles: [],
         textContent: request.body.content,
         owner: request.user._id
@@ -58,11 +59,19 @@ router.post('/addPost', upload.array('files', 12), async(request, response) => {
             imageReading.push(
                 jimp.read(file.buffer)
                     .then(img => {
+                        console.log(post, 'read');
+                        // imageUploading.push(
+                        //     img.writeAsync(`public/blogs/${filename}`)
+                        //         .then(() => {
+                        //             post.attachedFiles.push(`blogs/${filename}`);
+                        //             console.log(post, 'saved')
+                        //         })
+                        // );
                         imageUploading.push(
-                            img.writeAsync(`public/blogs/${filename}`)
+                            fs.writeFile(`public/blogs/${filename}`, file.buffer)
                                 .then(() => {
                                     post.attachedFiles.push(`blogs/${filename}`);
-                                    console.log(post, 'hi')
+                                    console.log(post, 'saved')
                                 })
                         );
                         blogFileSize.forEach(async sizeMode => {
@@ -73,8 +82,10 @@ router.post('/addPost', upload.array('files', 12), async(request, response) => {
             );
         });
     }
+    console.log('start');
     await Promise.all(imageReading);
     await Promise.all(imageUploading);
+    console.log('stop');
     if(!post.textContent && post.attachedFiles.length === 0) {
         return response.sendStatus(404);
     }
@@ -83,13 +94,13 @@ router.post('/addPost', upload.array('files', 12), async(request, response) => {
 });
 
 router.put('/editPost', upload.array('files', 12), async(request, response) => {
-    let post = {
+    const post = {
         attachedFiles: request.body.existsFiles ? request.body.existsFiles : [],
         textContent: request.body.content,
         owner: request.user._id
     };
 
-    let existsPost = await Blog.findOne({_id: request.body._id, owner: request.user._id});
+    const existsPost = await Blog.findOne({_id: request.body._id, owner: request.user._id});
     existsPost.attachedFiles.forEach(file => {
        if(!post.attachedFiles.includes(file)) {
            fs.unlink(`public/${file}`, err => console.log(err));
@@ -109,14 +120,14 @@ router.put('/editPost', upload.array('files', 12), async(request, response) => {
 });
 
 router.delete('/deletePost/:_id', async(request, response) => {
-    let deletedItem = await Blog.findOneAndRemove({
+    const deletedItem = await Blog.findOneAndRemove({
         _id: request.params._id, owner: request.user._id
     });
     if(deletedItem) {
         deletedItem.attachedFiles.forEach(file => {
             fs.unlink(`public/${file}`, err => console.log(err));
             blogFileSize.forEach(async sizeMode => {
-                fs.unlink(`public/${sizeMode.name}.${file}`, err => console.log(err));
+                // fs.unlink(`public/${sizeMode.name}.${file}`, err => console.log(err));
             });
         });
         await Rate.findOneAndDelete({itemId: deletedItem._id});

@@ -32,7 +32,7 @@ const upload = multer({
 ];*/
 
 router.put('/editProfile', upload.single('avatar'), async (request, response) => {
-    let oldProfile = await User.findOne({_id: request.user._id});
+    const oldProfile = await User.findOne({_id: request.user._id});
     if(request.file) {
         request.body.avatar = `avatars/${request.file.filename}`;
         if(oldProfile.avatar !== 'avatars/default.jpg') {
@@ -59,7 +59,7 @@ router.put('/editProfile', upload.single('avatar'), async (request, response) =>
         {new: true, runValidators: true}
     );
     if(newProfile) {
-        let session_hash_data = await User.findOne(request.body).select('session_hash');
+        const session_hash_data = await User.findOne(request.body).select('session_hash');
         newProfile.session_hash = session_hash_data.session_hash;
         response.send(authPayload(newProfile));
     } else {
@@ -68,14 +68,14 @@ router.put('/editProfile', upload.single('avatar'), async (request, response) =>
 });
 
 router.get('/getUsers/:count&:page', async(request, response) => {
-    let maxCount = request.params.count;
-    let currentPage = request.params.page;
-    let users = await User.find({}, [], {skip: currentPage * maxCount, limit: maxCount});
+    const maxCount = Number(request.params.count);
+    const currentPage = Number(request.params.page);
+    const users = await User.find({}, [], {skip: currentPage * maxCount, limit: maxCount});
     users.length > 0 ? response.send(users) : response.sendStatus(404);
 });
 
 router.get('/getUser/:id', async(request, response) => {
-    let user = await User.findOne({_id: request.params.id});
+    const user = await User.findOne({_id: request.params.id});
     if(user) {
         response.send(user);
     } else {
