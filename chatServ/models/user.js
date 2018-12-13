@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const roomSchema = mongoose.Schema({
     avatar: {
-        type: String,
-        required: true,
-        default: 'avatars/default.jpg'
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Image',
+        required: true
     },
     username: {
         type: String,
@@ -59,3 +59,5 @@ const roomSchema = mongoose.Schema({
     }
 });
 module.exports = mongoose.model("User", roomSchema);
+
+// default: 'avatars/default.jpg'

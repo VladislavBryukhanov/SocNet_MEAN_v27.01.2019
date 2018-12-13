@@ -4,6 +4,7 @@ const User = require('../models/user');
 const crypto = require('crypto');
 const authPayload = require('../modules/tokenPayload');
 
+//TODO remove auto sign in, sign in & Up must return only token
 router.get('/autoSignIn', async (request, response) => {
     let user = await User.findOne({
         _id: request.user._id,

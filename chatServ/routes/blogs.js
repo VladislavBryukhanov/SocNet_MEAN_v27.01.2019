@@ -68,11 +68,13 @@ router.post('/addPost', upload.array('files', 12), async(request, response) => {
                         //         })
                         // );
                         imageUploading.push(
-                            fs.writeFile(`public/blogs/${filename}`, file.buffer)
-                                .then(() => {
-                                    post.attachedFiles.push(`blogs/${filename}`);
-                                    console.log(post, 'saved')
-                                })
+                           new Promise((resolve, reject) => {
+                               fs.writeFile(`public/blogs/${filename}`, file.buffer, () => {
+                                   post.attachedFiles.push(`blogs/${filename}`);
+                                   console.log(post, 'saved');
+                                   resolve();
+                               })
+                           })
                         );
                         blogFileSize.forEach(async sizeMode => {
                             img.resize(jimp.AUTO, sizeMode.size);

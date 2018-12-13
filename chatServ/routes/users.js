@@ -34,9 +34,20 @@ const upload = multer({
 router.put('/editProfile', upload.single('avatar'), async (request, response) => {
     const oldProfile = await User.findOne({_id: request.user._id});
     if(request.file) {
-        request.body.avatar = `avatars/${request.file.filename}`;
-        if(oldProfile.avatar !== 'avatars/default.jpg') {
-            fs.unlink(`public/${oldProfile.avatar}`, err => console.log(err));
+        const avatar = {
+
+        };
+
+        request.body.avatar = {
+            filePath: 'avatars',
+            fileName: request.file.filename
+        };
+        // TODO default avatar
+        if (oldProfile.avatar) {
+            const {fileName, filePath} = oldProfile.avatar;
+            if(fileName !== 'default.jpg') {
+                fs.unlink(`public/${filePath + fileName}`, err => console.log(err));
+            }
         }
       /*  console.log(file);
         jimp.read(request.body.avatar.body)
@@ -53,7 +64,7 @@ router.put('/editProfile', upload.single('avatar'), async (request, response) =>
     if(request.body.password) {
         request.body.session_hash = crypto.randomBytes(20).toString('hex');
     }
-    let newProfile = await User.findOneAndUpdate(
+    const newProfile = await User.findOneAndUpdate(
         {_id: request.user._id},
         request.body,
         {new: true, runValidators: true}

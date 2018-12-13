@@ -9,10 +9,11 @@ const blogSchema = mongoose.Schema({
         type: String,
         default: ''
     },
-    attachedFiles: {
-        type: [String],
-        default: []
-    },
+    attachedFiles: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Image',
+        required: true
+    }],
     date: {
         type: Date,
         default: Date.now
