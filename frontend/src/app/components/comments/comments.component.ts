@@ -3,6 +3,7 @@ import {CommentsService} from '../../services/comments.service';
 import {AuthService} from '../../services/auth.service';
 import {ImageViewerService} from '../../services/image-viewer.service';
 import {map} from 'rxjs/internal/operators';
+import {Image} from "../../models/image";
 
 @Component({
   selector: 'app-comments',
@@ -72,7 +73,7 @@ export class CommentsComponent implements OnInit {
       );
   }
 
-  openImageViewer(images: string[], index: number) {
+  openImageViewer(images: Image[], index: number) {
     this.imageViewerService.openImageViewer(images, index);
   }
 }

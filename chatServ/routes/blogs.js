@@ -4,8 +4,10 @@ const path = require('path');
 const Rate = require('../models/rate');
 const Blog = require('../models/blog');
 const Image = require('../models/image');
+const _ = require('lodash');
 const fs = require('fs');
-const jimp = require('jimp');
+const uuid = require('uuid');
+const sharp = require('sharp');
 const multer = require('multer');
 // const storage = multer.diskStorage({
 //     destination: function(req, file, cb) {
@@ -25,10 +27,49 @@ const upload = multer({
 
 const blogFileSize = [
     {
+        name: 'normal',
+        size: 500
+    },
+    {
         name: 'min',
-        size: 350
+        size: 120
     }
 ];
+
+const fileResizingAndSaving = async (files) => {
+    const attachedFiles = [];
+    const imageUploading = [];
+
+    if(files.length > 0) {
+        files.forEach((file) => {
+            const filename = `${file.fieldname}-${uuid.v1()}${path.extname(file.originalname)}`;
+
+            blogFileSize.forEach(sizeMode => {
+                imageUploading.push(
+                    sharp(file.buffer)
+                        .resize(null, sizeMode.size)
+                        .toFile(`public/blogs/${sizeMode.name}.${filename}`)
+                )
+            });
+
+            imageUploading.push(
+                new Promise((resolve, reject) => {
+                    fs.writeFile(`public/blogs/${filename}`, file.buffer, () => {
+                        Image.create({filePath: 'blogs/', fileName: filename})
+                            .then((res) => {
+                                attachedFiles.push(res._id);
+                                resolve();
+                            });
+                    });
+                })
+            );
+        });
+    } else {
+        return [];
+    }
+    await Promise.all(imageUploading);
+    return attachedFiles;
+};
 
 //TODO paging func
 router.get('/getBlog/:userId&:count&:page', async(request, response) => {
@@ -49,47 +90,12 @@ router.get('/getPost/:postId', async(request, response) => {
 
 router.post('/addPost', upload.array('files', 12), async(request, response) => {
     const post = {
-        attachedFiles: [],
         textContent: request.body.content,
         owner: request.user._id
     };
-    const imageReading = [];
-    const imageUploading = [];
-    if(request.files.length > 0) {
-        request.files.forEach((file) => {
-            const filename = `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`;
-            imageReading.push(
-                jimp.read(file.buffer)
-                    .then(img => {
-                        console.log(post, 'read');
 
-                        imageUploading.push(
-                           new Promise((resolve, reject) => {
-                               fs.writeFile(`public/blogs/${filename}`, file.buffer, () => {
-                                   // post.attachedFiles.push(`blogs/${filename}`);
-                                   console.log(post, 'saved');
-                                   // resolve();
-                                   Image.create({filePath: 'blogs/', fileName: filename})
-                                       .then((res) => {
-                                           post.attachedFiles.push(res._id);
-                                           resolve();
-                                       });
-                               })
-                           })
-                        );
+    post.attachedFiles = await fileResizingAndSaving(request.files);
 
-                        blogFileSize.forEach(async sizeMode => {
-                            img.resize(jimp.AUTO, sizeMode.size);
-                            img.writeAsync(`public/blogs/${sizeMode.name}.${filename}`);
-                        });
-                    })
-            );
-        });
-    }
-    console.log('start');
-    await Promise.all(imageReading);
-    await Promise.all(imageUploading);
-    console.log('stop');
     if(!post.textContent && post.attachedFiles.length === 0) {
         return response.sendStatus(404);
     }
@@ -106,16 +112,26 @@ router.put('/editPost', upload.array('files', 12), async(request, response) => {
         owner: request.user._id
     };
 
-    const existsPost = await Blog.findOne({_id: request.body._id, owner: request.user._id});
+    const existsPost = await Blog.findOne({_id: request.body._id, owner: request.user._id})
+        .populate('attachedFiles');
+
     existsPost.attachedFiles.forEach(file => {
-       if(!post.attachedFiles.includes(file)) {
-           fs.unlink(`public/${file}`, err => console.log(err));
-       }
+        // typeof file._id = string, typeof post.id = ObjectId
+        if(!post.attachedFiles.some(file_id => file_id == file._id)) {
+            fs.unlink(`public/${file.filePath + file.fileName}`, err => console.log(err));
+            blogFileSize.forEach(sizeMode => {
+                fs.unlink(`public/${file.filePath + sizeMode.name}.${file.fileName}`, err => console.log(err));
+            });
+            existsPost.attachedFiles = existsPost.attachedFiles.filter(item => item._id != file._id);
+            Image.findOneAndDelete({_id: file._id})
+                .catch(err => console.log(err));
+        }
     });
 
-    request.files.forEach((file) => {
-        post.attachedFiles.push(`blogs/${file.filename}`);
-    });
+    post.attachedFiles = [
+        ...existsPost.attachedFiles,
+        ...await fileResizingAndSaving(request.files)
+    ];
 
     if(!post.textContent && post.attachedFiles.length === 0) {
         return response.sendStatus(404);
@@ -132,15 +148,18 @@ router.put('/editPost', upload.array('files', 12), async(request, response) => {
 router.delete('/deletePost/:_id', async(request, response) => {
     const deletedItem = await Blog.findOneAndRemove({
         _id: request.params._id, owner: request.user._id
-    });
+    }).populate('attachedFiles');
     if(deletedItem) {
         deletedItem.attachedFiles.forEach(file => {
-            fs.unlink(`public/${file}`, err => console.log(err));
-            blogFileSize.forEach(async sizeMode => {
-                // fs.unlink(`public/${sizeMode.name}.${file}`, err => console.log(err));
+            fs.unlink(`public/${file.filePath + file.fileName}`, err => console.log(err));
+            blogFileSize.forEach(sizeMode => {
+                fs.unlink(`public/${file.filePath + sizeMode.name}.${file.fileName}`, err => console.log(err));
             });
+            Image.findOneAndDelete({_id: file._id})
+                .catch(err => console.log(err));
         });
-        await Rate.findOneAndDelete({itemId: deletedItem._id});
+        Rate.findOneAndDelete({itemId: deletedItem._id})
+            .catch(err => console.log(err));
     }
     response.send(deletedItem);
 });

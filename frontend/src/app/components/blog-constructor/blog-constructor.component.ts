@@ -4,6 +4,7 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {Blog} from '../../models/blog';
 import {CommentsService} from '../../services/comments.service';
 import {Observable} from 'rxjs/index';
+import {Image} from "../../models/image";
 
 // it component allows build posts or comments
 
@@ -76,8 +77,8 @@ export class BlogConstructorComponent implements OnInit {
   editPost(newPost: FormData, textContent: string) {
     newPost.append('_id', this.existsPost._id);
     newPost.append('content', textContent);
-    this.existsPost.attachedFiles.forEach(file =>
-      newPost.append('existsFiles[]', file));
+    this.existsPost.attachedFiles.forEach((file: Image) =>
+      newPost.append('existsFiles[]', file._id));
 
     if (this.existsPost.attachedFiles.length > 0 || textContent.trim().length > 0) {
       this.editItem(newPost);
