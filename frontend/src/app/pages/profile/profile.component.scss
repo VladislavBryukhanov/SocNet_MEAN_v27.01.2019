@@ -1,0 +1,47 @@
+.profilePage {
+  height: calc(100vh - 70px);
+  overflow: auto;
+  margin-top: 70px;
+
+  .mainContent {
+    margin-top: 28px;
+
+    .profile {
+      margin: 15px;
+      .leftBlock {
+        width: 50%;
+        display: inline-block;
+        .avatar {
+          cursor: pointer;
+          width: calc(100% - 16px);
+          box-shadow: 0 0 31px 1px grey;
+          border: 8px solid white;
+          display: inline-block;
+        }
+        .avatar:hover {
+          box-shadow: 0 0 31px 1px rgba(0, 0, 0, 0.65);
+        }
+      }
+      .rightBlock {
+        display: inline-block;
+        vertical-align: top;
+        width: 45%;
+        margin-left: 5%;
+        .username {
+          font-weight: 500;
+          vertical-align: top;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+}
+.imageViewer {
+  position: relative;
+  max-height: 85vh;
+  width: 70%;
+  max-width: 1200px;
+  margin: auto;
+  text-align: left;
+}

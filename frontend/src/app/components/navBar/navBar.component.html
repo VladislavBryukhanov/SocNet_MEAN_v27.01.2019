@@ -1,0 +1,25 @@
+<div class="navBar">
+
+  <ng-template [ngIf]="!this.authService.isAuthenticated" [ngIfElse]="loggedIn">
+    <div  class="navigation">
+        <a routerLink="/">sign in</a>
+        <a routerLink="/sign_up">sign up</a>
+    </div>
+  </ng-template>
+
+  <ng-template #loggedIn>
+    <div  class="navigation">
+        <a routerLink="/user_list">list of users</a>
+    </div>
+    <div class="profile" *ngIf="this.authService.myUser">
+      <a class="username" routerLink="/edit_profile">{{this.authService.myUser.username}}</a>
+      <img
+        src="{{this.authService.myUser.avatar | imageResizer:'min' | imagePath}}"
+        class="userAvatar"
+        routerLink="/profile/{{this.authService.myUser._id}}"/>
+      <a (click)="this.authService.signOut()" class="logOutBtn">Log out</a>
+    </div>
+  </ng-template>
+
+</div>
+

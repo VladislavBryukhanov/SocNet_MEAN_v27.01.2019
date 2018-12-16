@@ -1,0 +1,54 @@
+.userListModal {
+  display: inline-block;
+  //height: calc(100vh - 70px);
+  height: calc(60vh - 70px);
+  overflow: auto;
+  width: 100%;
+  //margin-top: 70px;
+  //margin-top: calc(20vh + 70px);
+
+  .mainContent {
+    margin-top: 0;
+    margin-bottom: 0;
+    width: 100%;
+    padding: 0;
+    min-height: 100%;
+  }
+
+}
+
+.userListPage {
+  //height: 500px;
+  //overflow: scroll;
+  height: calc(100vh - 70px);
+  overflow: auto;
+  margin-top: 70px;
+
+  .mainContent {
+    margin-top: 28px;
+  }
+}
+.userList {
+  text-align: left;
+  .user {
+    cursor: pointer;
+    padding: 10px;
+    display: block;
+    font-size: 22px;
+    color: #335871;
+    text-decoration: none;
+    border-bottom: 1px solid #ebebeb;
+    .userAvatar {
+      height: 50px;
+      width: 50px;
+      border-radius: 45px;
+      vertical-align: middle;
+      margin: 0 15px;
+      box-shadow: 4px 6px 17px -1px black;
+    }
+  }
+  .user:hover {
+    color: #326080;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}

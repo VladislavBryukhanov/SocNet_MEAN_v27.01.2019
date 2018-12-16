@@ -1,0 +1,49 @@
+<span class="commentBlock"
+      (click)="commentsModal(true)"
+      [ngClass]="isCommentedByMe ? 'active' : ''">
+  <span class="commentBtn">
+    <img [hidden]="isCommentedByMe" src="../../../assets/staticLayout/comment.3.png"/>
+    <img [hidden]="!isCommentedByMe" src="../../../assets/staticLayout/comment.2.png"/>
+  </span>
+  <span>{{commentsCounter}}</span>
+</span>
+
+<ng-template [ngIf]="isCommentsOpened">
+  <app-modal-component
+    [id]="modalId"
+    (userListModal)="commentsModal($event)"
+    [disposable]="true">
+    <div class="modalBody">
+      <div class="modalHeader">
+        Comments
+      </div>
+      <div class="commentsBlock"
+           appInfiniteScroll
+           [scrollCallback]="scrollCallback"
+           [initDataSize]="2"
+           [minItemSize]="145">
+        <div class="comment" *ngFor="let comment of commentsService.comments">
+          <div class="ownerBlock" routerLink="/profile/{{comment.user._id}}">
+            <img class="userAvatar"
+                 src="{{comment.user.avatar | imageResizer:'min' | imagePath}}"/>
+            <span class="username">{{comment.user.username}}</span>
+          </div>
+          <div class="imageBlock">
+            <img *ngFor="let img of comment.attachedFiles; let i = index"
+                 (click)="openImageViewer(comment.attachedFiles, i)"
+                 src="{{img | imageResizer:'normal' | imagePath}}"
+                 [ngClass]="(i == 0) ? 'attachedImage' : 'attachment'"/>
+          </div>
+          <article class="textContent">{{comment.textContent}}</article>
+
+          <p class="postDate">{{comment.date|date:'dd MMM yyyy, HH:mm:ss'}}</p>
+        </div>
+      </div>
+
+      <app-blog-constructor
+        [isComment]="true"
+        [itemId]="itemId">
+      </app-blog-constructor>
+    </div>
+  </app-modal-component>
+</ng-template>

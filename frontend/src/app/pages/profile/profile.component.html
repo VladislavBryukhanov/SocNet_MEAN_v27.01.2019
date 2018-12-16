@@ -1,0 +1,29 @@
+<div *ngIf="profile" class="profilePage"
+     appInfiniteScroll
+     [scrollCallback]="scrollCallback"
+     [initDataSize]="1"
+     [minItemSize]="123">
+  <div class="mainContent">
+    <div class="profile">
+      <div class="leftBlock">
+        <img
+          (click)="openImageViewer([profile.avatar], 0)"
+          src="{{profile.avatar | imageResizer:'normal' | imagePath}}"
+          class="avatar"/>
+      </div>
+      <div class="rightBlock">
+        <h1 class="username">{{profile.username}}</h1>
+      </div>
+    </div>
+  </div>
+
+  <app-blog-constructor *ngIf="isMyPage"></app-blog-constructor>
+  <app-blog [isMyPage]="isMyPage"></app-blog>
+</div>
+
+<!--//TODO stop image viewer component rendering before modal open (mb its bug with model)-->
+<app-modal-component [id]="imageViewerService.modalImageViewerId">
+  <app-image-viewer
+    class="imageViewer">
+  </app-image-viewer>
+</app-modal-component>

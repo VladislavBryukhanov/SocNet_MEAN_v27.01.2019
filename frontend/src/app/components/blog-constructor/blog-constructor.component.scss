@@ -1,0 +1,113 @@
+
+.commentConstructor.mainContent {
+  box-shadow: 0 0 12px -1px grey;
+  padding: 8px;
+  margin: 0;
+  //width: calc(100% - 30px);
+  width: calc(100% - 16px);
+  .blogConstructor {
+    text-align: left;
+    margin-top: 0;
+  }
+}
+
+.postConstructor {
+    margin-left: calc(27.5% - 15px);
+    display: inline-block;
+}
+
+.mainContent {
+  margin-top: 20px;
+
+  .blogConstructor {
+    //margin: 3%;
+    //width: 94%;
+    //width: 100%;
+    max-width: 100%;
+    margin: 9px;
+
+    textarea {
+      padding: 6px;
+      width: calc(100% - 12px);
+      display: block;
+      font-family: inherit;
+      font-size: 19px;
+      //min-height: 140px;
+      overflow: hidden;
+      min-height: 7vw;
+      height: 0;
+    }
+    input {
+      margin-top: 8px
+    }
+    .image-upload {
+      label {
+        cursor: pointer;
+        img {
+          padding-top: 10px;
+          width: 34px;
+        }
+      }
+      input {
+        display: none;
+      }
+    }
+    .submitPost {
+      font-family: inherit;
+      float: right;
+      margin-top: 10px;
+      //margin: 8px -12px;
+      font-weight: 100;
+      width: 153px;
+      height: 36px;
+      color: white;
+      font-size: 19px;
+      border: 0;
+      //background-color: #5682a3;
+      background-color: #6496C7;
+      cursor: pointer;
+      border-radius: 2px;
+      box-shadow: 1px 2px 1px 1px #56729a;
+      //box-shadow: 1px 1px 1px 1px #4f6
+    }
+    .submitPost:hover {
+      background-color: rgb(84, 136, 200);
+    }
+    .submitPost:active {
+      background-color: #417BBA;
+      box-shadow: 1px 2px 1px 1px #56729a;
+    }
+  }
+  .attachedImages {
+    margin: 9px;
+    .fileBlock {
+      display: inline-block;
+      margin: 4px 6px 4px 0;
+      .removeFile {
+        display: none;
+        vertical-align: top;
+        position: relative;
+        width: 28px;
+        height: 26px;
+        background-color: black;
+        border-radius: 3px;
+        color: white;
+        font-weight: 700;
+        margin-left: -28px;
+        cursor: pointer;
+        font-size: 18px;
+      }
+      .attachment {
+        width: 100px;
+        height: 100px;
+        border-radius: 3px;
+        display: inline-block;
+      }
+    }
+    .fileBlock:hover {
+      .removeFile {
+        display: inherit;
+      }
+    }
+  }
+}

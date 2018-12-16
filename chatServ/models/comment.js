@@ -1,7 +1,12 @@
 const mongoose = require('mongoose');
 
-const blogSchema = mongoose.Schema({
-    owner: {
+const commentSchema = mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    itemId: {
         type: String,
         required: true
     },
@@ -20,4 +25,5 @@ const blogSchema = mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model("Blog", blogSchema);
+module.exports = mongoose.model("Comment", commentSchema);
+

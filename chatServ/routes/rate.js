@@ -10,27 +10,32 @@ const actions = {
 };
 
 router.get('/getRatedUsers/:itemId&:isPositive&:count&:page', bodyParser.json(), async(request, response) => {
-    let itemId = request.params.itemId;
-    let isPositive = request.params.isPositive;
-    let maxCount = request.params.count;
-    let currentPage = request.params.page;
+    const itemId = request.params.itemId;
+    const isPositive = request.params.isPositive;
+    const maxCount = Number(request.params.count);
+    const currentPage = Number(request.params.page);
 
     let users = await Rate.find({itemId, isPositive})
         .sort({date: -1})
         .skip(currentPage * maxCount)
         .limit(maxCount)
-        .populate('user');
+        .populate({
+            path: 'user',
+            populate: {
+                path: 'avatar'
+            }
+        });
     users = users.map( item => item.user);
     response.send(users);
 });
 
 router.get('/getRateCounter/:itemId&:userId', async (request, response) => {
-    let itemId = request.params.itemId;
-    let user = mongoose.Types.ObjectId(request.params.userId);
+    const itemId = request.params.itemId;
+    const user = mongoose.Types.ObjectId(request.params.userId);
 
-    let likeCounter = await Rate.count({itemId, isPositive: true});
-    let dislikeCounter = await Rate.count({itemId, isPositive: false});
-    let myAction = await Rate.findOne({itemId, user, isPositive: true}) ? actions.LIKE
+    const likeCounter = await Rate.count({itemId, isPositive: true});
+    const dislikeCounter = await Rate.count({itemId, isPositive: false});
+    const myAction = await Rate.findOne({itemId, user, isPositive: true}) ? actions.LIKE
         : await Rate.findOne({itemId, user, isPositive: false}) ? actions.DISLIKE : null;
 
     response.send({likeCounter, dislikeCounter, myAction});
@@ -38,7 +43,7 @@ router.get('/getRateCounter/:itemId&:userId', async (request, response) => {
 
 router.post('/postRate', async (request, response) => {
     request.body.user = mongoose.Types.ObjectId(request.body.userId);
-    let prevRate = await Rate.findOne({
+    const prevRate = await Rate.findOne({
         user: mongoose.Types.ObjectId(request.body.userId),
         itemId: request.body.itemId
     });

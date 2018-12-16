@@ -1,0 +1,80 @@
+.commentBlock {
+  margin-left: 20px;
+  font-size: 20px;
+  color: grey;
+  cursor: pointer;
+  .commentBtn {
+    vertical-align: bottom;
+    background: none;
+    border: none;
+    img {
+      height: 26px;
+      vertical-align: bottom;
+      padding-bottom: 4px;
+      padding-right: 7px;
+    }
+  }
+}
+
+
+.active {
+  color: firebrick;
+}
+.commentsBlock {
+  //overflow: auto;
+  //height: 70%;
+  //max-height: 85vh;
+  text-align: left;
+  height: 45vh;
+  overflow: auto;
+  .comment {
+    margin: 15px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    //margin-bottom: 10px;
+    .ownerBlock:hover {
+      .username {
+        text-decoration: line-through;
+      }
+    }
+    .ownerBlock {
+      cursor: pointer;
+      display: inline-block;
+      .username {
+        font-size: 20px;
+      }
+      .userAvatar {
+        height: 50px;
+        width: 50px;
+        border-radius: 45px;
+        vertical-align: middle;
+        margin: 0 15px 12px 0;
+        box-shadow: 4px 6px 17px -1px black;
+      }
+    }
+    .postDate {
+      color: grey;
+      text-align:  right;
+      font-size: 14px;
+      margin: 5px 0 4px 0;
+    }
+    .textContent {
+      color: #5682a3;
+    }
+  }
+}
+
+.modalBody {
+  width: 55%;
+  margin: auto;
+  background-color: white;
+
+  .modalHeader {
+    font-size: 23px;
+    padding: 15px 0;
+    margin-bottom: 0;
+    box-shadow: 1px 5px 23px 1px grey;
+    border-bottom: 1px solid grey;
+  }
+}
+
+

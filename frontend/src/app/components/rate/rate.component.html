@@ -1,0 +1,54 @@
+<div class="rate">
+  <!--<img class="views" src="../../../assets/views.png"/>-->
+  <span class="likePost"
+        (mouseenter)="showRatedUsers(true)"
+        [ngClass]="meLike ? 'active' : ''">
+
+    <ng-template [ngIf]="isShowedLikedUsers && this.likeCounter">
+      <app-rated-users
+        class="likeBlock"
+        [action]="'liked'"
+        [itemId]="itemId"
+        [rateCounter]="likeCounter"
+        [isPositive]="true">
+      </app-rated-users>
+    </ng-template>
+
+    <span (click)="ratePost(true)">
+      <span [hidden]="meLike">
+          <img src="../../../assets/staticLayout/like.1.png"/>
+      </span>
+      <span [hidden]="!meLike">
+        <img src="../../../assets/staticLayout/like.2.png"/>
+      </span>
+      <span>{{likeCounter}}</span>
+    </span>
+  </span>
+
+  <span class="dislikePost"
+        (mouseenter)="showRatedUsers(false)"
+        [ngClass]="meDislike ? 'active' : ''">
+
+     <ng-template [ngIf]="isShowedDislikedUsers && dislikeCounter">
+      <app-rated-users
+        class="dislikeBlock"
+        [action]="'disliked'"
+        [itemId]="itemId"
+        [rateCounter]="dislikeCounter"
+        [isPositive]="false">
+      </app-rated-users>
+    </ng-template>
+
+    <span (click)="ratePost(false)">
+      <span [hidden]="meDislike">
+        <img src="../../../assets/staticLayout/dislike.3.png"/>
+      </span>
+      <span [hidden]="!meDislike" >
+        <img src="../../../assets/staticLayout/dislike.2.png"/>
+      </span>
+      <span>{{dislikeCounter}}</span>
+    </span>
+
+  </span>
+
+</div>
