@@ -8,7 +8,7 @@
       <div class="leftBlock">
         <img
           (click)="openImageViewer([profile.avatar], 0)"
-          src={{profile.avatar|imagePath}}
+          src="{{profile.avatar | imageResizer:'normal' | imagePath}}"
           class="avatar"/>
       </div>
       <div class="rightBlock">

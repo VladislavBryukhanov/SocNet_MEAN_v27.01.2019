@@ -151,9 +151,11 @@ router.delete('/deletePost/:_id', async(request, response) => {
     }).populate('attachedFiles');
     if(deletedItem) {
         deletedItem.attachedFiles.forEach(file => {
-            fs.unlink(`public/${file.filePath + file.fileName}`, err => console.log(err));
+            const {fileName, filePath} = file;
+            fs.unlink(`public/${filePath + fileName}`, err => console.log(err));
             blogFileSize.forEach(sizeMode => {
-                fs.unlink(`public/${file.filePath + sizeMode.name}.${file.fileName}`, err => console.log(err));
+                fs.unlink(`public/${filePath + sizeMode.name}.${fileName}`,
+                        err => console.log(err));
             });
             Image.findOneAndDelete({_id: file._id})
                 .catch(err => console.log(err));

@@ -8,7 +8,9 @@
       This post is {{action}} by
     </p>
     <div *ngFor="let user of users" class="user">
-      <img  class="userAvatar" src={{user.avatar|imagePath}} routerLink="/profile/{{user._id}}"/>
+      <img  class="userAvatar"
+            src="{{user.avatar | imageResizer:'min' | imagePath}}"
+            routerLink="/profile/{{user._id}}"/>
       <p>{{user.username}}</p>
     </div>
   </div>

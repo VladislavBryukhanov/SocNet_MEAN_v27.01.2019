@@ -43,7 +43,12 @@ router.get('/getComments/:itemId&:count&:page', async(request, response) => {
     const comments = await Comment.find({itemId: request.params.itemId})
         .skip(currentPage * maxCount)
         .limit(maxCount)
-        .populate('user');
+        .populate({
+            path: 'user',
+            populate: {
+                path: 'avatar'
+            }
+        });
     if(comments.length > 0) {
         response.send(comments);
     } else {

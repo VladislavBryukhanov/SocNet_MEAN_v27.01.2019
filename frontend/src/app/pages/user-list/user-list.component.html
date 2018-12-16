@@ -6,7 +6,7 @@
   <div class="mainContent">
     <div class="userList">
       <div class="user" *ngFor="let user of users" routerLink='/profile/{{user._id}}'>
-        <img class="userAvatar" src={{user.avatar|imagePath}} />
+        <img class="userAvatar" src="{{user.avatar | imageResizer:'min' | imagePath}}" />
         <span>{{user.username}}</span>
       </div>
     </div>
