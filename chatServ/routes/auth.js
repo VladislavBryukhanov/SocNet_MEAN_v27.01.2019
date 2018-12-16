@@ -4,12 +4,13 @@ const User = require('../models/user');
 const crypto = require('crypto');
 const authPayload = require('../modules/tokenPayload');
 
+//TODO remove auto sign in, sign in & Up must return only token
 router.get('/autoSignIn', async (request, response) => {
     let user = await User.findOne({
         _id: request.user._id,
         role: request.user.role,
         session_hash: request.user.session_hash
-    });
+    }).populate('avatar');
     if (user) {
        response.send(user);
     } else {
@@ -19,7 +20,7 @@ router.get('/autoSignIn', async (request, response) => {
 });
 
 router.post('/signIn', async (request, response) => {
-    let user = await User.findOne(request.body);
+    let user = await User.findOne(request.body).populate('avatar');
     if(user) {
         let session_hash_data = await User.findOne(request.body).select('session_hash');
         user.session_hash = session_hash_data.session_hash;
@@ -32,6 +33,7 @@ router.post('/signIn', async (request, response) => {
 router.post('/signUp', async (request, response) => {
     request.body.session_hash = crypto.randomBytes(20).toString('hex');
     let user = await User.create(request.body);
+    user = await User.populate(user, 'avatar');
     if(user) {
         response.send(authPayload(user));
     } else {

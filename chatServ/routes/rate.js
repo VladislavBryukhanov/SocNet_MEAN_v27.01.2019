@@ -19,7 +19,12 @@ router.get('/getRatedUsers/:itemId&:isPositive&:count&:page', bodyParser.json(),
         .sort({date: -1})
         .skip(currentPage * maxCount)
         .limit(maxCount)
-        .populate('user');
+        .populate({
+            path: 'user',
+            populate: {
+                path: 'avatar'
+            }
+        });
     users = users.map( item => item.user);
     response.send(users);
 });

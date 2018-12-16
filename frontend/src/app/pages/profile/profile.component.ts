@@ -6,6 +6,7 @@ import {AuthService} from '../../services/auth.service';
 import {BlogService} from '../../services/blog.service';
 import {map} from 'rxjs/internal/operators';
 import {ImageViewerService} from '../../services/image-viewer.service';
+import {Image} from "../../models/image";
 
 @Component({
   selector: 'app-profile',
@@ -63,7 +64,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       );
   }
 
-  openImageViewer(images: string[], index: number) {
+  openImageViewer(images: Image[], index: number) {
     this.imageViewerService.openImageViewer(images, index);
   }
 }

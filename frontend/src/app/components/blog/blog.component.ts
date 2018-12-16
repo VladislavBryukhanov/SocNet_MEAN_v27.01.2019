@@ -4,6 +4,7 @@ import {Blog} from '../../models/blog';
 import {AuthService} from '../../services/auth.service';
 import {ModalService} from '../../services/modal.service';
 import {ImageViewerService} from '../../services/image-viewer.service';
+import {Image} from "../../models/image";
 
 @Component({
   selector: 'app-blog',
@@ -43,7 +44,7 @@ export class BlogComponent {
     this.modalService.open(this.modalRemovingId);
   }
 
-  openImageViewer(images: string[], index: number) {
+  openImageViewer(images: Image[], index: number) {
     this.imageViewerService.openImageViewer(images, index);
   }
 }

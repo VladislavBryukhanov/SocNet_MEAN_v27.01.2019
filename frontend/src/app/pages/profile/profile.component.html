@@ -8,7 +8,7 @@
       <div class="leftBlock">
         <img
           (click)="openImageViewer([profile.avatar], 0)"
-          src={{profile.avatar|imagePath}}
+          src="{{profile.avatar | imageResizer:'normal' | imagePath}}"
           class="avatar"/>
       </div>
       <div class="rightBlock">
@@ -21,6 +21,7 @@
   <app-blog [isMyPage]="isMyPage"></app-blog>
 </div>
 
+<!--//TODO stop image viewer component rendering before modal open (mb its bug with model)-->
 <app-modal-component [id]="imageViewerService.modalImageViewerId">
   <app-image-viewer
     class="imageViewer">

@@ -14,10 +14,11 @@ const commentSchema = mongoose.Schema({
         type: String,
         default: ''
     },
-    attachedFiles: {
-        type: [String],
-        default: []
-    },
+    attachedFiles: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Image',
+        required: true
+    }],
     date: {
         type: Date,
         default: Date.now
@@ -25,3 +26,4 @@ const commentSchema = mongoose.Schema({
 });
 
 module.exports = mongoose.model("Comment", commentSchema);
+
