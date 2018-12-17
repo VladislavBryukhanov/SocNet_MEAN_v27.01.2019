@@ -135,8 +135,8 @@ export class BlogConstructorComponent implements OnInit {
     this.filesPreview.splice(index, 1);
   }
 
-  removeFileExists(url: string) {
-    this.existsPost.attachedFiles = this.existsPost.attachedFiles.filter(item => item !== url);
+  removeFileExists(img: Image) {
+    this.existsPost.attachedFiles = this.existsPost.attachedFiles.filter(item => item !== img);
   }
 
 }
