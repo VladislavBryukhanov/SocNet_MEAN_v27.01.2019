@@ -65,22 +65,6 @@ const fileResizingAndSaving = async (files) => {
 
 //TODO paging func
 router.get('/getBlog/:id&:limit&:offset', async(request, response) => {
-/*    const limit = Number(request.params.limit);
-    const offset = Number(request.params.offset);
-    const id = request.params.id;
-    const blog = await Blog.find(
-            {owner: id},
-            [],
-            {skip: offset, limit})
-        .sort({date: -1})
-        .populate('attachedFiles');
-    const res = {
-        data: blog,
-        count: await Blog.count({owner: id}),
-        offset,
-        limit
-    };*/
-    // blog.length > 0 ? response.send(res) : response.sendStatus(404);
     const id = request.params.id;
     const res = await findWithPaging(request.params, Blog, {owner: id}, 'attachedFiles');
     res.data.length > 0 ? response.send(res) : response.sendStatus(404);

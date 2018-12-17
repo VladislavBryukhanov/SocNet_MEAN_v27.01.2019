@@ -1,6 +1,6 @@
 import {AfterViewInit, Directive, ElementRef, Input} from '@angular/core';
-import {fromEvent, of, throwError} from 'rxjs/index';
-import {catchError, exhaustMap, filter, map, pairwise} from 'rxjs/internal/operators';
+import {fromEvent} from 'rxjs/index';
+import {exhaustMap, filter, map, pairwise} from 'rxjs/internal/operators';
 
 @Directive({
   selector: '[appInfiniteScroll]'
@@ -17,20 +17,22 @@ export class InfiniteScrollDirective implements AfterViewInit {
   private scrollEvent$;
 
   private countOfItems = 0;
+  private limit = 0;
   private offset = 0;
-  private itemsForStep = 0;
+  private currentPage = 0;
 
   constructor(private elemRef: ElementRef) {}
 
   ngAfterViewInit(): void {
     this.scrollEvent$ = fromEvent(this.elemRef.nativeElement, 'scroll');
 
-    this.itemsForStep = Math.floor(this.elemRef.nativeElement.clientHeight /
+    this.limit = Math.floor(this.elemRef.nativeElement.clientHeight /
       this.minItemSize * this.initDataSize) + 1;
-    this.scrollCallback(this.itemsForStep)
+    this.scrollCallback(this.limit, this.currentPage)
       .subscribe(res => {
         this.countOfItems = res['count'];
         this.offset = res['offset'];
+        this.currentPage++;
       });
 
     this.scrollEvent$
@@ -47,11 +49,12 @@ export class InfiniteScrollDirective implements AfterViewInit {
           && this.isScrollingDown(position)
           && this.isScrollOutOfRange(position[1])),
         exhaustMap(_ => {
-          return this.scrollCallback(this.itemsForStep)
+          return this.scrollCallback(this.limit, this.currentPage)
         })
       ).subscribe(res => {
         this.countOfItems = res['count'];
         this.offset = res['offset'];
+        this.currentPage++;
     });
   }
 
@@ -65,7 +68,6 @@ export class InfiniteScrollDirective implements AfterViewInit {
   }
 
   inRangeOfDataCount() {
-    return this.countOfItems > this.offset + this.itemsForStep;
+    return this.countOfItems > this.offset + this.limit;
   }
-
 }

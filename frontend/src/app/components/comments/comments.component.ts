@@ -20,7 +20,6 @@ export class CommentsComponent implements OnInit {
 
   public isCommentsOpened = false;
   public scrollCallback;
-  private currentPage = 0;
   public modalId = 'modalComments';
 
   constructor(public commentsService: CommentsService,
@@ -60,15 +59,15 @@ export class CommentsComponent implements OnInit {
     this.isCommentsOpened = isCommentsOpened;
   }
 
-  nextPage(maxCount: number) {
-    return this.commentsService.getComments(this.itemId, maxCount, this.currentPage)
+  nextPage(maxCount: number, currentPage: number) {
+    return this.commentsService.getComments(this.itemId, maxCount, currentPage)
       .pipe(
         map(res => {
           // this.blogService.blog = this.blogService.blog.concat(res);
           if (this.commentsService.comments.length === this.commentsCounter) {
             this.commentsService.addCommentListener(this.itemId);
           }
-          this.currentPage++;
+          return res;
         })
       );
   }

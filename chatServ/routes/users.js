@@ -4,11 +4,6 @@ const User = require('../models/user');
 const findWithPaging = require('../common/paging');
 
 router.get('/getUsers/:limit&:offset', async(request, response) => {
-    /*const maxCount = Number(request.params.count);
-    const currentPage = Number(request.params.page);
-    const users = await User.find({}, [], {skip: currentPage * maxCount, limit: maxCount})
-        .populate('avatar');
-    users.length > 0 ? response.send(users) : response.sendStatus(404);*/
     const res = await findWithPaging(request.params, User, {}, 'avatar');
     res.data.length > 0 ? response.send(res) : response.sendStatus(404);
 });

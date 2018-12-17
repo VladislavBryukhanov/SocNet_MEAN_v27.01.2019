@@ -3,30 +3,23 @@ const router = express.Router();
 const Rate = require('../models/rate');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const findWithPaging = require('../common/paging');
 
 const actions = {
   LIKE: 'like',
   DISLIKE: 'dislike'
 };
 
-router.get('/getRatedUsers/:itemId&:isPositive&:count&:page', bodyParser.json(), async(request, response) => {
+router.get('/getRatedUsers/:itemId&:isPositive&:limit&:offset', bodyParser.json(), async(request, response) => {
     const itemId = request.params.itemId;
     const isPositive = request.params.isPositive;
-    const maxCount = Number(request.params.count);
-    const currentPage = Number(request.params.page);
-
-    let users = await Rate.find({itemId, isPositive})
-        .sort({date: -1})
-        .skip(currentPage * maxCount)
-        .limit(maxCount)
-        .populate({
-            path: 'user',
-            populate: {
-                path: 'avatar'
-            }
-        });
-    users = users.map( item => item.user);
-    response.send(users);
+    const populate = {
+        path: 'user',
+        populate: {path: 'avatar'}
+    };
+    const res = await findWithPaging(request.params, Rate, {itemId, isPositive}, populate);
+    res.data = res.data.map( item => item.user );
+    res.data.length > 0 ? response.send(res) : response.sendStatus(404);
 });
 
 router.get('/getRateCounter/:itemId&:userId', async (request, response) => {

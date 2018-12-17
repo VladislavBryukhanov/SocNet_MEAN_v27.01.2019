@@ -1,5 +1,5 @@
 <div class="blog">
-  <div *ngFor="let post of blogService.blog.data">
+  <div *ngFor="let post of blogService.blog">
     <div class="blogBody" *ngIf="post._id != editFormOpened">
       <div class="post">
         <div class="imageBlock">

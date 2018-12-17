@@ -4,6 +4,7 @@ const Comment = require('../models/comment');
 const path = require('path');
 const mongoose = require('mongoose');
 const fs = require('fs');
+const findWithPaging = require('../common/paging');
 
 const multer = require('multer');
 const storage = multer.diskStorage({
@@ -37,23 +38,17 @@ router.get('/getComment/:commentId', async(request, response) => {
     response.send(await Comment.findOne({_id: request.params.commentId}));
 });
 
-router.get('/getComments/:itemId&:count&:page', async(request, response) => {
-    const maxCount = Number(request.params.count);
-    const currentPage = Number(request.params.page);
-    const comments = await Comment.find({itemId: request.params.itemId})
-        .skip(currentPage * maxCount)
-        .limit(maxCount)
-        .populate({
-            path: 'user',
-            populate: {
-                path: 'avatar'
-            }
-        });
-    if(comments.length > 0) {
-        response.send(comments);
-    } else {
-        response.sendStatus(404);
-    }
+router.get('/getComments/:itemId&:limit&:offset', async(request, response) => {
+    const populate = {
+        path: 'user',
+        populate: {path: 'avatar'}
+    };
+    const res = await findWithPaging(
+        request.params,
+        Comment,
+        {itemId: request.params.itemId},
+        populate);
+    res.data.length > 0 ? response.send(res) : response.sendStatus(404);
 });
 
 router.post('/addComment', upload.array('files', 12), async (request, response) => {
