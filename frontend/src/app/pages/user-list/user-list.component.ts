@@ -33,9 +33,9 @@ export class UserListComponent implements OnInit {
     return this.userSelectionMethod(maxCount, this.currentPage)
       .pipe(
         map((res: User[]) => {
-          this.users = this.users.concat(res);
+          this.users = this.users.concat(res['data']);
           this.currentPage++;
+          return res;
         }));
   }
-
 }

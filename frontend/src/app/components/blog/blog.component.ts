@@ -16,7 +16,6 @@ export class BlogComponent {
   @Input()
   public isMyPage: boolean;
   private postId: string;
-  public blog: Blog[] = [];
   public editFormOpened: string;
   public modalRemovingId = 'confirmPostRemoving';
 

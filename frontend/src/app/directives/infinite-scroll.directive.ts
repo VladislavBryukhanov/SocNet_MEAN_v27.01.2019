@@ -16,15 +16,22 @@ export class InfiniteScrollDirective implements AfterViewInit {
 
   private scrollEvent$;
 
+  private countOfItems = 0;
+  private offset = 0;
+  private itemsForStep = 0;
+
   constructor(private elemRef: ElementRef) {}
 
   ngAfterViewInit(): void {
     this.scrollEvent$ = fromEvent(this.elemRef.nativeElement, 'scroll');
 
-    const countOfItems = Math.floor(this.elemRef.nativeElement.clientHeight /
+    this.itemsForStep = Math.floor(this.elemRef.nativeElement.clientHeight /
       this.minItemSize * this.initDataSize) + 1;
-    this.scrollCallback(countOfItems)
-      .subscribe();
+    this.scrollCallback(this.itemsForStep)
+      .subscribe(res => {
+        this.countOfItems = res['count'];
+        this.offset = res['offset'];
+      });
 
     this.scrollEvent$
       .pipe(
@@ -35,21 +42,17 @@ export class InfiniteScrollDirective implements AfterViewInit {
           })
         ),
         pairwise(),
-        filter(position => this.isScrollingDown(position)
+        filter(position =>
+          this.inRangeOfDataCount()
+          && this.isScrollingDown(position)
           && this.isScrollOutOfRange(position[1])),
         exhaustMap(_ => {
-          return this.scrollCallback(countOfItems)
-            .pipe(
-              catchError(err => {
-                if (err.status === 404) {
-                  console.log('full data loaded');
-                }
-                return throwError(err);
-              })
-            );
+          return this.scrollCallback(this.itemsForStep)
         })
-      )
-      .subscribe();
+      ).subscribe(res => {
+        this.countOfItems = res['count'];
+        this.offset = res['offset'];
+    });
   }
 
   isScrollingDown(position): boolean {
@@ -59,6 +62,10 @@ export class InfiniteScrollDirective implements AfterViewInit {
   isScrollOutOfRange(position): boolean {
     return position.scrollHeight - (position.scrollTop + position.clientHeight)
       < position.clientHeight;
+  }
+
+  inRangeOfDataCount() {
+    return this.countOfItems > this.offset + this.itemsForStep;
   }
 
 }
