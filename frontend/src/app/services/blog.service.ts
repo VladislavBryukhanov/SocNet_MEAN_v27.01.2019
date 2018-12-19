@@ -23,8 +23,8 @@ export class BlogService {
     return this.http.get<Blog>(`/blogs/getPost/${postId}`);
   }
 
-  getBlog(userId: string, maxCount: number = 1, currentPage: number = 0): Observable<Blog[]> {
-    return this.http.get<Blog[]>(`/blogs/getBlog/${userId}&${maxCount}&${currentPage}`);
+  getBlog(userId: string, limit: number = 1, currentPage: number = 0): Observable<Blog[]> {
+    return this.http.get<Blog[]>(`/blogs/getBlog/${userId}&${limit}&${currentPage * limit}`);
   }
 
   publishPost(post: FormData) {

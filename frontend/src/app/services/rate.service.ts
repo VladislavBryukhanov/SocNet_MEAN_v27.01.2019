@@ -13,10 +13,10 @@ export class RateService {
 
   getRatedUsers(itemId: string,
                 isPositive: boolean,
-                maxCount: number = 1,
+                limit: number = 1,
                 currentPage: number = 0): Observable<User[]> {
       return this.http.get<User[]>(
-        `/rate/getRatedUsers/${itemId}&${isPositive}&${maxCount}&${currentPage}`);
+        `/rate/getRatedUsers/${itemId}&${isPositive}&${limit}&${currentPage * limit}`);
   }
 
   getRate(itemId: string, userId: string): Observable<Object> {

@@ -43,8 +43,8 @@ export class CommentsService {
     return this.http.get<Comment>(`/comments/getComment/${commentId}`);
   }
 
-  getComments(itemId: string, maxCount: number = 1, currentPage: number = 0) {
-    return this.http.get<Comment[]>(`/comments/getComments/${itemId}&${maxCount}&${currentPage}`)
+  getComments(itemId: string, limit: number = 1, currentPage: number = 0) {
+    return this.http.get<Comment[]>(`/comments/getComments/${itemId}&${limit}&${currentPage * limit}`)
       .pipe(
         map(res => {
             this._comments = this._comments.concat(res['data']);
