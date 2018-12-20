@@ -10,8 +10,8 @@ export class UsersService {
 
   constructor(private http: HttpClient) { }
 
-  getUserList(maxCount: number = 1, currentPage: number = 0): Observable<User[]> {
-    return this.http.get<User[]>(`/users/getUsers/${maxCount}&${currentPage}`);
+  getUserList(limit: number = 1, currentPage: number = 0): Observable<User[]> {
+    return this.http.get<User[]>(`/users/getUsers/${limit}&${currentPage * limit}`);
   }
 
   getUserById(id: string): Observable<User> {

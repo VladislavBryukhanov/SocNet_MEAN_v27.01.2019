@@ -18,7 +18,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
   public profile: User;
   public isMyPage = false;
 
-  private currentPage = 0;
   public scrollCallback;
 
   constructor(private userService: UsersService,
@@ -54,12 +53,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.blogService.destroy();
   }
 
-  nextPage(maxCount: number) {
-    return this.blogService.getBlog(this.router.snapshot.params['id'], maxCount, this.currentPage)
+  nextPage(maxCount: number, currentPage: number) {
+    return this.blogService.getBlog(this.router.snapshot.params['id'], maxCount, currentPage)
       .pipe(
         map(res => {
-          this.blogService.blog = this.blogService.blog.concat(res);
-          this.currentPage++;
+          this.blogService.blog = this.blogService.blog.concat(res['data']);
+          return res;
         })
       );
   }

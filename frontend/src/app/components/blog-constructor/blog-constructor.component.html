@@ -2,7 +2,7 @@
   <div class="attachedImages">
       <ng-template [ngIf]="editId && existsPost">
         <div *ngFor="let image of existsPost.attachedFiles" class="fileBlock">
-          <img src="{{image|imagePath}}" class="attachment"/>
+          <img src="{{image | imageResizer:'min' | imagePath}}" class="attachment"/>
           <button (click)="removeFileExists(image)" class="removeFile">X</button>
         </div>
       </ng-template>

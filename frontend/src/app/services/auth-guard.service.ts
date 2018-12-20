@@ -10,12 +10,14 @@ export class AuthGuardService implements CanActivate {
   constructor(private authService: AuthService, private router: Router) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    if (this.authService.isAuthenticated) {
+    if (this.authService.myUser) {
       return true;
     } else {
       this.authService.redirectUrl = state.url;
-      this.authService.autoSignIn()
-        .subscribe(null, err => {
+      this.authService.getProfile()
+        .subscribe(_ => {
+          this.router.navigate([this.authService.redirectUrl]);
+        }, err => {
           console.log(err);
           if (err.status === 401) {
             this.router.navigate(['/']);

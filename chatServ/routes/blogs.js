@@ -8,17 +8,9 @@ const _ = require('lodash');
 const fs = require('fs');
 const uuid = require('uuid');
 const sharp = require('sharp');
+const findWithPaging = require('../common/paging');
 const multer = require('multer');
-// const storage = multer.diskStorage({
-//     destination: function(req, file, cb) {
-//         cb(null, path.join(__dirname+ '/../', 'public/blogs'))
-//     },
-//     filename: function(req, file, cb) {
-//         cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`)
-//     }
-// });
 
-// const getFileName = (file) => `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`;
 const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
@@ -72,15 +64,10 @@ const fileResizingAndSaving = async (files) => {
 };
 
 //TODO paging func
-router.get('/getBlog/:userId&:count&:page', async(request, response) => {
-    const maxCount = Number(request.params.count);
-    const currentPage = Number(request.params.page);
-    const blog = await Blog.find(
-            {owner: request.params.userId},
-            [],
-            {skip: currentPage * maxCount, limit: maxCount}
-        ).sort({date: -1}).populate('attachedFiles');
-    blog.length > 0 ? response.send(blog) : response.sendStatus(404);
+router.get('/getBlog/:id&:limit&:offset', async(request, response) => {
+    const id = request.params.id;
+    const res = await findWithPaging(request.params, Blog, {owner: id}, 'attachedFiles');
+    res.data.length > 0 ? response.send(res) : response.sendStatus(404);
 });
 
 router.get('/getPost/:postId', async(request, response) => {

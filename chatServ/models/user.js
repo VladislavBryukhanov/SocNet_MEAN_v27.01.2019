@@ -3,7 +3,7 @@ const userSchema = mongoose.Schema({
     avatar: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Image',
-        default: "5c13da433a27a06afaffe2e9"
+        default: "5c12c5b44ad0e0209b5e6f67"
         // TODO fix id
         // required: true
     },

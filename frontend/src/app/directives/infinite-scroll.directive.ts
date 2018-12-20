@@ -1,6 +1,6 @@
 import {AfterViewInit, Directive, ElementRef, Input} from '@angular/core';
-import {fromEvent, of, throwError} from 'rxjs/index';
-import {catchError, exhaustMap, filter, map, pairwise} from 'rxjs/internal/operators';
+import {fromEvent} from 'rxjs/index';
+import {exhaustMap, filter, map, pairwise} from 'rxjs/internal/operators';
 
 @Directive({
   selector: '[appInfiniteScroll]'
@@ -16,15 +16,24 @@ export class InfiniteScrollDirective implements AfterViewInit {
 
   private scrollEvent$;
 
+  private countOfItems = 0;
+  private limit = 0;
+  private offset = 0;
+  private currentPage = 0;
+
   constructor(private elemRef: ElementRef) {}
 
   ngAfterViewInit(): void {
     this.scrollEvent$ = fromEvent(this.elemRef.nativeElement, 'scroll');
 
-    const countOfItems = Math.floor(this.elemRef.nativeElement.clientHeight /
+    this.limit = Math.floor(this.elemRef.nativeElement.clientHeight /
       this.minItemSize * this.initDataSize) + 1;
-    this.scrollCallback(countOfItems)
-      .subscribe();
+    this.scrollCallback(this.limit, this.currentPage)
+      .subscribe(res => {
+        this.countOfItems = res['count'];
+        this.offset = res['offset'];
+        this.currentPage++;
+      });
 
     this.scrollEvent$
       .pipe(
@@ -35,21 +44,18 @@ export class InfiniteScrollDirective implements AfterViewInit {
           })
         ),
         pairwise(),
-        filter(position => this.isScrollingDown(position)
+        filter(position =>
+          this.inRangeOfDataCount()
+          && this.isScrollingDown(position)
           && this.isScrollOutOfRange(position[1])),
         exhaustMap(_ => {
-          return this.scrollCallback(countOfItems)
-            .pipe(
-              catchError(err => {
-                if (err.status === 404) {
-                  console.log('full data loaded');
-                }
-                return throwError(err);
-              })
-            );
+          return this.scrollCallback(this.limit, this.currentPage)
         })
-      )
-      .subscribe();
+      ).subscribe(res => {
+        this.countOfItems = res['count'];
+        this.offset = res['offset'];
+        this.currentPage++;
+    });
   }
 
   isScrollingDown(position): boolean {
@@ -61,4 +67,7 @@ export class InfiniteScrollDirective implements AfterViewInit {
       < position.clientHeight;
   }
 
+  inRangeOfDataCount() {
+    return this.countOfItems > this.offset + this.limit;
+  }
 }

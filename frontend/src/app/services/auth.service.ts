@@ -15,10 +15,6 @@ export class AuthService {
     return this._authToken;
   }
 
-  set authToken(value: string) {
-    this._authToken = value;
-  }
-
   get myUser(): User {
     return this._myUser;
   }
@@ -38,59 +34,57 @@ export class AuthService {
   private _redirectUrl = '/user_list';
   private _myUser: User;
   public _authToken: string;
-  public isAuthenticated = false;
 
   constructor (private http: HttpClient, private router: Router, private location: Location) { }
 
   signUp(user: User) {
     this.authentication(
-      this.http.post<User>('/signUp', user)
+      this.http.post<string>('/signUp', user)
     );
   }
 
   signIn(user) {
     this.authentication(
-      this.http.post<User>('/signIn', user)
+      this.http.post<string>('/signIn', user)
     );
   }
 
   signOut() {
     localStorage.removeItem('AuthToken');
-    this.isAuthenticated = false;
     this._myUser = null;
     this.router.navigate(['/']);
   }
 
-  autoSignIn(): Observable<void> {
-    if (!this.getAuthToken()) {
+  getProfile(): Observable<void> {
+    this._authToken = this.getAuthToken();
+    if (!this._authToken) {
       const err = {status: 401};
       return throwError(err);
     }
-    this._authToken = this.getAuthToken();
-    return this.http.get<User>('/autoSignIn').pipe(
-        map(user => {
-          this._myUser = user;
-          this.isAuthenticated = true;
-          this.router.navigate([this.redirectUrl]);
-        }),
+    return this.http.get<User>('/getProfile').pipe(
+      map(user => {
+        this._myUser = user;
+        // this.router.navigate([this.redirectUrl]);
+      }),
       catchError((err) => {
           console.log(err.status);
           if (err.status === 401) {
-            localStorage.removeItem('AuthToken');
-            // signOut();
+            this.signOut();
             return throwError(err);
           }
         })
       );
   }
 
-  authentication(payload: Observable<User>) {
-    payload.subscribe(res => {
+  authentication(payload: Observable<string>) {
+    payload.subscribe((res) => {
       this.saveAuthToken(res['token']);
       this._authToken = this.getAuthToken();
-      this._myUser = res['user'];
-      this.isAuthenticated = true;
-      this.router.navigate([this.redirectUrl]);
+      this.getProfile()
+        .subscribe(_ =>
+          this.router.navigate([this.redirectUrl])
+        );
+      // this.router.navigate([this.redirectUrl]);
     });
   }
 
@@ -107,11 +101,12 @@ export class AuthService {
 
 
   editProfile(user: FormData) {
-    return this.http.put<User>('/users/editProfile', user)
-      .subscribe(res => {
-        this.saveAuthToken(res['token']);
-        this._authToken = this.getAuthToken();
-        this._myUser = res['user'];
+    return this.http.put<User>('/editProfile', user)
+      .subscribe(user => {
+        // this.saveAuthToken(res['token']);
+        // this._authToken = this.getAuthToken();
+        // this._myUser = res['user'];
+        this._myUser = user;
         this.location.back();
       });
   }

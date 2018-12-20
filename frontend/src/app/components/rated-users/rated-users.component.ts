@@ -32,7 +32,7 @@ export class RatedUsersComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     this.userSelectionMethod(5, 0)
       .subscribe((res: User[]) => {
-        this.users = res;
+        this.users = res['data'];
       });
   }
 

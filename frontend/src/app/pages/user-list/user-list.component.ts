@@ -17,7 +17,6 @@ export class UserListComponent implements OnInit {
 
   public users: User[] = [];
 
-  private currentPage = 0;
   public scrollCallback;
 
   constructor(private usersService: UsersService) { }
@@ -29,13 +28,12 @@ export class UserListComponent implements OnInit {
     this.scrollCallback = this.nextPage.bind(this);
   }
 
-  nextPage(maxCount: number) {
-    return this.userSelectionMethod(maxCount, this.currentPage)
+  nextPage(maxCount: number, currentPage: number) {
+    return this.userSelectionMethod(maxCount, currentPage)
       .pipe(
         map((res: User[]) => {
-          this.users = this.users.concat(res);
-          this.currentPage++;
+          this.users = this.users.concat(res['data']);
+          return res;
         }));
   }
-
 }

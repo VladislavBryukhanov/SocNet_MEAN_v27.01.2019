@@ -10,12 +10,12 @@ export class AnonGuardService implements CanActivate {
   constructor(private authService: AuthService, private router: Router) { }
 
   canActivate(): boolean {
-    if (this.authService.isAuthenticated) {
-      this.router.navigate(['/user_list']);
+    if (this.authService.myUser) {
+      this.router.navigate([this.authService.redirectUrl]);
     } else {
-      this.authService.autoSignIn()
+      this.authService.getProfile()
         .subscribe(_ => {
-          this.router.navigate(['/user_list']);
+          this.router.navigate([this.authService.redirectUrl]);
         }, err => {
           if (err.status === 401) {
             console.log('Unauthorized');

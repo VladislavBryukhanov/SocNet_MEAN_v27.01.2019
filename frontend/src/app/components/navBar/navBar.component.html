@@ -1,6 +1,6 @@
 <div class="navBar">
 
-  <ng-template [ngIf]="!this.authService.isAuthenticated" [ngIfElse]="loggedIn">
+  <ng-template [ngIf]="!this.authService.myUser" [ngIfElse]="loggedIn">
     <div  class="navigation">
         <a routerLink="/">sign in</a>
         <a routerLink="/sign_up">sign up</a>
