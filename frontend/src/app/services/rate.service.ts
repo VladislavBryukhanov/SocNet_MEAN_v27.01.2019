@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/index';
 import {Rate} from '../models/rate';
-import {User} from '../models/user';
+import {PaginatedUsers} from "../models/paginatedUsers";
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +14,8 @@ export class RateService {
   getRatedUsers(itemId: string,
                 isPositive: boolean,
                 limit: number = 1,
-                currentPage: number = 0): Observable<User[]> {
-      return this.http.get<User[]>(
+                currentPage: number = 0): Observable<PaginatedUsers> {
+      return this.http.get<PaginatedUsers>(
         `/rate/getRatedUsers/${itemId}&${isPositive}&${limit}&${currentPage * limit}`);
   }
 
