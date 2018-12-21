@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/index';
 import {Rate} from '../models/rate';
 import {PaginatedUsers} from "../models/paginatedUsers";
+import {FullRateInfo} from "../models/fullRateInfo";
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,7 @@ export class RateService {
         `/rate/getRatedUsers/${itemId}&${isPositive}&${limit}&${currentPage * limit}`);
   }
 
-  getRate(itemId: string, userId: string): Observable<Object> {
+  getRate(itemId: string, userId: string): Observable<FullRateInfo> {
     return this.http.get(`/rate/getRateCounter/${itemId}&${userId}`);
   }
 

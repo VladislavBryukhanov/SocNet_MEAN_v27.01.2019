@@ -10,7 +10,7 @@ const actions = {
   DISLIKE: 'dislike'
 };
 
-router.get('/getRatedUsers/:itemId&:isPositive&:limit&:offset', bodyParser.json(), async(request, response) => {
+router.get('/getRatedUsers/:itemId&:isPositive&:limit&:offset', bodyParser.json(), async (request, response) => {
     const itemId = request.params.itemId;
     const isPositive = request.params.isPositive;
     const populate = {

@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Rate = require('./rate');
+const Comment = require('./comment');
 
 const blogSchema = mongoose.Schema({
     owner: {
@@ -17,7 +19,9 @@ const blogSchema = mongoose.Schema({
     date: {
         type: Date,
         default: Date.now
-    }
+    },
+    rate: [Rate.schema],
+    comments: [Comment.schema]
 });
 
 module.exports = mongoose.model("Blog", blogSchema);

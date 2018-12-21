@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {RateService} from '../../services/rate.service';
 import {AuthService} from '../../services/auth.service';
 import {Rate} from '../../models/rate';
+import {FullRateInfo} from "../../models/fullRateInfo";
 
 enum actions {
   LIKE = 'like',
@@ -17,6 +18,8 @@ export class RateComponent implements OnInit {
 
   @Input()
   public itemId: string;
+  @Input()
+  public rate: FullRateInfo;
 
   public likeCounter: number;
   public dislikeCounter: number;
@@ -30,7 +33,8 @@ export class RateComponent implements OnInit {
   constructor(private rateService: RateService, private authService: AuthService) { }
 
   ngOnInit() {
-    this.getPostRate();
+    // this.getPostRate();
+    this.destructureRate(this.rate);
   }
 
   // true = like, false = dislike
@@ -41,22 +45,25 @@ export class RateComponent implements OnInit {
       this.itemId
     )).subscribe(_ => {
         this.getPostRate();
-      });
+    });
   }
 
   getPostRate() {
     this.rateService.getRate(this.itemId, this.authService.myUser._id)
       .subscribe(res => {
-        this.likeCounter = res['likeCounter'];
-        this.dislikeCounter = res['dislikeCounter'];
-
-        res['myAction'] === actions.LIKE ?
-          this.meLike = true : this.meLike = false;
-        res['myAction'] === actions.DISLIKE ?
-          this.meDislike = true : this.meDislike = false;
+        this.destructureRate(res);
       });
   }
 
+  destructureRate(rate) {
+    this.likeCounter = rate.likeCounter;
+    this.dislikeCounter = rate.dislikeCounter;
+
+    rate.myAction === actions.LIKE ?
+      this.meLike = true : this.meLike = false;
+    rate.myAction === actions.DISLIKE ?
+      this.meDislike = true : this.meDislike = false;
+  }
   // true = like, false = dislike
   showRatedUsers(isLike) {
     this.isShowedLikedUsers = isLike;
