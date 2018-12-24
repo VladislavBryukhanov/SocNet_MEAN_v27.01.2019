@@ -9,10 +9,6 @@ const rateSchema = mongoose.Schema({
         type: Boolean,
         required: true
     },
-    itemId: {
-        type: String,
-        required: true
-    },
     lastState: {
         type: Boolean
     },

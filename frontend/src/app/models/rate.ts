@@ -2,12 +2,10 @@ export class Rate {
   public _id: string;
   public userId: string;
   public isPositive: boolean;
-  public itemId: string;
   public lastState: boolean;
 
-  constructor(userId: string, isPositive: boolean, itemId: string) {
+  constructor(userId: string, isPositive: boolean) {
     this.userId = userId;
     this.isPositive = isPositive;
-    this.itemId = itemId;
   }
 }

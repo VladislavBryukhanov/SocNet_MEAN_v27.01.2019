@@ -22,7 +22,7 @@
         </div>
         <article class="textContent">{{post.textContent}}</article>
 
-        <app-rate [itemId]="post._id" [rate]="post.rate"></app-rate>
+        <app-rate [itemId]="post._id" [rate]="post.rate" [targetType]="TargetType.blog"></app-rate>
         <!--<app-comments [itemId]="post._id"></app-comments>-->
 
         <p class="postDate">{{post.date|date:'dd MMM yyyy, HH:mm:ss'}}</p>

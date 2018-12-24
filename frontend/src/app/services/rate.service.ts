@@ -21,11 +21,11 @@ export class RateService {
   }
 
   getRate(itemId: string, userId: string): Observable<FullRateInfo> {
-    return this.http.get(`/rate/getRateCounter/${itemId}&${userId}`);
+    return this.http.get<FullRateInfo>(`/rate/getRateCounter/${itemId}&${userId}`);
   }
 
-  postRate(rate: Rate): Observable<Rate> {
-    return this.http.post<Rate>('/rate/postRate', rate);
+  postRate(rate: Rate, targetType: string, itemId: string): Observable<Rate> {
+    return this.http.post<Rate>('/rate/postRate', {rate, targetType, itemId});
   }
 
 }

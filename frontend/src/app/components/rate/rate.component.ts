@@ -3,11 +3,7 @@ import {RateService} from '../../services/rate.service';
 import {AuthService} from '../../services/auth.service';
 import {Rate} from '../../models/rate';
 import {FullRateInfo} from "../../models/fullRateInfo";
-
-enum actions {
-  LIKE = 'like',
-  DISLIKE = 'dislike'
-}
+import {Actions} from "../../models/constants";
 
 @Component({
   selector: 'app-rate',
@@ -20,6 +16,8 @@ export class RateComponent implements OnInit {
   public itemId: string;
   @Input()
   public rate: FullRateInfo;
+  @Input()
+  public targetType: string;
 
   public likeCounter: number;
   public dislikeCounter: number;
@@ -39,11 +37,11 @@ export class RateComponent implements OnInit {
 
   // true = like, false = dislike
   ratePost(isLike: boolean) {
-    this.rateService.postRate(new Rate(
-      this.authService.myUser._id,
-      isLike,
+    this.rateService.postRate(
+      new Rate(this.authService.myUser._id, isLike),
+      this.targetType,
       this.itemId
-    )).subscribe(_ => {
+    ).subscribe(_ => {
         this.getPostRate();
     });
   }
@@ -59,9 +57,9 @@ export class RateComponent implements OnInit {
     this.likeCounter = rate.likeCounter;
     this.dislikeCounter = rate.dislikeCounter;
 
-    rate.myAction === actions.LIKE ?
+    rate.myAction === Actions.LIKE ?
       this.meLike = true : this.meLike = false;
-    rate.myAction === actions.DISLIKE ?
+    rate.myAction === Actions.DISLIKE ?
       this.meDislike = true : this.meDislike = false;
   }
   // true = like, false = dislike

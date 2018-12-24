@@ -144,6 +144,7 @@ router.get('/getBlog/:id&:limit&:offset', async (request, response) => {
             balance: { $sum: "$rate" }
         }}
     ]);*/
+
     Rate.aggregate([
         { $match: {
                 user: id

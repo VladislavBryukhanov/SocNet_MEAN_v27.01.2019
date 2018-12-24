@@ -23,18 +23,21 @@
 
       .imageBlock {
         margin-bottom: 9px;
+        text-align: center;
         img:hover {
           box-shadow: 0 7px 23px 1px grey;
-
         }
         img {
           cursor: pointer;
         }
         .attachedImage {
-          width: 100%;
+          max-width: 100%;
+          max-height: 60%;
+          display: block;
+          margin: auto;
         }
         .attachment{
-          width: 120px;
+          //width: 120px;
           height: 120px;
           border-radius: 3px;
           margin: 10px 20px 10px 0;

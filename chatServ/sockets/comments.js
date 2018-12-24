@@ -15,5 +15,13 @@ module.exports = (server) => {
         client.on('commentAdded', (comment) => {
             io.to(client.room).emit('commentAdded', comment);
         });
+
+        client.on('commentChanged', (comment) => {
+            io.to(client.room).emit('commentChanged', comment);
+        });
+
+        client.on('commentRemoved', (comment) => {
+            io.to(client.room).emit('commentRemoved', comment);
+        })
     });
 };
