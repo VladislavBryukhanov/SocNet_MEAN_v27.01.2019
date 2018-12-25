@@ -1,13 +1,102 @@
 const express = require('express');
 const router = express.Router();
 const Rate = require('../models/rate');
+const Blog = require('../models/blog');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const findWithPaging = require('../common/paging');
 
-const actions = {
-  LIKE: 'like',
-  DISLIKE: 'dislike'
+const actions = require('../common/constants').actions;
+const targetType = require('../common/constants').targetType;
+
+const postRate = async (Model, request) => {
+    const { body, user } = request;
+
+/*    const prevRate = await Model.findOne({
+        _id: body.itemId
+    }).populate({
+        path: 'rate',
+        match: {user: body.user}
+    }).then(res => res.rate);*/
+
+    // const prevRate = await Model.aggregate([
+    //     {
+    //         $match: {
+    //             _id: mongoose.Types.ObjectId(body.itemId)
+    //         }
+    //     },
+    //     {
+    //         $lookup: {
+    //             from: "images",
+    //             localField: "attachedFiles",
+    //             foreignField: "_id",
+    //             as: "attachedFiles"
+    //         }
+    //     },
+    // ]).then(res => res[0].attachedFiles);
+ /*   const prevRate = await Model.aggregate([
+        {
+            $match: {
+                _id: mongoose.Types.ObjectId(body.itemId)
+            }
+        },
+        {
+            $lookup: {
+                from: "rates",
+                localField: "rate",
+                foreignField: "_id",
+                as: "rate",
+            },
+            $match: {
+                "project.rates.user": body.user
+            }
+        },
+    ]).then(res => res[0].rate);*/
+    const prevRate = await Model.aggregate([
+        {
+            $match: {
+                _id: mongoose.Types.ObjectId(body.itemId)
+            }
+        },
+        {
+            $lookup: {
+                from: "rates",
+                localField: "rate",
+                foreignField: "_id",
+                as: "rate"
+            },
+            pipeline: [
+                {
+                    $match: {
+                        $expr: {
+                            $and: [
+                                { $eq: ["$user", body.user]},
+                                { $eq: ["$user", user]}
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+    ]).then(res => res[0].rate);
+    console.log(prevRate);
+
+    // const prevRate = await Rate.findOne({
+    //     user: mongoose.Types.ObjectId(request.body.userId),
+    //     itemId: request.body.itemId
+    // });
+    if (prevRate) {
+        if (prevRate.isPositive !== body.isPositive) {
+            body.lastState = prevRate.isPositive;
+            return (await Rate.findOneAndUpdate({_id: prevRate._id}, body,
+                { upsert: true, new: true, setDefaultsOnInsert: true }));
+        } else {
+            const rate = await Rate.findOneAndDelete({_id: prevRate._id});
+
+        }
+    } else {
+        return (await Rate.create(body));
+    }
 };
 
 router.get('/getRatedUsers/:itemId&:isPositive&:limit&:offset', bodyParser.json(), async (request, response) => {
@@ -35,21 +124,25 @@ router.get('/getRateCounter/:itemId&:userId', async (request, response) => {
 });
 
 router.post('/postRate', async (request, response) => {
-    request.body.user = mongoose.Types.ObjectId(request.body.userId);
-    const prevRate = await Rate.findOne({
-        user: mongoose.Types.ObjectId(request.body.userId),
-        itemId: request.body.itemId
-    });
-    if (prevRate) {
-        if (prevRate.isPositive !== request.body.isPositive) {
-            request.body.lastState = prevRate.isPositive;
-            response.send(await Rate.findOneAndUpdate({_id: prevRate._id}, request.body,
-                { upsert: true, new: true, setDefaultsOnInsert: true }));
-        } else {
-            response.send(await Rate.findOneAndDelete({_id: prevRate._id}));
+    request.body.user = mongoose.Types.ObjectId(request.body.rate.userId);
+    // const itemId = request.body.itemId;
+    const typeTarget = request.body.targetType;
+
+    switch(typeTarget) {
+        case targetType.blog: {
+            const res = await postRate(Blog, request);
+            console.log(res);
+            return response.sendStatus(res);
         }
-    } else {
-        response.send(await Rate.create(request.body));
+        case targetType.comment: {
+            return response.sendStatus(500);
+        }
+        case targetType.image: {
+            return response.sendStatus(500);
+        }
+        default: {
+            return response.sendStatus(400);
+        }
     }
 });
 

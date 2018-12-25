@@ -13,6 +13,8 @@ const sharp = require('sharp');
 const findWithPaging = require('../common/paging');
 const multer = require('multer');
 
+const actions = require('../common/constants').actions;
+
 const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
@@ -67,10 +69,7 @@ const fileResizingAndSaving = async (files) => {
 
 const getRateAndComments = async (items, user) => {
     // todo import from rate
-    const actions = {
-        LIKE: 'like',
-        DISLIKE: 'dislike'
-    };
+
     const queries = [];
     const updatedBlogPayload = [];
 
@@ -79,6 +78,7 @@ const getRateAndComments = async (items, user) => {
         let commentsCounter = Comment.count({itemId});
         let isCommentedByMe = !!Comment.findOne({itemId, user});
 
+        // TODO MB Rate.find({itemId}, 'isPositive') and local calculation instead 3 query
         let likeCounter = Rate.count({itemId, isPositive: true});
         let dislikeCounter = Rate.count({itemId, isPositive: false});
         let myAction = Rate.findOne({itemId, user})

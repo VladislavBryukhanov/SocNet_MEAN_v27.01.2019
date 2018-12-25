@@ -3,7 +3,7 @@ const User = require('../models/user');
 const authTokenAccess = (unless) => {
     return async (request, response, next) => {
         if(unless.includes(request.path)) {
-            next();
+            return next();
         }
 
         if (await User.findOne({
