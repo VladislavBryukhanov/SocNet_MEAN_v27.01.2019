@@ -44,7 +44,7 @@ const fileResizingAndSaving = async (files) => {
                 imageUploading.push(
                     sharp(file.buffer)
                         .resize(null, sizeMode.size)
-                        .toFile(`public/blogs/${sizeMode.name}.${filename}`)
+                        .toFile(`public/blogs/${sizeMode.name}/${filename}`)
                 )
             });
 
@@ -145,11 +145,41 @@ router.get('/getBlog/:id&:limit&:offset', async (request, response) => {
         }}
     ]);*/
 
-    Rate.aggregate([
-        { $match: {
-                user: id
-            }},
-        { $count: "count"}
+    Blog.aggregate([
+        {
+            $match: {
+                owner: request.params.id
+            }
+        },
+        { "$unwind": "$rate" },
+        {
+            $lookup: {
+                from: "rates",
+                localField: 'rate',
+                foreignField: '_id',
+                as: "56hjudtryhjngfyj"
+            }
+        },
+        // {
+        //     $group:
+        //         {
+        //             _id: "$rate",
+        //             "likeCounter": {
+        //                 $sum: {
+        //                     $cond: [
+        //                         { isPositive: true}, 1, 0
+        //                     ]
+        //                 }
+        //             },
+        //             "dislikeCounter": {
+        //                 $sum: {
+        //                         $cond: [
+        //                             { isPositive: false}, 0, 1
+        //                         ]
+        //                     }
+        //             },
+        //         }
+        // }
     ], function (err, result) {
         if (err) {
             console.log(err);

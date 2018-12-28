@@ -55,47 +55,62 @@ const postRate = async (Model, request) => {
     const prevRate = await Model.aggregate([
         {
             $match: {
-                _id: mongoose.Types.ObjectId(body.itemId)
+                _id: body.itemId
             }
         },
         {
             $lookup: {
                 from: "rates",
-                localField: "rate",
-                foreignField: "_id",
-                as: "rate"
-            },
-            pipeline: [
-                {
-                    $match: {
-                        $expr: {
-                            $and: [
-                                { $eq: ["$user", body.user]},
-                                { $eq: ["$user", user]}
-                            ]
+                let: {
+                    user: body.rate.userId
+                },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$user", "$$user"]},
+                                ]
+                            }
                         }
                     }
-                }
-            ]
+                ],
+                as: "rate"
+            }
         },
-    ]).then(res => res[0].rate);
+    ]).then(res => res[0]);
     console.log(prevRate);
+    // res[0] - $match found only one value by blog id
+    // rate[0] - $pipeline + $match found only one value by userId
 
     // const prevRate = await Rate.findOne({
     //     user: mongoose.Types.ObjectId(request.body.userId),
     //     itemId: request.body.itemId
     // });
     if (prevRate) {
-        if (prevRate.isPositive !== body.isPositive) {
-            body.lastState = prevRate.isPositive;
-            return (await Rate.findOneAndUpdate({_id: prevRate._id}, body,
+        if (prevRate.isPositive !== body.rate.isPositive) {
+            body.rate.lastState = prevRate.isPositive;
+            return (await Rate.findOneAndUpdate({_id: prevRate._id}, body.rate,
                 { upsert: true, new: true, setDefaultsOnInsert: true }));
         } else {
-            const rate = await Rate.findOneAndDelete({_id: prevRate._id});
-
+            await Model.updateOne(
+                {_id: user._id},
+                {
+                    $pull: {_id: prevRate._id}
+                });
+            return await Rate.findOneAndDelete({_id: prevRate._id});
         }
     } else {
-        return (await Rate.create(body));
+        const rate = await Rate.create(body.rate);
+        console.log(user);
+        let resu = await Model.updateOne(
+            {_id: mongoose.Types.ObjectId(body.itemId)},
+            {
+                $push: {rate: rate._id}
+            });
+        console.log(resu);
+        return rate;
+
     }
 };
 
@@ -124,7 +139,7 @@ router.get('/getRateCounter/:itemId&:userId', async (request, response) => {
 });
 
 router.post('/postRate', async (request, response) => {
-    request.body.user = mongoose.Types.ObjectId(request.body.rate.userId);
+    request.body.rate.user = mongoose.Types.ObjectId(request.body.rate.userId);
     // const itemId = request.body.itemId;
     const typeTarget = request.body.targetType;
 
@@ -132,7 +147,7 @@ router.post('/postRate', async (request, response) => {
         case targetType.blog: {
             const res = await postRate(Blog, request);
             console.log(res);
-            return response.sendStatus(res);
+            return response.send(res);
         }
         case targetType.comment: {
             return response.sendStatus(500);

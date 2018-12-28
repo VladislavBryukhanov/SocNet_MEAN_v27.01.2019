@@ -38,7 +38,7 @@ const avatarResizingAndSaving = async (avatar) => {
         imageUploading.push(
             sharp(avatar.buffer)
                 .resize(null, sizeMode.size)
-                .toFile(`public/avatars/${sizeMode.name}.${filename}`)
+                .toFile(`public/avatars/${sizeMode.name}/${filename}`)
         )
     });
 
@@ -75,8 +75,7 @@ router.get('/getProfile', async (request, response) => {
         role: request.user.role,
         session_hash: request.user.session_hash
     }).populate('avatar');
-    if (user) {
-       response.send(user);
+    if (user) {       response.send(user);
     } else {
        response.sendStatus(401);
     }
