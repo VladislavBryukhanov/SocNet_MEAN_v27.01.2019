@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const findWithPaging = require('../common/paging');
 
-const actions = require('../common/constants').actions;
+// const actions = require('../common/constants').actions;
 const targetType = require('../common/constants').targetType;
 
 const postRate = async (Model, request) => {
@@ -79,7 +79,7 @@ const postRate = async (Model, request) => {
             }
         },
     ]).then(res => res[0]);
-    console.log(prevRate);
+    console.log(prevRate, 'prev');
     // res[0] - $match found only one value by blog id
     // rate[0] - $pipeline + $match found only one value by userId
 
@@ -126,7 +126,7 @@ router.get('/getRatedUsers/:itemId&:isPositive&:limit&:offset', bodyParser.json(
     res.data.length > 0 ? response.send(res) : response.sendStatus(404);
 });
 
-router.get('/getRateCounter/:itemId&:userId', async (request, response) => {
+/*router.get('/getRateCounter/:itemId&:userId', async (request, response) => {
     const itemId = request.params.itemId;
     const user = mongoose.Types.ObjectId(request.params.userId);
 
@@ -136,7 +136,7 @@ router.get('/getRateCounter/:itemId&:userId', async (request, response) => {
         : await Rate.findOne({itemId, user, isPositive: false}) ? actions.DISLIKE : null;
 
     response.send({likeCounter, dislikeCounter, myAction});
-});
+});*/
 
 router.post('/postRate', async (request, response) => {
     request.body.rate.user = mongoose.Types.ObjectId(request.body.rate.userId);

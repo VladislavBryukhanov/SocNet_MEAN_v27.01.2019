@@ -6,6 +6,7 @@ const Blog = require('../models/blog');
 const Image = require('../models/image');
 const Comment = require('../models/comment');
 const mongoose = require('mongoose');
+const objId = mongoose.Types.ObjectId;
 const _ = require('lodash');
 const fs = require('fs');
 const uuid = require('uuid');
@@ -67,130 +68,115 @@ const fileResizingAndSaving = async (files) => {
     return attachedFiles;
 };
 
-const getRateAndComments = async (items, user) => {
-    // todo import from rate
-
-    const queries = [];
-    const updatedBlogPayload = [];
-
-    items.forEach(item => {
-        const itemId = item._id;
-        let commentsCounter = Comment.count({itemId});
-        let isCommentedByMe = !!Comment.findOne({itemId, user});
-
-        // TODO MB Rate.find({itemId}, 'isPositive') and local calculation instead 3 query
-        let likeCounter = Rate.count({itemId, isPositive: true});
-        let dislikeCounter = Rate.count({itemId, isPositive: false});
-        let myAction = Rate.findOne({itemId, user})
-            .then(myAction => {
-                return !myAction ? null
-                    : myAction.isPositive ? actions.LIKE : actions.DISLIKE;
-            });
-
-        queries.push(
-            Promise.all([
-                commentsCounter,
-                isCommentedByMe,
-                likeCounter,
-                dislikeCounter,
-                myAction
-            ]).then(res => {
-                const [
-                    commentsCounter,
-                    isCommentedByMe,
-                    likeCounter,
-                    dislikeCounter,
-                    myAction
-                ] = res;
-
-                const comments = {
-                    count: commentsCounter,
-                    isCommentedByMe
-                };
-
-                const rate = {
-                    likeCounter,
-                    dislikeCounter,
-                    myAction
-                };
-
-                updatedBlogPayload.push({
-                    ...item.toObject(),
-                    comments,
-                    rate
-                });
-            }));
-    });
-
-    await Promise.all(queries);
-
-    return updatedBlogPayload;
-};
-
-
-//TODO paging func
-router.get('/getBlog/:id&:limit&:offset', async (request, response) => {
-    // const id = request.params.id;
-    const id = mongoose.Types.ObjectId(request.params.id);
-
-    let res = await findWithPaging(request.params, Blog, {owner: id}, 'attachedFiles');
-  /*  const result = await Blog.aggregate([
-        { $match: {
-                owner: id
-            }},
-        { $unwind: "$rate" },
-        { $project: {
-            user: "$owner",
-            balance: { $sum: "$rate" }
-        }}
-    ]);*/
-
-    Blog.aggregate([
+const appendRateAndComments = async (id, user, items) => {
+    // TODO find of 8 blogs and this to one query - model.find + aggregate or full query = aggregate
+    const idOfposts = items.map(item => objId(item.id));
+    let rate = await Blog.aggregate([
         {
             $match: {
-                owner: request.params.id
+                _id: {
+                    $in: idOfposts
+                }
             }
         },
-        { "$unwind": "$rate" },
         {
             $lookup: {
                 from: "rates",
                 localField: 'rate',
                 foreignField: '_id',
-                as: "56hjudtryhjngfyj"
+                as: "rate"
             }
         },
-        // {
-        //     $group:
-        //         {
-        //             _id: "$rate",
-        //             "likeCounter": {
-        //                 $sum: {
-        //                     $cond: [
-        //                         { isPositive: true}, 1, 0
-        //                     ]
-        //                 }
-        //             },
-        //             "dislikeCounter": {
-        //                 $sum: {
-        //                         $cond: [
-        //                             { isPositive: false}, 0, 1
-        //                         ]
-        //                     }
-        //             },
-        //         }
-        // }
-    ], function (err, result) {
-        if (err) {
-            console.log(err);
-            return;
+        {
+            "$project": {
+                "_id": "$_id",
+                "likeCounter": {
+                    "$size": {
+                        "$filter": {
+                            "input": "$rate",
+                            "cond": { "$eq": [ "$$this.isPositive", true ] }
+                        }
+                    }
+                },
+                "dislikeCounter": {
+                    "$size": {
+                        "$filter": {
+                            "input": "$rate",
+                            "cond": { "$eq": [ "$$this.isPositive", false ] }
+                        }
+                    }
+                },
+                "myAction": {
+                    "$filter": {
+                        "input": "$rate",
+                        "cond": { "$eq": [ "$$this.user", user ] }
+                    }
+                }
+            }
         }
-        console.log(result, '++++++++++++++++++++++++++++++++');
-    });
+    ]);
 
-    // console.log(result, '++++++++++++++++++++++++++++++++');
-    // res.data = await getRateAndComments(res.data, request.user._id);
-    res.data.length > 0 ? response.send(res) : response.sendStatus(404);
+    //TODO comment and rate to one aggregation
+
+    let comments = await Blog.aggregate([
+        {
+            $match: {
+                _id: {
+                    $in: idOfposts
+                }
+            }
+        },
+        {
+            $lookup: {
+                from: "comments",
+                localField: 'comments',
+                foreignField: '_id',
+                as: "comments"
+            }
+        },
+        {
+            "$project": {
+                "_id": "$_id",
+                "commentsCounter": {
+                    "$size": "$comments"
+                },
+                "isCommentedByMe": {
+                    "$filter": {
+                        "input": "$comments",
+                        "cond": { "$eq": [ "$$this.user", user ] }
+                    }
+                }
+            }
+        }
+    ]);
+
+    return items.map(post => {
+        const rateInfo = rate.find(rate => rate._id.equals(post._id));
+        rateInfo.myAction = _.isEmpty(rateInfo.myAction) ? null
+            : rateInfo.myAction[0].isPositive ? actions.LIKE : actions.DISLIKE;
+
+        const commentsInfo = comments.find(comment => comment._id.equals(post._id));
+        commentsInfo.isCommentedByMe = !_.isEmpty(commentsInfo.isCommentedByMe);
+        post.comments = commentsInfo;
+
+        return {...post.toObject(), rate: rateInfo, comments: commentsInfo};
+    });
+};
+
+//TODO paging func
+router.get('/getBlog/:id&:limit&:offset', async (request, response) => {
+    const id = objId(request.params.id);
+    const user = objId(request.user._id);
+
+    let res = await findWithPaging(request.params, Blog, {owner: id}, 'attachedFiles');
+    if (_.isEmpty(res)) {
+        return response.sendStatus(404)
+    }
+
+    // aggregate lookup will populate all child rate is it normal? and will remove them and return actual data
+    // multiple count request vs $match
+    res.data = await appendRateAndComments(request.params.id, user, res.data);
+    return response.send(res);
 });
 
 router.get('/getPost/:postId', async(request, response) => {
@@ -249,7 +235,7 @@ router.put('/editPost', upload.array('files', 12), async (request, response) => 
     }
 
     const blog = await Blog.findOneAndUpdate({
-        _id: request.body._id, owner: request.user._id},
+            _id: request.body._id, owner: request.user._id},
         post,
         { "new": true }
     ).populate('attachedFiles');
@@ -266,7 +252,7 @@ router.delete('/deletePost/:_id', async (request, response) => {
             fs.unlink(`public/${filePath + fileName}`, err => console.log(err));
             blogFileSize.forEach(sizeMode => {
                 fs.unlink(`public/${filePath + sizeMode.name}.${fileName}`,
-                        err => console.log(err));
+                    err => console.log(err));
             });
             Image.findOneAndDelete({_id: file._id})
                 .catch(err => console.log(err));
