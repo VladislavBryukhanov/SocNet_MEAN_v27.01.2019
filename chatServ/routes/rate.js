@@ -4,89 +4,54 @@ const Rate = require('../models/rate');
 const Blog = require('../models/blog');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const objId = mongoose.Types.ObjectId;
+const _ = require("lodash");
 const findWithPaging = require('../common/paging');
 
-// const actions = require('../common/constants').actions;
+const actions = require('../common/constants').actions;
 const targetType = require('../common/constants').targetType;
+
+//TODO aggregation to common module
 
 const postRate = async (Model, request) => {
     const { body, user } = request;
 
-/*    const prevRate = await Model.findOne({
-        _id: body.itemId
-    }).populate({
-        path: 'rate',
-        match: {user: body.user}
-    }).then(res => res.rate);*/
-
-    // const prevRate = await Model.aggregate([
-    //     {
-    //         $match: {
-    //             _id: mongoose.Types.ObjectId(body.itemId)
-    //         }
-    //     },
-    //     {
-    //         $lookup: {
-    //             from: "images",
-    //             localField: "attachedFiles",
-    //             foreignField: "_id",
-    //             as: "attachedFiles"
-    //         }
-    //     },
-    // ]).then(res => res[0].attachedFiles);
- /*   const prevRate = await Model.aggregate([
-        {
-            $match: {
-                _id: mongoose.Types.ObjectId(body.itemId)
-            }
-        },
-        {
-            $lookup: {
-                from: "rates",
-                localField: "rate",
-                foreignField: "_id",
-                as: "rate",
-            },
-            $match: {
-                "project.rates.user": body.user
-            }
-        },
-    ]).then(res => res[0].rate);*/
     const prevRate = await Model.aggregate([
         {
             $match: {
-                _id: body.itemId
+                _id: objId(body.itemId)
             }
         },
         {
             $lookup: {
                 from: "rates",
-                let: {
-                    user: body.rate.userId
-                },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: {
-                                $and: [
-                                    { $eq: ["$user", "$$user"]},
-                                ]
-                            }
-                        }
-                    }
-                ],
+                localField: 'rate',
+                foreignField: '_id',
                 as: "rate"
             }
         },
-    ]).then(res => res[0]);
-    console.log(prevRate, 'prev');
+        {
+            "$project": {
+                "rate": {
+                    "$filter": {
+                        "input": "$rate",
+                        "cond": {"$eq": ["$$this.user", objId(body.rate.userId)]}
+                    }
+                }
+            }
+        }
+    ]).then(res => {
+        if (res[0] && !_.isEmpty(res[0].rate)) {
+            return res[0].rate[0];
+        } else {
+            return null;
+        }
+    });
+    console.log('PREV_RATE');
     // res[0] - $match found only one value by blog id
     // rate[0] - $pipeline + $match found only one value by userId
 
-    // const prevRate = await Rate.findOne({
-    //     user: mongoose.Types.ObjectId(request.body.userId),
-    //     itemId: request.body.itemId
-    // });
+    request.body.rate.user = objId(body.rate.userId);
     if (prevRate) {
         if (prevRate.isPositive !== body.rate.isPositive) {
             body.rate.lastState = prevRate.isPositive;
@@ -94,28 +59,25 @@ const postRate = async (Model, request) => {
                 { upsert: true, new: true, setDefaultsOnInsert: true }));
         } else {
             await Model.updateOne(
-                {_id: user._id},
+                {_id: objId(body.itemId)},
                 {
-                    $pull: {_id: prevRate._id}
+                    $pull: {rate: prevRate._id}
                 });
             return await Rate.findOneAndDelete({_id: prevRate._id});
         }
     } else {
         const rate = await Rate.create(body.rate);
-        console.log(user);
-        let resu = await Model.updateOne(
-            {_id: mongoose.Types.ObjectId(body.itemId)},
+        await Model.updateOne(
+            {_id: objId(body.itemId)},
             {
                 $push: {rate: rate._id}
             });
-        console.log(resu);
         return rate;
-
     }
 };
 
 router.get('/getRatedUsers/:itemId&:isPositive&:limit&:offset', bodyParser.json(), async (request, response) => {
-    const itemId = request.params.itemId;
+    /*const itemId = request.params.itemId;
     const isPositive = request.params.isPositive;
     const populate = {
         path: 'user',
@@ -123,30 +85,174 @@ router.get('/getRatedUsers/:itemId&:isPositive&:limit&:offset', bodyParser.json(
     };
     const res = await findWithPaging(request.params, Rate, {itemId, isPositive}, populate);
     res.data = res.data.map( item => item.user );
+    res.data.length > 0 ? response.send(res) : response.sendStatus(404);*/
+
+    //Todo get item type and use it instead "Blog", MODEL must be variable
+    const itemId = objId(request.params.itemId);
+    const isPositive = request.params.isPositive === 'true';
+    const limit = Number(request.params.limit);
+    const offset = Number(request.params.offset);
+    const ratedUsers = await Blog.aggregate([
+        {
+            $match: {
+                _id: itemId
+            }
+        },
+        {
+            $lookup: {
+                from: "rates",
+                localField: 'rate',
+                foreignField: '_id',
+                as: "rate"
+            }
+        },
+        {
+            "$project": {
+                "rate": {
+                    "$filter": {
+                        "input": "$rate",
+                        "cond": {"$eq": ["$$this.isPositive", isPositive]}
+                    }
+                },
+                "count": {
+                    "$size": "$rate"
+                }
+            }
+        },
+        {$unwind: "$rate"},
+        {$sort: {"rate.date": -1}},
+        {$skip: offset},
+        {$limit: limit},
+        {
+            $replaceRoot: {
+                newRoot: "$rate"
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: 'user',
+                foreignField: '_id',
+                as: "user"
+            }
+        },
+        {$unwind: "$user"},
+        {
+            $replaceRoot: {
+                newRoot: "$user"
+            }
+        },
+        {
+            $lookup: {
+                from: "images",
+                localField: 'avatar',
+                foreignField: '_id',
+                as: "avatar"
+            }
+        },
+        {$unwind: "$avatar"},
+    ]);
+
+    // TODO count to prev aggregation
+    const count = await Blog.aggregate([
+        {
+            $match: {
+                _id: objId(request.params.itemId)
+            }
+        },
+        {
+            $lookup: {
+                from: "rates",
+                localField: 'rate',
+                foreignField: '_id',
+                as: "rate"
+            }
+        },
+        {
+            "$project": {
+                "count": {
+                    "$size": {
+                        "$filter": {
+                            "input": "$rate",
+                            "cond": { "$eq": [ "$$this.isPositive", isPositive ] }
+                        }
+                    }
+                }
+            }
+        }
+    ]).then(res => res[0].count);
+
+    const res = {
+        data: ratedUsers,
+        count,
+        offset,
+        limit
+    };
     res.data.length > 0 ? response.send(res) : response.sendStatus(404);
 });
 
-/*router.get('/getRateCounter/:itemId&:userId', async (request, response) => {
-    const itemId = request.params.itemId;
-    const user = mongoose.Types.ObjectId(request.params.userId);
+router.get('/getRateCounter/:itemId&:userId', async (request, response) => {
 
-    const likeCounter = await Rate.count({itemId, isPositive: true});
-    const dislikeCounter = await Rate.count({itemId, isPositive: false});
-    const myAction = await Rate.findOne({itemId, user, isPositive: true}) ? actions.LIKE
-        : await Rate.findOne({itemId, user, isPositive: false}) ? actions.DISLIKE : null;
+    //TODO userId? mb from token?
+    //TODO this aggregate equals blogs populated items
 
-    response.send({likeCounter, dislikeCounter, myAction});
-});*/
+    //Todo get item type and use it instead "Blog", MODEL must be variable
+    const rate = await Blog.aggregate([
+        {
+            $match: {
+                _id: objId(request.params.itemId)
+            }
+        },
+        {
+            $lookup: {
+                from: "rates",
+                localField: 'rate',
+                foreignField: '_id',
+                as: "rate"
+            }
+        },
+        {
+            "$project": {
+                "likeCounter": {
+                    "$size": {
+                        "$filter": {
+                            "input": "$rate",
+                            "cond": { "$eq": [ "$$this.isPositive", true ] }
+                        }
+                    }
+                },
+                "dislikeCounter": {
+                    "$size": {
+                        "$filter": {
+                            "input": "$rate",
+                            "cond": { "$eq": [ "$$this.isPositive", false ] }
+                        }
+                    }
+                },
+                "myAction": {
+                    "$filter": {
+                        "input": "$rate",
+                        "cond": { "$eq": [ "$$this.user", objId(request.params.userId) ] }
+                    }
+                }
+            }
+        }
+    ]);
+    const [rateInfo] = rate;
+    rateInfo.myAction = _.isEmpty(rateInfo.myAction) ? null
+        : rateInfo.myAction[0].isPositive ? actions.LIKE : actions.DISLIKE;
+    response.send(rateInfo);
+});
 
 router.post('/postRate', async (request, response) => {
-    request.body.rate.user = mongoose.Types.ObjectId(request.body.rate.userId);
+    // request.body.rate.user = objId(request.body.rate.userId);
     // const itemId = request.body.itemId;
     const typeTarget = request.body.targetType;
 
+    // Todo mongose['Model'] instead switch
     switch(typeTarget) {
         case targetType.blog: {
             const res = await postRate(Blog, request);
-            console.log(res);
             return response.send(res);
         }
         case targetType.comment: {

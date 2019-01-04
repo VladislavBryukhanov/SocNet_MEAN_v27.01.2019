@@ -68,7 +68,7 @@ const fileResizingAndSaving = async (files) => {
     return attachedFiles;
 };
 
-const appendRateAndComments = async (id, user, items) => {
+const appendRateAndComments = async (user, items) => {
     // TODO find of 8 blogs and this to one query - model.find + aggregate or full query = aggregate
     const idOfposts = items.map(item => objId(item.id));
     let rate = await Blog.aggregate([
@@ -175,7 +175,7 @@ router.get('/getBlog/:id&:limit&:offset', async (request, response) => {
 
     // aggregate lookup will populate all child rate is it normal? and will remove them and return actual data
     // multiple count request vs $match
-    res.data = await appendRateAndComments(request.params.id, user, res.data);
+    res.data = await appendRateAndComments(user, res.data);
     return response.send(res);
 });
 
@@ -197,8 +197,11 @@ router.post('/addPost', upload.array('files', 12), async (request, response) => 
         return response.sendStatus(404);
     }
 
+    // TODO mb to one query ?
     let blog = await Blog.create(post);
+    [blog] = await appendRateAndComments(objId(request.user._id), [blog]);
     blog = await Blog.populate(blog, 'attachedFiles');
+
     response.send(blog);
 });
 
