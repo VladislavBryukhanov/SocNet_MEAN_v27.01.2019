@@ -20,7 +20,7 @@ export class CommentsComponent implements OnInit {
   @Input()
   public comments: PaginatedComments;
   @Input()
-  public targetType: string;
+  public targetModel: string;
 
   public commentsCounter;
   public isCommentedByMe;

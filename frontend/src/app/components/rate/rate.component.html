@@ -7,6 +7,7 @@
     <ng-template [ngIf]="isShowedLikedUsers && this.likeCounter">
       <app-rated-users
         class="likeBlock"
+        [targetModel]="targetModel"
         [action]="'liked'"
         [itemId]="itemId"
         [rateCounter]="likeCounter"
@@ -32,6 +33,7 @@
      <ng-template [ngIf]="isShowedDislikedUsers && dislikeCounter">
       <app-rated-users
         class="dislikeBlock"
+        [targetModel]="targetModel"
         [action]="'disliked'"
         [itemId]="itemId"
         [rateCounter]="dislikeCounter"

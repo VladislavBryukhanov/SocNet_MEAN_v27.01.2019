@@ -1,10 +1,10 @@
 export enum Actions {
-    LIKE = 'like',
-    DISLIKE = 'dislike'
+    like = 'like',
+    dislike = 'dislike'
 }
 
-export enum TargetType {
-    blog = 'BLOG',
-    comment = 'COMMENT',
-    image = 'IMAGE',
+export enum TargetModel {
+    Blog = 'Blog',
+    Comment = 'Comment',
+    Image = 'Image',
 }

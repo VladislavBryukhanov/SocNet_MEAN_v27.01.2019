@@ -4,7 +4,7 @@ import {AuthService} from '../../services/auth.service';
 import {ModalService} from '../../services/modal.service';
 import {ImageViewerService} from '../../services/image-viewer.service';
 import {Image} from "../../models/image";
-import {TargetType} from "../../models/constants";
+import {TargetModel} from "../../models/constants";
 
 @Component({
   selector: 'app-blog',
@@ -20,7 +20,7 @@ export class BlogComponent {
   public editFormOpened: string;
   public modalRemovingId = 'confirmPostRemoving';
 
-  public TargetType = TargetType;
+  public targetModel = TargetModel;
 
   constructor(public blogService: BlogService,
               public authService: AuthService,

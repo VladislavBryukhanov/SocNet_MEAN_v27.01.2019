@@ -17,7 +17,7 @@ export class RateComponent implements OnInit {
   @Input()
   public rate: FullRateInfo;
   @Input()
-  public targetType: string;
+  public targetModel: string;
 
   public likeCounter: number;
   public dislikeCounter: number;
@@ -39,7 +39,7 @@ export class RateComponent implements OnInit {
   ratePost(isLike: boolean) {
     this.rateService.postRate(
       new Rate(this.authService.myUser._id, isLike),
-      this.targetType,
+      this.targetModel,
       this.itemId
     ).subscribe(_ => {
         this.getPostRate();
@@ -47,8 +47,11 @@ export class RateComponent implements OnInit {
   }
 
   getPostRate() {
-    this.rateService.getRate(this.itemId, this.authService.myUser._id)
-      .subscribe(res => {
+    this.rateService.getRate(
+      this.itemId,
+      this.targetModel,
+      this.authService.myUser._id
+    ).subscribe(res => {
         this.destructureRate(res);
       });
   }
@@ -57,9 +60,9 @@ export class RateComponent implements OnInit {
     this.likeCounter = rate.likeCounter;
     this.dislikeCounter = rate.dislikeCounter;
 
-    rate.myAction === Actions.LIKE ?
+    rate.myAction === Actions.like ?
       this.meLike = true : this.meLike = false;
-    rate.myAction === Actions.DISLIKE ?
+    rate.myAction === Actions.dislike ?
       this.meDislike = true : this.meDislike = false;
   }
   // true = like, false = dislike

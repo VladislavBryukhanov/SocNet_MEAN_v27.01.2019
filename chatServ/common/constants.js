@@ -1,10 +1,10 @@
 module.exports.actions = {
-    LIKE: 'like',
-    DISLIKE: 'dislike'
+    like: 'like',
+    dislike: 'dislike'
 };
 
-module.exports.targetType = {
-    blog: 'BLOG',
-    comment: 'COMMENT',
-    image: 'IMAGE',
+module.exports.ModelType = {
+    Blog: 'Blog',
+    Comment: 'Comment',
+    Image: 'Image',
 };

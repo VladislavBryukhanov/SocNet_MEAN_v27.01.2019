@@ -6,10 +6,10 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const objId = mongoose.Types.ObjectId;
 const _ = require("lodash");
-const findWithPaging = require('../common/paging');
+// const findWithPaging = require('../common/paging');
 
 const actions = require('../common/constants').actions;
-const targetType = require('../common/constants').targetType;
+const ModelType = require('../common/constants').ModelType;
 
 //TODO aggregation to common module
 
@@ -47,7 +47,6 @@ const postRate = async (Model, request) => {
             return null;
         }
     });
-    console.log('PREV_RATE');
     // res[0] - $match found only one value by blog id
     // rate[0] - $pipeline + $match found only one value by userId
 
@@ -76,7 +75,12 @@ const postRate = async (Model, request) => {
     }
 };
 
-router.get('/getRatedUsers/:itemId&:isPositive&:limit&:offset', bodyParser.json(), async (request, response) => {
+router.get('/getRatedUsers/:itemId&:targetModel&:isPositive&:limit&:offset', bodyParser.json(), async (request, response) => {
+    const modelTarget = request.params.targetModel;
+    if (!ModelType.hasOwnProperty(modelTarget)) {
+        return response.sendStatus(400);
+    }
+    const targetModel = mongoose.model(modelTarget);
     /*const itemId = request.params.itemId;
     const isPositive = request.params.isPositive;
     const populate = {
@@ -92,7 +96,7 @@ router.get('/getRatedUsers/:itemId&:isPositive&:limit&:offset', bodyParser.json(
     const isPositive = request.params.isPositive === 'true';
     const limit = Number(request.params.limit);
     const offset = Number(request.params.offset);
-    const ratedUsers = await Blog.aggregate([
+    const ratedUsers = await targetModel.aggregate([
         {
             $match: {
                 _id: itemId
@@ -191,13 +195,18 @@ router.get('/getRatedUsers/:itemId&:isPositive&:limit&:offset', bodyParser.json(
     res.data.length > 0 ? response.send(res) : response.sendStatus(404);
 });
 
-router.get('/getRateCounter/:itemId&:userId', async (request, response) => {
+router.get('/getRateCounter/:itemId&:targetModel&:userId', async (request, response) => {
+    const modelTarget = request.params.targetModel;
+    if (!ModelType.hasOwnProperty(modelTarget)) {
+        return response.sendStatus(400);
+    }
+    const targetModel = mongoose.model(modelTarget);
 
     //TODO userId? mb from token?
     //TODO this aggregate equals blogs populated items
 
     //Todo get item type and use it instead "Blog", MODEL must be variable
-    const rate = await Blog.aggregate([
+    const rate = await targetModel.aggregate([
         {
             $match: {
                 _id: objId(request.params.itemId)
@@ -240,31 +249,19 @@ router.get('/getRateCounter/:itemId&:userId', async (request, response) => {
     ]);
     const [rateInfo] = rate;
     rateInfo.myAction = _.isEmpty(rateInfo.myAction) ? null
-        : rateInfo.myAction[0].isPositive ? actions.LIKE : actions.DISLIKE;
+        : rateInfo.myAction[0].isPositive ? actions.like : actions.dislike;
     response.send(rateInfo);
 });
 
 router.post('/postRate', async (request, response) => {
-    // request.body.rate.user = objId(request.body.rate.userId);
-    // const itemId = request.body.itemId;
-    const typeTarget = request.body.targetType;
-
-    // Todo mongose['Model'] instead switch
-    switch(typeTarget) {
-        case targetType.blog: {
-            const res = await postRate(Blog, request);
-            return response.send(res);
-        }
-        case targetType.comment: {
-            return response.sendStatus(500);
-        }
-        case targetType.image: {
-            return response.sendStatus(500);
-        }
-        default: {
-            return response.sendStatus(400);
-        }
+    const modelTarget = request.body.targetModel;
+    if (!ModelType.hasOwnProperty(modelTarget)) {
+        return response.sendStatus(400);
     }
+    const targetModel = mongoose.model(modelTarget);
+
+    const res = await postRate(targetModel, request);
+    return response.send(res);
 });
 
 module.exports = router;

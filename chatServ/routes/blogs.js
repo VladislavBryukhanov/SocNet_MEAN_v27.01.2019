@@ -4,7 +4,7 @@ const path = require('path');
 const Rate = require('../models/rate');
 const Blog = require('../models/blog');
 const Image = require('../models/image');
-const Comment = require('../models/comment');
+// const Comment = require('../models/comment');
 const mongoose = require('mongoose');
 const objId = mongoose.Types.ObjectId;
 const _ = require('lodash');
@@ -153,7 +153,7 @@ const appendRateAndComments = async (user, items) => {
     return items.map(post => {
         const rateInfo = rate.find(rate => rate._id.equals(post._id));
         rateInfo.myAction = _.isEmpty(rateInfo.myAction) ? null
-            : rateInfo.myAction[0].isPositive ? actions.LIKE : actions.DISLIKE;
+            : rateInfo.myAction[0].isPositive ? actions.like : actions.dislike;
 
         const commentsInfo = comments.find(comment => comment._id.equals(post._id));
         commentsInfo.isCommentedByMe = !_.isEmpty(commentsInfo.isCommentedByMe);
@@ -163,7 +163,6 @@ const appendRateAndComments = async (user, items) => {
     });
 };
 
-//TODO paging func
 router.get('/getBlog/:id&:limit&:offset', async (request, response) => {
     const id = objId(request.params.id);
     const user = objId(request.user._id);

@@ -13,19 +13,20 @@ export class RateService {
   constructor(private http: HttpClient) { }
 
   getRatedUsers(itemId: string,
+                targetModel: string,
                 isPositive: boolean,
                 limit: number = 1,
                 currentPage: number = 0): Observable<PaginatedUsers> {
       return this.http.get<PaginatedUsers>(
-        `/rate/getRatedUsers/${itemId}&${isPositive}&${limit}&${currentPage * limit}`);
+        `/rate/getRatedUsers/${itemId}&${targetModel}&${isPositive}&${limit}&${currentPage * limit}`);
   }
 
-  getRate(itemId: string, userId: string): Observable<FullRateInfo> {
-    return this.http.get<FullRateInfo>(`/rate/getRateCounter/${itemId}&${userId}`);
+  getRate(itemId: string, targetModel: string, userId: string): Observable<FullRateInfo> {
+    return this.http.get<FullRateInfo>(`/rate/getRateCounter/${itemId}&${targetModel}&${userId}`);
   }
 
-  postRate(rate: Rate, targetType: string, itemId: string): Observable<Rate> {
-    return this.http.post<Rate>('/rate/postRate', {rate, targetType, itemId});
+  postRate(rate: Rate, targetModel: string, itemId: string): Observable<Rate> {
+    return this.http.post<Rate>('/rate/postRate', {rate, targetModel, itemId});
   }
 
 }

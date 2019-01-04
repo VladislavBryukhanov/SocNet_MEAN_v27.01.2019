@@ -10,6 +10,8 @@ import {RateService} from '../../services/rate.service';
 export class RatedUsersComponent implements OnChanges {
 
   @Input()
+  public targetModel: string;
+  @Input()
   public itemId: string;
   @Input()
   public isPositive: boolean;
@@ -25,7 +27,7 @@ export class RatedUsersComponent implements OnChanges {
 
   constructor(private rateService: RateService) {
     this.userSelectionMethod = (maxCount, currentPage) => {
-      return this.rateService.getRatedUsers(this.itemId, this.isPositive, maxCount, currentPage);
+      return this.rateService.getRatedUsers(this.itemId, this.targetModel, this.isPositive, maxCount, currentPage);
     };
   }
 
