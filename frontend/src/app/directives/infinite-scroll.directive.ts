@@ -64,7 +64,7 @@ export class InfiniteScrollDirective implements AfterViewInit {
 
   isScrollOutOfRange(position): boolean {
     return position.scrollHeight - (position.scrollTop + position.clientHeight)
-      < position.clientHeight;
+      < position.clientHeight / 2;
   }
 
   inRangeOfDataCount() {

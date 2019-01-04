@@ -137,7 +137,7 @@ const appendRateAndComments = async (user, items) => {
         {
             "$project": {
                 "_id": "$_id",
-                "commentsCounter": {
+                "count": {
                     "$size": "$comments"
                 },
                 "isCommentedByMe": {

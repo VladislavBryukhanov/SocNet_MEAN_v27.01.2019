@@ -4,6 +4,7 @@ import {AuthService} from '../../services/auth.service';
 import {ImageViewerService} from '../../services/image-viewer.service';
 import {map} from 'rxjs/internal/operators';
 import {Image} from "../../models/image";
+import {PaginatedComments} from "../../models/paginatedComments";
 
 @Component({
   selector: 'app-comments',
@@ -13,8 +14,14 @@ import {Image} from "../../models/image";
 export class CommentsComponent implements OnInit {
 // TODO user can open a few comments which must be saved and opened
 // TODO update counter for every created comment
+
   @Input()
-  itemId: string;
+  public itemId: string;
+  @Input()
+  public comments: PaginatedComments;
+  @Input()
+  public targetType: string;
+
   public commentsCounter;
   public isCommentedByMe;
 
@@ -27,11 +34,14 @@ export class CommentsComponent implements OnInit {
               private imageViewerService: ImageViewerService) { }
 
   ngOnInit() {
-    this.commentsService.getCommentsCounter(this.authService.myUser._id, this.itemId)
-      .subscribe(res => {
-        this.commentsCounter = res['commentsCounter'];
-        this.isCommentedByMe = res['isCommentedByMe'];
-      });
+    // this.commentsService.getCommentsCounter(this.authService.myUser._id, this.itemId)
+    //   .subscribe(res => {
+    //     this.commentsCounter = res['commentsCounter'];
+    //     this.isCommentedByMe = res['isCommentedByMe'];
+    //   });
+    // comments.isCommentedByMe
+    this.commentsCounter = this.comments.count;
+    this.isCommentedByMe = this.comments.isCommentedByMe;
     this.scrollCallback = this.nextPage.bind(this);
   }
 
