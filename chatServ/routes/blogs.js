@@ -1,37 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const path = require('path');
-const Rate = require('../models/rate');
-const Blog = require('../models/blog');
-const Image = require('../models/image');
-// const Comment = require('../models/comment');
 const mongoose = require('mongoose');
 const objId = mongoose.Types.ObjectId;
 const _ = require('lodash');
+const path = require('path');
 const fs = require('fs');
 const uuid = require('uuid');
 const sharp = require('sharp');
+
+const Rate = require('../models/rate');
+const Blog = require('../models/blog');
+const Image = require('../models/image');
+const Comment = require('../models/comment');
 const findWithPaging = require('../common/paging');
-const multer = require('multer');
-
 const actions = require('../common/constants').actions;
+const blogFileSize = require('../common/imageFiles/imagesSize').blogFileSize;
+const maxFileSize = require('../common/imageFiles/imagesSize').maxFileSize;
 
+const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
-    limits: {fileSize: 5 * 1024 * 1024}
+    limits: maxFileSize
 });
-
-const blogFileSize = [
-    {
-        name: 'normal',
-        size: 500
-    },
-    {
-        name: 'min',
-        size: 120
-    }
-];
 
 const fileResizingAndSaving = async (files) => {
     const attachedFiles = [];
@@ -245,6 +236,7 @@ router.put('/editPost', upload.array('files', 12), async (request, response) => 
 });
 
 router.delete('/deletePost/:_id', async (request, response) => {
+    //TODO mb replace to pre (cascade style)
     const deletedItem = await Blog.findOneAndRemove({
         _id: request.params._id, owner: request.user._id
     }).populate('attachedFiles');
@@ -253,14 +245,17 @@ router.delete('/deletePost/:_id', async (request, response) => {
             const {fileName, filePath} = file;
             fs.unlink(`public/${filePath + fileName}`, err => console.log(err));
             blogFileSize.forEach(sizeMode => {
-                fs.unlink(`public/${filePath + sizeMode.name}.${fileName}`,
+                fs.unlink(`public/${filePath + sizeMode.name}/${fileName}`,
                     err => console.log(err));
             });
             Image.findOneAndDelete({_id: file._id})
                 .catch(err => console.log(err));
         });
-        Rate.findOneAndDelete({itemId: deletedItem._id})
+        console.log(deletedItem);
+        Rate.deleteMany({_id: {$in: deletedItem.rate}})
             .catch(err => console.log(err));
+        // Comment.deleteMany({_id: {$in: deletedItem.comments}})
+        //     .catch(err => console.log(err));
     }
     response.send(deletedItem);
 });

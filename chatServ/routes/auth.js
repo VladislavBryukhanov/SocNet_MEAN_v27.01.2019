@@ -1,32 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/user');
-const secret = require('../secret');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const Image = require('../models/image');
+const uuid = require('uuid');
 const path = require('path');
 const fs = require('fs');
-const uuid = require('uuid');
-const multer = require('multer');
 const sharp = require('sharp');
 
+const Image = require('../models/image');
+const User = require('../models/user');
+const secret = require('../secret');
+const avatarFileSize = require('../common/imageFiles/imagesSize').avatarFileSize;
+const maxFileSize = require('../common/imageFiles/imagesSize').maxFileSize;
+
+const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
-    limits: {fileSize: 5 * 1024 * 1024}
+    limits: maxFileSize
 });
-
-const avatarFileSize = [
-    {
-        name: 'min',
-        size: 50
-    },
-    {
-        name: 'normal',
-        size: 240
-    },
-];
 
 // TODO common methods for files inside blogs and users
 const avatarResizingAndSaving = async (avatar) => {
@@ -114,7 +106,7 @@ router.put('/editProfile', upload.single('avatar'), async (request, response) =>
             if(fileName !== 'default.jpg') {
                 fs.unlink(`public/${filePath + fileName}`, err => console.log(err));
                 avatarFileSize.forEach(sizeMode => {
-                    fs.unlink(`public/${filePath + sizeMode.name}.${fileName}`,
+                    fs.unlink(`public/${filePath + sizeMode.name}/${fileName}`,
                         err => console.log(err));
                 });
                 Image.findOneAndDelete({_id: _id})
