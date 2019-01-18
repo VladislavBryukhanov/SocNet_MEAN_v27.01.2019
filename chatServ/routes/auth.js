@@ -2,16 +2,13 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const uuid = require('uuid');
-const path = require('path');
-const fs = require('fs');
-const sharp = require('sharp');
 
-const Image = require('../models/image');
 const User = require('../models/user');
 const secret = require('../secret');
 const avatarFileSize = require('../common/imageFiles/imagesSize').avatarFileSize;
 const maxFileSize = require('../common/imageFiles/imagesSize').maxFileSize;
+const resizeAndSaveImage = require('../common/imageFiles/imageActions').resizeAndSaveImage;
+const deleteAttachedFiles = require('../common/imageFiles/imageActions').deleteAttachedFiles;
 
 const multer = require('multer');
 const storage = multer.memoryStorage();
@@ -19,35 +16,6 @@ const upload = multer({
     storage: storage,
     limits: maxFileSize
 });
-
-// TODO common methods for files inside blogs and users
-const avatarResizingAndSaving = async (avatar) => {
-    let newAvatarId;
-    const imageUploading = [];
-    const filename = `${avatar.fieldname}-${uuid.v1()}${path.extname(avatar.originalname)}`;
-
-    avatarFileSize.forEach(sizeMode => {
-        imageUploading.push(
-            sharp(avatar.buffer)
-                .resize(null, sizeMode.size)
-                .toFile(`public/avatars/${sizeMode.name}/${filename}`)
-        )
-    });
-
-    imageUploading.push(
-        new Promise((resolve, reject) => {
-            fs.writeFile(`public/avatars/${filename}`, avatar.buffer, () => {
-                Image.create({filePath: 'avatars/', fileName: filename})
-                    .then((res) => {
-                        newAvatarId = res._id;
-                        resolve();
-                    });
-            });
-        })
-    );
-    await Promise.all(imageUploading);
-    return newAvatarId;
-};
 
 const getToken = (user) => {
     const payload = {
@@ -98,22 +66,15 @@ router.put('/editProfile', upload.single('avatar'), async (request, response) =>
     const oldProfile = await User.findOne({_id: request.user._id}).populate('avatar');
 
     if(request.file) {
-        request.body.avatar = await avatarResizingAndSaving(request.file);
+        const [avatar] = await resizeAndSaveImage([request.file], 'avatars/', avatarFileSize);
+        request.body.avatar = avatar;
 
         if (oldProfile.avatar) {
-            const {fileName, filePath, _id} = oldProfile.avatar;
-
+            const {fileName} = oldProfile.avatar;
             if(fileName !== 'default.jpg') {
-                fs.unlink(`public/${filePath + fileName}`, err => console.log(err));
-                avatarFileSize.forEach(sizeMode => {
-                    fs.unlink(`public/${filePath + sizeMode.name}/${fileName}`,
-                        err => console.log(err));
-                });
-                Image.findOneAndDelete({_id: _id})
-                    .catch(err => console.log(err));
+                deleteAttachedFiles([oldProfile.avatar], avatarFileSize);
             }
         }
-
     }
     // else {
     //     delete request.body.avatar;

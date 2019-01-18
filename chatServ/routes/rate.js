@@ -13,8 +13,50 @@ const ModelType = require('../common/constants').ModelType;
 
 //TODO aggregation to common module
 
+const getRateInfo = async (Model, condition, user) => {
+    return await Model.aggregate([
+        {
+            $match: condition
+        },
+        {
+            $lookup: {
+                from: "rates",
+                localField: 'rate',
+                foreignField: '_id',
+                as: "rate"
+            }
+        },
+        {
+            "$project": {
+                "likeCounter": {
+                    "$size": {
+                        "$filter": {
+                            "input": "$rate",
+                            "cond": { "$eq": [ "$$this.isPositive", true ] }
+                        }
+                    }
+                },
+                "dislikeCounter": {
+                    "$size": {
+                        "$filter": {
+                            "input": "$rate",
+                            "cond": { "$eq": [ "$$this.isPositive", false ] }
+                        }
+                    }
+                },
+                "myAction": {
+                    "$filter": {
+                        "input": "$rate",
+                        "cond": { "$eq": [ "$$this.user", user ] }
+                    }
+                }
+            }
+        }
+    ]);
+};
+
 const postRate = async (Model, request) => {
-    const { body, user } = request;
+    const { body } = request;
 
     const prevRate = await Model.aggregate([
         {
@@ -39,10 +81,10 @@ const postRate = async (Model, request) => {
                     }
                 }
             }
-        }
-    ]).then(res => {
-        if (res[0] && !_.isEmpty(res[0].rate)) {
-            return res[0].rate[0];
+        },
+    ]).then(([res]) => {
+        if (res && !_.isEmpty(res.rate)) {
+            return res.rate[0];
         } else {
             return null;
         }
@@ -91,7 +133,6 @@ router.get('/getRatedUsers/:itemId&:targetModel&:isPositive&:limit&:offset', bod
     res.data = res.data.map( item => item.user );
     res.data.length > 0 ? response.send(res) : response.sendStatus(404);*/
 
-    //Todo get item type and use it instead "Blog", MODEL must be variable
     const itemId = objId(request.params.itemId);
     const isPositive = request.params.isPositive === 'true';
     const limit = Number(request.params.limit);
@@ -203,50 +244,11 @@ router.get('/getRateCounter/:itemId&:targetModel&:userId', async (request, respo
     const targetModel = mongoose.model(modelTarget);
 
     //TODO userId? mb from token?
-    //TODO this aggregate equals blogs populated items
-
-    //Todo get item type and use it instead "Blog", MODEL must be variable
-    const rate = await targetModel.aggregate([
-        {
-            $match: {
-                _id: objId(request.params.itemId)
-            }
-        },
-        {
-            $lookup: {
-                from: "rates",
-                localField: 'rate',
-                foreignField: '_id',
-                as: "rate"
-            }
-        },
-        {
-            "$project": {
-                "likeCounter": {
-                    "$size": {
-                        "$filter": {
-                            "input": "$rate",
-                            "cond": { "$eq": [ "$$this.isPositive", true ] }
-                        }
-                    }
-                },
-                "dislikeCounter": {
-                    "$size": {
-                        "$filter": {
-                            "input": "$rate",
-                            "cond": { "$eq": [ "$$this.isPositive", false ] }
-                        }
-                    }
-                },
-                "myAction": {
-                    "$filter": {
-                        "input": "$rate",
-                        "cond": { "$eq": [ "$$this.user", objId(request.params.userId) ] }
-                    }
-                }
-            }
-        }
-    ]);
+    const rate = await getRateInfo(
+        targetModel,
+        {_id: objId(request.params.itemId)},
+        objId(request.params.userId)
+    );
     const [rateInfo] = rate;
     rateInfo.myAction = _.isEmpty(rateInfo.myAction) ? null
         : rateInfo.myAction[0].isPositive ? actions.like : actions.dislike;
@@ -265,3 +267,4 @@ router.post('/postRate', async (request, response) => {
 });
 
 module.exports = router;
+module.exports.getRateInfo = getRateInfo;

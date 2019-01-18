@@ -22,4 +22,4 @@ module.exports.avatarFileSize = [
 
 module.exports.maxFileSize = {
     fileSize: 5 * 1024 * 1024
-}
+};
