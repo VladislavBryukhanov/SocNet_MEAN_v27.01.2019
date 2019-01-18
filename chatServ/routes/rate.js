@@ -9,7 +9,7 @@ const _ = require("lodash");
 // const findWithPaging = require('../common/paging');
 
 const actions = require('../common/constants').actions;
-const ModelType = require('../common/constants').ModelType;
+const bindDbModelMiddleware = require('../middlewares/bindDbModel');
 
 //TODO aggregation to common module
 
@@ -117,12 +117,8 @@ const postRate = async (Model, request) => {
     }
 };
 
-router.get('/getRatedUsers/:itemId&:targetModel&:isPositive&:limit&:offset', bodyParser.json(), async (request, response) => {
-    const modelTarget = request.params.targetModel;
-    if (!ModelType.hasOwnProperty(modelTarget)) {
-        return response.sendStatus(400);
-    }
-    const targetModel = mongoose.model(modelTarget);
+router.get('/getRatedUsers/:itemId&:targetModel&:isPositive&:limit&:offset',
+    bindDbModelMiddleware, async (request, response) => {
     /*const itemId = request.params.itemId;
     const isPositive = request.params.isPositive;
     const populate = {
@@ -137,7 +133,7 @@ router.get('/getRatedUsers/:itemId&:targetModel&:isPositive&:limit&:offset', bod
     const isPositive = request.params.isPositive === 'true';
     const limit = Number(request.params.limit);
     const offset = Number(request.params.offset);
-    const ratedUsers = await targetModel.aggregate([
+    const ratedUsers = await request.targetModel.aggregate([
         {
             $match: {
                 _id: itemId
@@ -236,16 +232,11 @@ router.get('/getRatedUsers/:itemId&:targetModel&:isPositive&:limit&:offset', bod
     res.data.length > 0 ? response.send(res) : response.sendStatus(404);
 });
 
-router.get('/getRateCounter/:itemId&:targetModel&:userId', async (request, response) => {
-    const modelTarget = request.params.targetModel;
-    if (!ModelType.hasOwnProperty(modelTarget)) {
-        return response.sendStatus(400);
-    }
-    const targetModel = mongoose.model(modelTarget);
-
+router.get('/getRateCounter/:itemId&:targetModel&:userId',
+    bindDbModelMiddleware, async (request, response) => {
     //TODO userId? mb from token?
     const rate = await getRateInfo(
-        targetModel,
+        request.targetModel,
         {_id: objId(request.params.itemId)},
         objId(request.params.userId)
     );
@@ -255,14 +246,8 @@ router.get('/getRateCounter/:itemId&:targetModel&:userId', async (request, respo
     response.send(rateInfo);
 });
 
-router.post('/postRate', async (request, response) => {
-    const modelTarget = request.body.targetModel;
-    if (!ModelType.hasOwnProperty(modelTarget)) {
-        return response.sendStatus(400);
-    }
-    const targetModel = mongoose.model(modelTarget);
-
-    const res = await postRate(targetModel, request);
+router.post('/postRate', bindDbModelMiddleware, async (request, response) => {
+    const res = await postRate(request.targetModel, request);
     return response.send(res);
 });
 

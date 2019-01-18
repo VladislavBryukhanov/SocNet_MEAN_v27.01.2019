@@ -134,7 +134,7 @@ router.put('/editPost', upload.array('files', 12), async (request, response) => 
     existsPost.attachedFiles.forEach(file => {
         // typeof file._id = string, typeof post.id = ObjectId
         if(!post.attachedFiles.some(file_id => file_id == file._id)) {
-            deleteAttachedFiles(file, blogFileSize);
+            deleteAttachedFiles([file], blogFileSize);
             existsPost.attachedFiles = existsPost.attachedFiles.filter(
                 item => item._id != file._id);
         }

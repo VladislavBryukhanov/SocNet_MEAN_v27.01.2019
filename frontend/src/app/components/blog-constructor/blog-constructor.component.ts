@@ -82,6 +82,7 @@ export class BlogConstructorComponent implements OnInit {
 
     if (this.existsPost.attachedFiles.length > 0 || textContent.trim().length > 0) {
       this.editItem(newPost);
+      //TODO editForm sloded before changes and subscribe is not solution because it will worked before rerendering
       this.closeEditForm.emit();
     }
   }
