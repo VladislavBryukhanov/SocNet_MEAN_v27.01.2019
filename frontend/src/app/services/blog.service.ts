@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Blog} from '../models/blog';
 import {Observable} from 'rxjs/index';
+import {PaginatedBlog} from "../models/paginatedBlog";
 
 @Injectable({
   providedIn: 'root'
@@ -23,8 +24,8 @@ export class BlogService {
     return this.http.get<Blog>(`/blogs/getPost/${postId}`);
   }
 
-  getBlog(userId: string, limit: number = 1, currentPage: number = 0): Observable<Blog[]> {
-    return this.http.get<Blog[]>(`/blogs/getBlog/${userId}&${limit}&${currentPage * limit}`);
+  getBlog(userId: string, limit: number = 1, currentPage: number = 0): Observable<PaginatedBlog> {
+    return this.http.get<PaginatedBlog>(`/blogs/getBlog/${userId}&${limit}&${currentPage * limit}`);
   }
 
   publishPost(post: FormData) {

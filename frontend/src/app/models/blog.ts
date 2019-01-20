@@ -1,4 +1,6 @@
 import {Image} from "./image";
+import {PaginatedComments} from "./paginatedComments";
+import {FullRateInfo} from "./fullRateInfo";
 
 export class Blog {
   _id: string;
@@ -6,4 +8,6 @@ export class Blog {
   attachedFiles: Image[];
   date: Date;
   owner: string;
+  rate: FullRateInfo;
+  comments: PaginatedComments;
 }

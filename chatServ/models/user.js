@@ -4,6 +4,7 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Image',
         default: "5c12c5b44ad0e0209b5e6f67"
+        // db.images.insert({"_id" : ObjectId("5c12c5b44ad0e0209b5e6f67"), "filePath" : "avatars/", "fileName" : "default.jpg", "__v" : 0})
         // TODO fix id
         // required: true
     },
@@ -31,12 +32,12 @@ const userSchema = mongoose.Schema({
         default: 'user',
         required: true
     },
-    bio: {
-
-    },
-    gender: {
-
-    },
+    // bio: {
+    //
+    // },
+    // gender: {
+    //
+    // },
     // age: {
     //
     // },

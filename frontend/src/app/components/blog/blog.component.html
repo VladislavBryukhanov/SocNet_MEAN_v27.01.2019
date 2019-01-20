@@ -22,8 +22,8 @@
         </div>
         <article class="textContent">{{post.textContent}}</article>
 
-        <app-rate [itemId]="post._id"></app-rate>
-        <app-comments [itemId]="post._id"></app-comments>
+        <app-rate [itemId]="post._id" [rate]="post.rate" [targetModel]="targetModel.Blog"></app-rate>
+        <app-comments [itemId]="post._id" [comments]="post.comments" [targetModel]="targetModel.Blog"></app-comments>
 
         <p class="postDate">{{post.date|date:'dd MMM yyyy, HH:mm:ss'}}</p>
       </div>

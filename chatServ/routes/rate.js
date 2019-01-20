@@ -1,17 +1,62 @@
 const express = require('express');
 const router = express.Router();
 const Rate = require('../models/rate');
-const bodyParser = require('body-parser');
+const Blog = require('../models/blog');
 const mongoose = require('mongoose');
-const findWithPaging = require('../common/paging');
+const objId = mongoose.Types.ObjectId;
+const _ = require("lodash");
+// const findWithPaging = require('../common/paging');
 
-const actions = {
-  LIKE: 'like',
-  DISLIKE: 'dislike'
+const actions = require('../common/constants').actions;
+const bindDbModelMiddleware = require('../middlewares/bindDbModel');
+
+//TODO aggregation to common module
+
+const getRateInfo = async (Model, condition, user) => {
+    return await Model.aggregate([
+        {
+            $match: condition
+        },
+        {
+            $lookup: {
+                from: "rates",
+                localField: 'rate',
+                foreignField: '_id',
+                as: "rate"
+            }
+        },
+        {
+            "$project": {
+                "likeCounter": {
+                    "$size": {
+                        "$filter": {
+                            "input": "$rate",
+                            "cond": { "$eq": [ "$$this.isPositive", true ] }
+                        }
+                    }
+                },
+                "dislikeCounter": {
+                    "$size": {
+                        "$filter": {
+                            "input": "$rate",
+                            "cond": { "$eq": [ "$$this.isPositive", false ] }
+                        }
+                    }
+                },
+                "myAction": {
+                    "$filter": {
+                        "input": "$rate",
+                        "cond": { "$eq": [ "$$this.user", user ] }
+                    }
+                }
+            }
+        }
+    ]);
 };
 
-router.get('/getRatedUsers/:itemId&:isPositive&:limit&:offset', bodyParser.json(), async(request, response) => {
-    const itemId = request.params.itemId;
+router.get('/getRatedUsers/:itemId&:targetModel&:isPositive&:limit&:offset',
+    bindDbModelMiddleware, async (request, response) => {
+    /*const itemId = request.params.itemId;
     const isPositive = request.params.isPositive;
     const populate = {
         path: 'user',
@@ -19,38 +64,187 @@ router.get('/getRatedUsers/:itemId&:isPositive&:limit&:offset', bodyParser.json(
     };
     const res = await findWithPaging(request.params, Rate, {itemId, isPositive}, populate);
     res.data = res.data.map( item => item.user );
+    res.data.length > 0 ? response.send(res) : response.sendStatus(404);*/
+
+    const itemId = objId(request.params.itemId);
+    const isPositive = request.params.isPositive === 'true';
+    const limit = Number(request.params.limit);
+    const offset = Number(request.params.offset);
+    const ratedUsers = await request.targetModel.aggregate([
+        {
+            $match: {
+                _id: itemId
+            }
+        },
+        {
+            $lookup: {
+                from: "rates",
+                localField: 'rate',
+                foreignField: '_id',
+                as: "rate"
+            }
+        },
+        {
+            "$project": {
+                "rate": {
+                    "$filter": {
+                        "input": "$rate",
+                        "cond": {"$eq": ["$$this.isPositive", isPositive]}
+                    }
+                },
+                "count": {
+                    "$size": "$rate"
+                }
+            }
+        },
+        {$unwind: "$rate"},
+        {$sort: {"rate.date": -1}},
+        {$skip: offset},
+        {$limit: limit},
+        {
+            $replaceRoot: {
+                newRoot: "$rate"
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: 'user',
+                foreignField: '_id',
+                as: "user"
+            }
+        },
+        {$unwind: "$user"},
+        {
+            $replaceRoot: {
+                newRoot: "$user"
+            }
+        },
+        {
+            $lookup: {
+                from: "images",
+                localField: 'avatar',
+                foreignField: '_id',
+                as: "avatar"
+            }
+        },
+        {$unwind: "$avatar"},
+    ]);
+
+    // TODO count to prev aggregation
+    const count = await Blog.aggregate([
+        {
+            $match: {
+                _id: objId(request.params.itemId)
+            }
+        },
+        {
+            $lookup: {
+                from: "rates",
+                localField: 'rate',
+                foreignField: '_id',
+                as: "rate"
+            }
+        },
+        {
+            "$project": {
+                "count": {
+                    "$size": {
+                        "$filter": {
+                            "input": "$rate",
+                            "cond": { "$eq": [ "$$this.isPositive", isPositive ] }
+                        }
+                    }
+                }
+            }
+        }
+    ]).then(res => res[0].count);
+
+    const res = {
+        data: ratedUsers,
+        count,
+        offset,
+        limit
+    };
     res.data.length > 0 ? response.send(res) : response.sendStatus(404);
 });
 
-router.get('/getRateCounter/:itemId&:userId', async (request, response) => {
-    const itemId = request.params.itemId;
-    const user = mongoose.Types.ObjectId(request.params.userId);
-
-    const likeCounter = await Rate.count({itemId, isPositive: true});
-    const dislikeCounter = await Rate.count({itemId, isPositive: false});
-    const myAction = await Rate.findOne({itemId, user, isPositive: true}) ? actions.LIKE
-        : await Rate.findOne({itemId, user, isPositive: false}) ? actions.DISLIKE : null;
-
-    response.send({likeCounter, dislikeCounter, myAction});
+router.get('/getRateCounter/:itemId&:targetModel&:userId',
+    bindDbModelMiddleware, async (request, response) => {
+    //TODO userId? mb from token?
+    const rate = await getRateInfo(
+        request.targetModel,
+        {_id: objId(request.params.itemId)},
+        objId(request.params.userId)
+    );
+    const [rateInfo] = rate;
+    rateInfo.myAction = _.isEmpty(rateInfo.myAction) ? null
+        : rateInfo.myAction[0].isPositive ? actions.like : actions.dislike;
+    response.send(rateInfo);
 });
 
-router.post('/postRate', async (request, response) => {
-    request.body.user = mongoose.Types.ObjectId(request.body.userId);
-    const prevRate = await Rate.findOne({
-        user: mongoose.Types.ObjectId(request.body.userId),
-        itemId: request.body.itemId
-    });
-    if (prevRate) {
-        if (prevRate.isPositive !== request.body.isPositive) {
-            request.body.lastState = prevRate.isPositive;
-            response.send(await Rate.findOneAndUpdate({_id: prevRate._id}, request.body,
-                { upsert: true, new: true, setDefaultsOnInsert: true }));
+router.post('/postRate', bindDbModelMiddleware, async (request, response) => {
+    const { body, targetModel } = request;
+
+    const prevRate = await targetModel.aggregate([
+        {
+            $match: {
+                _id: objId(body.itemId)
+            }
+        },
+        {
+            $lookup: {
+                from: "rates",
+                localField: 'rate',
+                foreignField: '_id',
+                as: "rate"
+            }
+        },
+        {
+            "$project": {
+                "rate": {
+                    "$filter": {
+                        "input": "$rate",
+                        "cond": {"$eq": ["$$this.user", objId(body.rate.userId)]}
+                    }
+                }
+            }
+        },
+    ]).then(([res]) => {
+        if (res && !_.isEmpty(res.rate)) {
+            return res.rate[0];
         } else {
-            response.send(await Rate.findOneAndDelete({_id: prevRate._id}));
+            return null;
+        }
+    });
+    // res[0] - $match found only one value by blog id
+    // rate[0] - $pipeline + $match found only one value by userId
+
+    request.body.rate.user = objId(body.rate.userId);
+    let rate;
+    if (prevRate) {
+        if (prevRate.isPositive !== body.rate.isPositive) {
+            body.rate.lastState = prevRate.isPositive;
+            rate = await Rate.findOneAndUpdate({_id: prevRate._id}, body.rate,
+                { upsert: true, new: true, setDefaultsOnInsert: true });
+        } else {
+            await targetModel.updateOne(
+                {_id: objId(body.itemId)},
+                {
+                    $pull: {rate: prevRate._id}
+                });
+            rate = await Rate.findOneAndDelete({_id: prevRate._id});
         }
     } else {
-        response.send(await Rate.create(request.body));
+        rate = await Rate.create(body.rate);
+        await targetModel.updateOne(
+            {_id: objId(body.itemId)},
+            {
+                $push: {rate: rate._id}
+            });
     }
+    response.send(rate);
 });
 
 module.exports = router;
+module.exports.getRateInfo = getRateInfo;

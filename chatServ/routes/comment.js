@@ -34,11 +34,11 @@ router.get('/getCommentsCounter/:itemId&:userId', async (request, response) => {
     response.send({commentsCounter, isCommentedByMe});
 });
 
-router.get('/getComment/:commentId', async(request, response) => {
+router.get('/getComment/:commentId', async (request, response) => {
     response.send(await Comment.findOne({_id: request.params.commentId}));
 });
 
-router.get('/getComments/:itemId&:limit&:offset', async(request, response) => {
+router.get('/getComments/:itemId&:limit&:offset', async (request, response) => {
     const populate = {
         path: 'user',
         populate: {path: 'avatar'}
@@ -72,7 +72,7 @@ router.post('/addComment', upload.array('files', 12), async (request, response) 
     }
 });
 
-router.put('/editComment', upload.array('files', 12), async(request, response) => {
+router.put('/editComment', upload.array('files', 12), async (request, response) => {
     const post = {
         attachedFiles: request.body.existsFiles ? request.body.existsFiles : [],
         textContent: request.body.content,
@@ -100,7 +100,7 @@ router.put('/editComment', upload.array('files', 12), async(request, response) =
         _id: request.body._id, owner: request.user._id}, post, { "new": true }));
 });
 
-router.delete('/deleteComment/:_id', async(request, response) => {
+router.delete('/deleteComment/:_id', async (request, response) => {
     const deletedItem = await Comment.findOneAndRemove({
         _id: request.params._id, owner: request.user._id
     });
