@@ -81,10 +81,10 @@ const appendRateAndComments = async (user, items) => {
 };
 
 router.get('/getBlog/:id&:limit&:offset', async (request, response) => {
-    const id = objId(request.params.id);
+    const owner = objId(request.params.id);
     const user = objId(request.user._id);
 
-    let res = await findWithPaging(request.params, Blog, {owner: id}, 'attachedFiles');
+    let res = await findWithPaging(request.params, Blog, {owner}, 'attachedFiles');
     if (_.isEmpty(res)) {
         return response.sendStatus(404)
     }
@@ -104,7 +104,7 @@ router.get('/getPost/:postId', async(request, response) => {
 router.post('/addPost', upload.array('files', 12), async (request, response) => {
     const post = {
         textContent: request.body.content,
-        owner: request.user._id
+        owner: objId(request.user._id)
     };
 
     post.attachedFiles = await resizeAndSaveImage(request.files, 'blogs/', blogFileSize);
@@ -125,11 +125,13 @@ router.put('/editPost', upload.array('files', 12), async (request, response) => 
     const post = {
         attachedFiles: request.body.existsFiles ? request.body.existsFiles : [],
         textContent: request.body.content,
-        owner: request.user._id
+        owner: objId(request.user._id)
     };
 
-    const existsPost = await Blog.findOne({_id: request.body._id, owner: request.user._id})
-        .populate('attachedFiles');
+    const existsPost = await Blog.findOne({
+        _id: request.body._id,
+        owner: objId(request.user._id)})
+    .populate('attachedFiles');
 
     existsPost.attachedFiles.forEach(file => {
         // typeof file._id = string, typeof post.id = ObjectId
@@ -150,7 +152,7 @@ router.put('/editPost', upload.array('files', 12), async (request, response) => 
     }
 
     let blog = await Blog.findOneAndUpdate(
-        {_id: request.body._id, owner: request.user._id},
+        {_id: request.body._id, owner: objId(request.user._id)},
         post,
         { "new": true }
     ).populate('attachedFiles');
@@ -162,7 +164,7 @@ router.put('/editPost', upload.array('files', 12), async (request, response) => 
 router.delete('/deletePost/:_id', async (request, response) => {
     //TODO mb replace to pre (cascade style)
     const deletedItem = await Blog.findOneAndRemove({
-        _id: request.params._id, owner: request.user._id
+        _id: request.params._id, owner: objId(request.user._id)
     }).populate('attachedFiles');
     if(deletedItem) {
         deleteAttachedFiles(deletedItem.attachedFiles, blogFileSize);

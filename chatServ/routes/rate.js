@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Rate = require('../models/rate');
 const Blog = require('../models/blog');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const objId = mongoose.Types.ObjectId;
 const _ = require("lodash");
@@ -53,68 +52,6 @@ const getRateInfo = async (Model, condition, user) => {
             }
         }
     ]);
-};
-
-const postRate = async (Model, request) => {
-    const { body } = request;
-
-    const prevRate = await Model.aggregate([
-        {
-            $match: {
-                _id: objId(body.itemId)
-            }
-        },
-        {
-            $lookup: {
-                from: "rates",
-                localField: 'rate',
-                foreignField: '_id',
-                as: "rate"
-            }
-        },
-        {
-            "$project": {
-                "rate": {
-                    "$filter": {
-                        "input": "$rate",
-                        "cond": {"$eq": ["$$this.user", objId(body.rate.userId)]}
-                    }
-                }
-            }
-        },
-    ]).then(([res]) => {
-        if (res && !_.isEmpty(res.rate)) {
-            return res.rate[0];
-        } else {
-            return null;
-        }
-    });
-    // res[0] - $match found only one value by blog id
-    // rate[0] - $pipeline + $match found only one value by userId
-
-    request.body.rate.user = objId(body.rate.userId);
-    if (prevRate) {
-        if (prevRate.isPositive !== body.rate.isPositive) {
-            body.rate.lastState = prevRate.isPositive;
-            return (await Rate.findOneAndUpdate({_id: prevRate._id}, body.rate,
-                { upsert: true, new: true, setDefaultsOnInsert: true }));
-        } else {
-            await Model.updateOne(
-                {_id: objId(body.itemId)},
-                {
-                    $pull: {rate: prevRate._id}
-                });
-            return await Rate.findOneAndDelete({_id: prevRate._id});
-        }
-    } else {
-        const rate = await Rate.create(body.rate);
-        await Model.updateOne(
-            {_id: objId(body.itemId)},
-            {
-                $push: {rate: rate._id}
-            });
-        return rate;
-    }
 };
 
 router.get('/getRatedUsers/:itemId&:targetModel&:isPositive&:limit&:offset',
@@ -247,8 +184,66 @@ router.get('/getRateCounter/:itemId&:targetModel&:userId',
 });
 
 router.post('/postRate', bindDbModelMiddleware, async (request, response) => {
-    const res = await postRate(request.targetModel, request);
-    return response.send(res);
+    const { body, targetModel } = request;
+
+    const prevRate = await targetModel.aggregate([
+        {
+            $match: {
+                _id: objId(body.itemId)
+            }
+        },
+        {
+            $lookup: {
+                from: "rates",
+                localField: 'rate',
+                foreignField: '_id',
+                as: "rate"
+            }
+        },
+        {
+            "$project": {
+                "rate": {
+                    "$filter": {
+                        "input": "$rate",
+                        "cond": {"$eq": ["$$this.user", objId(body.rate.userId)]}
+                    }
+                }
+            }
+        },
+    ]).then(([res]) => {
+        if (res && !_.isEmpty(res.rate)) {
+            return res.rate[0];
+        } else {
+            return null;
+        }
+    });
+    // res[0] - $match found only one value by blog id
+    // rate[0] - $pipeline + $match found only one value by userId
+
+    request.body.rate.user = objId(body.rate.userId);
+    let rate;
+    if (prevRate) {
+        if (prevRate.isPositive !== body.rate.isPositive) {
+            body.rate.lastState = prevRate.isPositive;
+            rate = await Rate.findOneAndUpdate({_id: prevRate._id}, body.rate,
+                { upsert: true, new: true, setDefaultsOnInsert: true });
+        } else {
+            await targetModel.updateOne(
+                {_id: objId(body.itemId)},
+                {
+                    $pull: {rate: prevRate._id}
+                });
+            rate = await Rate.findOneAndDelete({_id: prevRate._id});
+        }
+    } else {
+        rate = await Rate.create(body.rate);
+        await targetModel.updateOne(
+            {_id: objId(body.itemId)},
+            {
+                $push: {rate: rate._id}
+            });
+    }
+    response.send(rate);
 });
 
 module.exports = router;
