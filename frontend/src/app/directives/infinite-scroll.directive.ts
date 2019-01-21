@@ -1,11 +1,11 @@
-import {AfterViewInit, Directive, ElementRef, Input} from '@angular/core';
+import {AfterViewInit, Directive, DoCheck, ElementRef, Input} from '@angular/core';
 import {fromEvent} from 'rxjs/index';
 import {exhaustMap, filter, map, pairwise} from 'rxjs/internal/operators';
 
 @Directive({
   selector: '[appInfiniteScroll]'
 })
-export class InfiniteScrollDirective implements AfterViewInit {
+export class InfiniteScrollDirective implements AfterViewInit, DoCheck {
 
   @Input()
   private scrollCallback;
@@ -16,12 +16,21 @@ export class InfiniteScrollDirective implements AfterViewInit {
 
   private scrollEvent$;
 
+  private prevScrollHeight;
+
   private countOfItems = 0;
   private limit = 0;
   private offset = 0;
   private currentPage = 0;
 
   constructor(private elemRef: ElementRef) {}
+
+  ngDoCheck(): void {
+    if (this.prevScrollHeight > this.elemRef.nativeElement.scrollHeight) {
+      this.elemRef.nativeElement.dispatchEvent(new Event('scroll'));
+    }
+    this.prevScrollHeight = this.elemRef.nativeElement.scrollHeight;
+  }
 
   ngAfterViewInit(): void {
     this.scrollEvent$ = fromEvent(this.elemRef.nativeElement, 'scroll');
@@ -43,11 +52,9 @@ export class InfiniteScrollDirective implements AfterViewInit {
             scrollTop: e.target.scrollTop
           })
         ),
-        pairwise(),
         filter(position =>
           this.inRangeOfDataCount()
-          && this.isScrollingDown(position)
-          && this.isScrollOutOfRange(position[1])),
+          && this.isScrollOutOfRange(position)),
         exhaustMap(_ => {
           return this.scrollCallback(this.limit, this.currentPage)
         })
@@ -56,10 +63,6 @@ export class InfiniteScrollDirective implements AfterViewInit {
         this.offset = res['offset'];
         this.currentPage++;
     });
-  }
-
-  isScrollingDown(position): boolean {
-    return position[0].scrollTop < position[1].scrollTop;
   }
 
   isScrollOutOfRange(position): boolean {
