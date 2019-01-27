@@ -25,10 +25,11 @@
         margin-bottom: 9px;
         text-align: center;
         img:hover {
-          box-shadow: 0 7px 23px 1px grey;
+          box-shadow: 1px 5px 20px 1px grey;
         }
         img {
           cursor: pointer;
+          box-shadow: 1px 1px 8px 1px grey;
         }
         .attachedImage {
           max-width: 100%;

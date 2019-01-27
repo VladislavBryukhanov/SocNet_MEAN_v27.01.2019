@@ -1,23 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import {FormGroup} from "@angular/forms";
-import {User} from "../../models/user";
+import { Component } from '@angular/core';
 import {AuthService} from "../../services/auth.service";
-import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-sign-in',
   templateUrl: './sign-in.component.html',
-  styleUrls: ['./sign-in.component.css']
+  styleUrls: ['./sign-in.component.scss']
 })
-export class SignInComponent implements OnInit {
+export class SignInComponent {
 
   public login: string;
   public password: string;
 
   constructor(private authService: AuthService) { }
-
-  ngOnInit() {
-  }
 
   onSignIn() {
     const authData = {

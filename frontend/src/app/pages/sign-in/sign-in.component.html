@@ -1,9 +1,21 @@
-<h1>
-  sign-in works!
-</h1>
-<form (ngSubmit)="onSignIn()">
-  <input [(ngModel)]="login" placeholder="login" name="login"/>
-  <input [(ngModel)]="password" placeholder="password" name="password"/>
-  <input type="submit" value="Sign in"/>
-</form>
-<a routerLink="/sign_up">Sign up</a>
+<div>
+  <div class="title">
+    Sign in
+  </div>
+  <div class="authForm">
+    <form (ngSubmit)="onSignIn()">
+      <div class="field">
+        <label>Login</label>
+        <input [(ngModel)]="login" name="login"/>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input [(ngModel)]="password" name="password" type="password"/>
+      </div>
+      <div class="actions">
+        <input class="actionBtn" type="submit" value="Sign in"/>
+        <a routerLink="/sign_up">Sign up</a>
+      </div>
+    </form>
+  </div>
+</div>

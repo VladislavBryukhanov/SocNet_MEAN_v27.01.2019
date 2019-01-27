@@ -1,9 +1,22 @@
-<h1>
-  sign-up
-</h1>
-<form [formGroup]="formGroup" (ngSubmit)="onSignUp()">
-  <input formControlName="username" placeholder="username"/>
-  <input formControlName="login" placeholder="login"/>
-  <input formControlName="password" placeholder="password"/>
-  <input type="submit"/>
-</form>
+<div>
+  <div class="title">
+    Sign up
+  </div>
+  <div class="authForm">
+    <form [formGroup]="formGroup"  (ngSubmit)="onSignUp()">
+      <div class="field">
+        <label>Username</label>
+        <input formControlName="username" name="username"/>
+      </div>
+      <div class="field">
+        <label>Login</label>
+        <input formControlName="login" name="login" type="login"/>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input formControlName="password" name="password" type="password"/>
+      </div>
+      <input class="actionBtn" type="submit" value="Sign up"/>
+    </form>
+  </div>
+</div>

@@ -1,66 +1,15 @@
+@import '../../../assets/styles/forms';
+
 .editProfileForm {
   width: 100%;
   text-align: center;
 
   .field {
-    vertical-align: top;
-    display: inline-block;
-    //margin: 20px auto;
-    margin: 20px 3% 20px 3%;
     width: 44%;
-    min-width: 250px;
-    //width: 100%;
-
-    label {
-      display: block;
-      text-align: left;
-      width: 100%;
-    }
-    textarea {
-      height: 100px;
-    }
-    input {
-      height: 26px;
-    }
-    input, textarea {
-      display: block;
-      padding-left: 6px;
-      margin-top: 6px;
-      width: 98%;
-    }
-    input[type="checkbox"] {
-      width: auto;
-    }
-    //input[type="submit"] {
-    //  width: 160px;
-    //  height: 30px;
-    //  color: white;
-    //  font-size: 20px;
-    //  border: 0;
-    //  background-color: #5682a3;
-    //  cursor: pointer;
-    //}
   }
 
-  .saveChanges {
-    font-family: inherit;
-    margin: 8px 0;
-    font-weight: 100;
-    width: 153px;
-    height: 36px;
-    color: white;
-    font-size: 19px;
-    border: 0;
-    background-color: #6496C7;
-    cursor: pointer;
-    border-radius: 2px;
-    box-shadow: 1px 2px 1px 1px #56729a;
-  }
-  .saveChanges:hover {
-    background-color: rgb(84, 136, 200);
-  }
-  .saveChanges:active {
-    background-color: #417BBA;
-    box-shadow: 1px 2px 1px 1px #56729a;
+  .actionBtn {
+    display: block;
+    margin: 20px auto;
   }
 }
