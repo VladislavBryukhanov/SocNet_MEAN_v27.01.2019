@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {UsersService} from '../../services/users.service';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../../services/auth.service';
+import {ImagePathPipe} from "../../pipes/image-path.pipe";
+import {ImageResizerPipe} from "../../pipes/image-resizer.pipe";
 
 @Component({
   selector: 'app-edit-profile',
@@ -12,11 +13,17 @@ export class EditProfileComponent implements OnInit {
 
   public formGroup: FormGroup;
   private avatar: File;
+  private prevAvatar;
+  public avatarPreview;
 
   constructor(private formBuilder: FormBuilder,
               public authService: AuthService) { }
 
   ngOnInit() {
+    this.prevAvatar = new ImageResizerPipe()
+      .transform(this.authService.myUser.avatar, 'normal');
+    this.avatarPreview = new ImagePathPipe().transform(this.prevAvatar);
+
     this.formGroup = this.formBuilder.group({
       avatar: null,
       username: new FormControl(this.authService.myUser.username, [
@@ -36,6 +43,7 @@ export class EditProfileComponent implements OnInit {
 
   onAvatarChanged(e) {
     this.avatar = e.target.files[0];
+    this.getFileBlob(this.avatar);
   }
 
   onSaveChanges() {
@@ -52,4 +60,11 @@ export class EditProfileComponent implements OnInit {
     this.authService.editProfile(profile);
   }
 
+  getFileBlob(file: File) {
+    const fileReader = new FileReader();
+    fileReader.onload = _ => {
+      this.avatarPreview = fileReader.result;
+    };
+    fileReader.readAsDataURL(file);
+  }
 }

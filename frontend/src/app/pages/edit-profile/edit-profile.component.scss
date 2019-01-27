@@ -4,6 +4,22 @@
   width: 100%;
   text-align: center;
 
+  .avatarPreview {
+    width: 180px;
+    display: block;
+    margin-top: 6px;
+    cursor: pointer;
+    box-shadow: 1px 1px 8px 1px grey;
+    border: 8px solid white;
+  }
+  .avatarPreview:hover {
+    box-shadow: 1px 5px 20px 1px grey;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+
   .field {
     width: 44%;
   }

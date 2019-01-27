@@ -1,8 +1,16 @@
 <div class="mainContent">
-  <form [formGroup]="formGroup" (ngSubmit)="onSaveChanges()" class="editProfileForm">
+  <form [formGroup]="formGroup"
+        (ngSubmit)="onSaveChanges()"
+        class="editProfileForm">
     <div class="field">
       <label>Avatar</label>
-      <input formControlName="avatar" type="file" (change)="onAvatarChanged($event)"/>
+      <label for="avatarUpload">
+        <img class="avatarPreview" src="{{avatarPreview}}"/>
+      </label>
+      <input id="avatarUpload"
+             formControlName="avatar"
+             type="file"
+             (change)="onAvatarChanged($event)"/>
     </div>
     <div class="field">
       <label>Username</label>

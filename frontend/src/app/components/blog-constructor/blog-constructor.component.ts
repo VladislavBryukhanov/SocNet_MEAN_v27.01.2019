@@ -40,6 +40,8 @@ export class BlogConstructorComponent implements OnInit {
   private editItem;
   private publishItem;
 
+  private textareaInitSize;
+
   constructor(private blogService: BlogService,
               private formBuilder: FormBuilder,
               private elemRef: ElementRef,
@@ -63,6 +65,7 @@ export class BlogConstructorComponent implements OnInit {
       textContent: ''
     });
     this.textarea = this.elemRef.nativeElement.querySelector('textarea');
+    this.textareaInitSize = this.textarea.style.height;
     if (this.editId) {
       this.getItem(this.editId)
         .subscribe((res: Blog) => {
@@ -82,7 +85,7 @@ export class BlogConstructorComponent implements OnInit {
 
     if (this.existsPost.attachedFiles.length > 0 || textContent.trim().length > 0) {
       this.editItem(newPost);
-      //TODO editForm sloded before changes and subscribe is not solution because it will worked before rerendering
+      //TODO editForm closed before changes and subscribe is not solution because it will worked before rerendering
       this.closeEditForm.emit();
     }
   }
@@ -106,7 +109,7 @@ export class BlogConstructorComponent implements OnInit {
     this.attachedFiles = [];
     this.filesPreview = [];
     this.formGroup.reset();
-    this.textarea.style.height = '140 px';
+    this.textarea.style.height = this.textareaInitSize;
   }
 
   textContentChanged() {
@@ -118,14 +121,14 @@ export class BlogConstructorComponent implements OnInit {
   onFilesAttached(e) {
     const newFiles: File[] = Array.from(e.target.files);
     newFiles.forEach(file => {
-      this.getFileUrl(file);
+      this.attachedFiles.push(file);
+      this.getFileBlob(file);
     });
   }
 
-  async getFileUrl(file: File) {
+  getFileBlob(file: File) {
     const fileReader = new FileReader();
     fileReader.onload = _ => {
-      this.attachedFiles.push(file);
       this.filesPreview.push(fileReader.result);
     };
     fileReader.readAsDataURL(file);
@@ -137,7 +140,8 @@ export class BlogConstructorComponent implements OnInit {
   }
 
   removeFileExists(img: Image) {
-    this.existsPost.attachedFiles = this.existsPost.attachedFiles.filter(item => item !== img);
+    this.existsPost.attachedFiles =
+      this.existsPost.attachedFiles.filter(item => item !== img);
   }
 
 }
