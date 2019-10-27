@@ -21,7 +21,7 @@
            appInfiniteScroll
            [scrollCallback]="scrollCallback"
            [initDataSize]="2"
-           [minItemSize]="145">
+           [minItemSize]="95">
         <div class="comment" *ngFor="let comment of commentsService.comments">
           <div class="commentTitle">
               <div class="ownerBlock" routerLink="/profile/{{comment.user._id}}">
@@ -34,8 +34,8 @@
           <div class="imageBlock">
             <img *ngFor="let img of comment.attachedFiles; let i = index"
                  (click)="openImageViewer(comment.attachedFiles, i)"
-                 src="{{img | imageResizer:'min' | imagePath}}"
-                 [ngClass]="(i == 0) ? 'attachedImage' : 'attachment'"/>
+                 class="attachedImage"
+                 src="{{img | imageResizer:'min' | imagePath}}"/>
           </div>
           <article class="textContent">{{comment.textContent}}</article>
         </div>

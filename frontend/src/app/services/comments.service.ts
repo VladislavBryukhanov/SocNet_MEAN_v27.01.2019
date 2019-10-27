@@ -26,12 +26,11 @@ export class CommentsService {
   addCommentListener(itemId: string) {
     this.socket.emit('joinCommentsRoom', itemId);
     this.socket.on('commentAdded', (comment: Comment) => {
-      this._comments.unshift(comment);
+      this._comments.push(comment);
     });
   }
   removeCommentListener(itemId: string) {
-    // this.socket.close();
-    console.log('TODO Closing');
+    this.socket.close();
   }
 
   // getCommentsCounter(userId: string, itemId: string) {
@@ -56,10 +55,8 @@ export class CommentsService {
   addComment(comment: FormData, targetModel: string, itemId: string) {
     comment.append('itemId', itemId);
     comment.append('targetModel', targetModel);
-    this.http.post('/comments/addComment', comment)
-      .subscribe(res => {
-        this._comments.push(<Comment>res);
-      });
+    //todo handleMe
+    this.http.post('/comments/addComment', comment).toPromise();
   }
 
   deleteComment(commentId: string) {

@@ -24,34 +24,6 @@ const upload = multer({
 //     const user = objId(request.params.userId);
 
 //     // FIXME replace to aggregate
-//     const Model = request.targetModel;
-//     Model.aggregate([
-//         {
-//             $match: { _id: itemId}
-//         },
-//     ])
-//     const count = await request.targetModel.aggregate([
-//         {
-//             $match: { _id: objId(request.params.itemId) }
-//         },
-//         {
-//             $lookup: {
-//                 from: "comments",
-//                 localField: "comments",
-//                 foreignField: "_id",
-//                 as: "comments"
-//             },
-//         },
-//         {
-//             $project: {
-//                 count: {
-//                     $size: $comments
-//                 }
-//             }
-//         }
-     
-//     ]).then(res => res[0].count);
-
 //     const commentsCounter = await Comment.count({itemId});
 //     const isCommentedByMe = !!await Comment.findOne({itemId, user});
 
@@ -127,7 +99,7 @@ router.get('/getComments/:itemId&:targetModel&:limit&:offset', bindDbModelMiddle
         delete comment.user.session_hash
     });
 
-    response.send({ ...result, offset });
+    response.send({ ...result, offset: +offset });
 });
 
 router.post('/addComment', upload.array('files', 12), bindDbModelMiddleware, async (request, response) => {
@@ -152,7 +124,7 @@ router.post('/addComment', upload.array('files', 12), bindDbModelMiddleware, asy
             { $push: {comments: newComment._id} }
         );
 
-        commentEvent.emit(COMMENT_ADDED, newComment);
+        commentEvent.emit(COMMENT_ADDED, { itemId, newComment });
         response.send(newComment);
     } else {
         response.sendStatus(400);
