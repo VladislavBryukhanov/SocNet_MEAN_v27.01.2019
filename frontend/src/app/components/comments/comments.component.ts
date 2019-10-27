@@ -3,8 +3,8 @@ import {CommentsService} from '../../services/comments.service';
 import {AuthService} from '../../services/auth.service';
 import {ImageViewerService} from '../../services/image-viewer.service';
 import {map} from 'rxjs/internal/operators';
-import {Image} from "../../models/image";
-import {PaginatedComments} from "../../models/paginatedComments";
+import {Image} from '../../models/image';
+import {PaginatedComments} from '../../models/paginatedComments';
 
 @Component({
   selector: 'app-comments',

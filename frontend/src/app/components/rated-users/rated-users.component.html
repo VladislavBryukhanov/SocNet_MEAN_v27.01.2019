@@ -7,11 +7,13 @@
     <p class="userListModalLink" (click)="userListModal(true)">
       This post {{action}} by
     </p>
-    <div *ngFor="let user of users" class="user">
-      <img  class="userAvatar"
-            src="{{user.avatar | imageResizer:'min' | imagePath}}"
-            routerLink="/profile/{{user._id}}"/>
-      <p>{{user.username}}</p>
+    <div class="userList">
+      <div *ngFor="let user of users" class="user">
+        <img  class="userAvatar"
+              src="{{user.avatar | imageResizer:'min' | imagePath}}"
+              routerLink="/profile/{{user._id}}"/>
+        <p class="ratedUsername">{{user.username}}</p>
+      </div>
     </div>
   </div>
 </div>

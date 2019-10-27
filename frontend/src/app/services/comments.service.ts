@@ -11,18 +11,17 @@ import {map} from 'rxjs/internal/operators';
 })
 export class CommentsService {
 
-  constructor(private http: HttpClient) { }
+  private socket = io(AuthInterceptor.hostUrl, { path: '/comments_soc'});
 
+  private _comments: Comment[] = [];
   get comments(): Comment[] {
     return this._comments;
   }
-
   set comments(value: Comment[]) {
     this._comments = value;
   }
 
-  private _comments: Comment[] = [];
-  private socket = io(AuthInterceptor.hostUrl, { path: '/comments_soc'});
+  constructor(private http: HttpClient) { }
 
   addCommentListener(itemId: string) {
     this.socket.emit('joinCommentsRoom', itemId);
