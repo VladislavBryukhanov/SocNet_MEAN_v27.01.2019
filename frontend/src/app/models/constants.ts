@@ -8,3 +8,8 @@ export enum TargetModel {
     Comment = 'Comment',
     Image = 'Image',
 }
+
+export enum ImageSize {
+    normal = 'normal',
+    min = 'min'
+}

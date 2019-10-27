@@ -1,25 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const Comment = require('../models/comment');
-const path = require('path');
 const mongoose = require('mongoose');
 const fs = require('fs');
 const findWithPaging = require('../common/paging');
 
+const { maxFileSize } = require('../common/imageFiles/imagesSize');
 const multer = require('multer');
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, path.join(__dirname, '/../public/comments'))
-    },
-    filename: function(req, file, cb) {
-        cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`)
-    }
-});
+const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
-    limits: {
-        fileSize: 5 * 1024 * 1024
-    }
+    limits: maxFileSize
 });
 
 //TDOO blogs and comments equals

@@ -3,8 +3,7 @@ import {BlogService} from '../../services/blog.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Blog} from '../../models/blog';
 import {CommentsService} from '../../services/comments.service';
-import {Observable} from 'rxjs/index';
-import {Image} from "../../models/image";
+import {Image} from '../../models/image';
 
 // it component allows build posts or comments
 
