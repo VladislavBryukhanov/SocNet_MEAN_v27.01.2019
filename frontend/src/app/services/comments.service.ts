@@ -34,16 +34,16 @@ export class CommentsService {
     console.log('TODO Closing');
   }
 
-  getCommentsCounter(userId: string, itemId: string) {
-    return this.http.get(`/comments/getCommentsCounter/${itemId}&${userId}`);
-  }
+  // getCommentsCounter(userId: string, itemId: string) {
+  //   return this.http.get(`/comments/getCommentsCounter/${itemId}&${userId}`);
+  // }
 
   getComment(commentId): Observable<Comment> {
     return this.http.get<Comment>(`/comments/getComment/${commentId}`);
   }
 
-  getComments(itemId: string, limit: number = 1, currentPage: number = 0) {
-    return this.http.get<Comment[]>(`/comments/getComments/${itemId}&${limit}&${currentPage * limit}`)
+  getComments(itemId: string, targetModel: string, limit: number = 1, currentPage: number = 0) {
+    return this.http.get<Comment[]>(`/comments/getComments/${itemId}&${targetModel}&${limit}&${currentPage * limit}`)
       .pipe(
         map(res => {
             this._comments = this._comments.concat(res['data']);
@@ -53,8 +53,9 @@ export class CommentsService {
       );
   }
 
-  addComment(comment: FormData, itemId: string) {
+  addComment(comment: FormData, targetModel: string, itemId: string) {
     comment.append('itemId', itemId);
+    comment.append('targetModel', targetModel);
     this.http.post('/comments/addComment', comment)
       .subscribe(res => {
         this._comments.push(<Comment>res);

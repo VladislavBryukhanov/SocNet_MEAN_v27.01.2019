@@ -27,6 +27,6 @@
                (change)="onFilesAttached($event)"/>
       </label>
     </span>
-    <input type="submit" class="submitPost" value="publish post"/>
+    <input type="submit" class="submitPost" value="{{ isComment ? 'send comment' : 'publish post' }}"/>
   </form>
 </div>

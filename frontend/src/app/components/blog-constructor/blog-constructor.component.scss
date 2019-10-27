@@ -8,6 +8,9 @@
   .blogConstructor {
     text-align: left;
     margin-top: 0;
+    textarea {
+      min-height: 34px;
+    }
   }
 }
 

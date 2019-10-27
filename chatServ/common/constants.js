@@ -8,3 +8,9 @@ module.exports.ModelType = {
     Comment: 'Comment',
     Image: 'Image',
 };
+
+module.exports.commentEventActions = {
+    COMMENT_ADDED: 'commentAdded',
+    COMMENT_CHANGED: 'commentChanged',
+    COMMENT_REMOVED: 'commentRemoved'
+}

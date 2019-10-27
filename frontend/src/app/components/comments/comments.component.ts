@@ -70,7 +70,7 @@ export class CommentsComponent implements OnInit {
   }
 
   nextPage(maxCount: number, currentPage: number) {
-    return this.commentsService.getComments(this.itemId, maxCount, currentPage)
+    return this.commentsService.getComments(this.itemId, this.targetModel, maxCount, currentPage)
       .pipe(
         map(res => {
           // this.blogService.blog = this.blogService.blog.concat(res);

@@ -59,12 +59,14 @@
     }
     .textContent {
       color: #5682a3;
+      text-transform: capitalize;
+      margin-top: 6px;
     }
   }
 }
 
 .modalBody {
-  width: 55%;
+  width: 65%;
   margin: auto;
   background-color: white;
 
