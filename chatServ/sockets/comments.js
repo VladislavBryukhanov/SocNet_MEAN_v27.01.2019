@@ -18,13 +18,13 @@ module.exports = (server) => {
 
         // custom nodejs event. Passed from http router /comment on each endpoint
         event.on(COMMENT_ADDED, (comment) =>
-            io.to(client.room).broadcast(COMMENT_ADDED, comment));
+            io.to(client.room).emit(COMMENT_ADDED, comment));
         
         event.on(COMMENT_CHANGED, (comment) => 
-            io.to(client.room).broadcast(COMMENT_CHANGED, comment));
+            io.to(client.room).emit(COMMENT_CHANGED, comment));
 
         event.on(COMMENT_REMOVED, (comment) => 
-            io.to(client.room).broadcast(COMMENT_REMOVED, comment));
+            io.to(client.room).emit(COMMENT_REMOVED, comment));
 
         // socket.io event
         client.on('joinCommentsRoom', (postId) => {

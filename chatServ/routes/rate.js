@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Rate = require('../models/rate');
-const Blog = require('../models/blog');
 const mongoose = require('mongoose');
 const objId = mongoose.Types.ObjectId;
 const _ = require("lodash");

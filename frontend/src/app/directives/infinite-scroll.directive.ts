@@ -52,12 +52,9 @@ export class InfiniteScrollDirective implements AfterViewInit, DoCheck {
             scrollTop: e.target.scrollTop
           })
         ),
-        filter(position =>
-          this.inRangeOfDataCount()
-          && this.isScrollOutOfRange(position)),
-        exhaustMap(_ => {
-          return this.scrollCallback(this.limit, this.currentPage)
-        })
+        filter(position => this.inRangeOfDataCount()
+           && this.isScrollOutOfRange(position)),
+        exhaustMap(_ => this.scrollCallback(this.limit, this.currentPage))
       ).subscribe(res => {
         this.countOfItems = res['count'];
         this.offset = res['offset'];

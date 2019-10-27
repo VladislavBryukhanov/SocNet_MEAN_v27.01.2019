@@ -20,6 +20,13 @@ module.exports.avatarFileSize = [
     },
 ];
 
+module.exports.commentFileSize = [
+    {
+        name: 'min',
+        size: 150
+    }
+];
+
 module.exports.maxFileSize = {
     fileSize: 5 * 1024 * 1024
 };

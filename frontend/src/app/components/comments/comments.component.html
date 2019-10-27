@@ -23,20 +23,21 @@
            [initDataSize]="2"
            [minItemSize]="145">
         <div class="comment" *ngFor="let comment of commentsService.comments">
-          <div class="ownerBlock" routerLink="/profile/{{comment.user._id}}">
-            <img class="userAvatar"
-                 src="{{comment.user.avatar | imageResizer:'min' | imagePath}}"/>
-            <span class="username">{{comment.user.username}}</span>
+          <div class="commentTitle">
+              <div class="ownerBlock" routerLink="/profile/{{comment.user._id}}">
+                <img class="userAvatar"
+                     src="{{comment.user.avatar | imageResizer:'min' | imagePath}}"/>
+                <span class="username">{{comment.user.username}}</span>
+              </div>
+              <p class="postDate">{{comment.date|date:'dd MMM yyyy, HH:mm:ss'}}</p>
           </div>
           <div class="imageBlock">
             <img *ngFor="let img of comment.attachedFiles; let i = index"
                  (click)="openImageViewer(comment.attachedFiles, i)"
-                 src="{{img | imageResizer:'normal' | imagePath}}"
+                 src="{{img | imageResizer:'min' | imagePath}}"
                  [ngClass]="(i == 0) ? 'attachedImage' : 'attachment'"/>
           </div>
           <article class="textContent">{{comment.textContent}}</article>
-
-          <p class="postDate">{{comment.date|date:'dd MMM yyyy, HH:mm:ss'}}</p>
         </div>
       </div>
 

@@ -6,7 +6,7 @@ import {AuthService} from '../../services/auth.service';
 import {BlogService} from '../../services/blog.service';
 import {map} from 'rxjs/internal/operators';
 import {ImageViewerService} from '../../services/image-viewer.service';
-import {Image} from "../../models/image";
+import {Image} from '../../models/image';
 
 @Component({
   selector: 'app-profile',

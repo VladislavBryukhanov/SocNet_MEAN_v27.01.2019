@@ -6,6 +6,8 @@ const fs = require('fs');
 const { COMMENT_ADDED } = require('../common/constants').commentEventActions;
 const { commentEvent } = require('../sockets/comments');
 const { maxFileSize } = require('../common/imageFiles/imagesSize');
+const { commentFileSize } = require('../common/imageFiles/imagesSize');
+const { resizeAndSaveImage } = require('../common/imageFiles/imageActions');
 const bindDbModelMiddleware = require('../middlewares/bindDbModel');
 const objId = mongoose.Types.ObjectId;
 const multer = require('multer');
@@ -82,9 +84,17 @@ router.get('/getComments/:itemId&:targetModel&:limit&:offset', bindDbModelMiddle
             }
         },
         { $unwind: "$comments" },
-        { $sort: { "comments.date": -1 } },
+        { $sort: { "comments.date": 1 } },
         { $skip: +offset },
         { $limit: +limit },
+        {
+            $lookup: {
+                from: "images",
+                localField: 'comments.attachedFiles',
+                foreignField: '_id',
+                as: "comments.attachedFiles"
+            }
+        },
         {
             $lookup: {
                 from: "users",
@@ -117,22 +127,21 @@ router.get('/getComments/:itemId&:targetModel&:limit&:offset', bindDbModelMiddle
         delete comment.user.session_hash
     });
 
-    response.send(result);
+    response.send({ ...result, offset });
 });
 
 router.post('/addComment', upload.array('files', 12), bindDbModelMiddleware, async (request, response) => {
     const { itemId, content } = request.body;
-
     const comment = {
         user: objId(request.user._id),
         attachedFiles: [],
         itemId,
         textContent: content
     };
-    request.files.forEach(file => {
-        comment.attachedFiles.push(`comments/${file.filename}`);
-    });
-    if(comment.textContent.length > 0 || comment.attachedFiles.length > 0) {
+
+    comment.attachedFiles = await resizeAndSaveImage(request.files, 'comments/', commentFileSize);
+
+    if(comment.textContent || comment.attachedFiles.length > 0) {
         const newComment = await Comment.create(comment);
         await Comment.populate(newComment, {
             path: 'user',
@@ -144,8 +153,7 @@ router.post('/addComment', upload.array('files', 12), bindDbModelMiddleware, asy
         );
 
         commentEvent.emit(COMMENT_ADDED, newComment);
-        // response.send(newComment);
-        response.sendStatus(201);
+        response.send(newComment);
     } else {
         response.sendStatus(400);
     }

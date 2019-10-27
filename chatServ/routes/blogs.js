@@ -110,7 +110,7 @@ router.post('/addPost', upload.array('files', 12), async (request, response) => 
     post.attachedFiles = await resizeAndSaveImage(request.files, 'blogs/', blogFileSize);
 
     if(!post.textContent && post.attachedFiles.length === 0) {
-        return response.sendStatus(404);
+        return response.sendStatus(400);
     }
 
     // TODO mb to one query ?
