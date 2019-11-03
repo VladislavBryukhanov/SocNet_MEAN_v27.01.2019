@@ -1,5 +1,6 @@
-var mongoose = require('mongoose');
-var roomSchema = mongoose.Schema({
+const mongoose = require('mongoose');
+
+const roomSchema = mongoose.Schema({
     name: String,
     access: String,
 });

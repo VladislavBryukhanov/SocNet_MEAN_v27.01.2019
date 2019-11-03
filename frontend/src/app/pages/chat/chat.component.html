@@ -1,0 +1,33 @@
+<div class="chat-list">
+  <div class="exists-chats">
+    <div class="chat" *ngFor="let chat of chatList" (click)="onOpenChat(chat)">
+      <ng-container *ngTemplateOutlet="chatHeader; context: chat"></ng-container>
+    </div>
+  </div>
+
+  <div class="opened-chat">
+    <div class="chat-header">
+      <ng-container *ngTemplateOutlet="chatHeader; context: chatList[0]"></ng-container>
+    </div>
+
+    <div class="chat-content">
+      <div 
+        class="message"
+        *ngFor="let message of chatContent"
+        [ngClass]="!message.sentByMe ? 'alien-message' : ''"
+      >
+        <span class="text-content">
+          {{message.content}}
+        </span>
+        <span class="sent-date">
+          {{message.date|date:'dd MMM, HH:mm:ss'}}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #chatHeader let-name="name" let-avatar="avatar">
+  <img class="chatAvatar" src="{{avatar | imageResizer:'min' | imagePath}}"/>
+  <span>{{name}}</span>
+</ng-template>

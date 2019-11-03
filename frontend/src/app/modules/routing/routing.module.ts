@@ -8,6 +8,7 @@ import {AuthGuardService} from '../../services/auth-guard.service';
 import {AnonGuardService} from '../../services/anon-guard.service';
 import {ProfileComponent} from '../../pages/profile/profile.component';
 import {EditProfileComponent} from '../../pages/edit-profile/edit-profile.component';
+import { ChatComponent } from 'src/app/pages/chat/chat.component';
 
 const routes: Routes = [
   {
@@ -34,6 +35,11 @@ const routes: Routes = [
   {
     path: 'edit_profile',
     component: EditProfileComponent,
+    canActivate: [AuthGuardService]
+  },
+  {
+    path: 'chat',
+    component: ChatComponent,
     canActivate: [AuthGuardService]
   }
 ];

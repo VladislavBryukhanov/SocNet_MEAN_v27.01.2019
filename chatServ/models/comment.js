@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
+const { ObjectId } = mongoose.Schema.Types;
 
 const commentSchema = mongoose.Schema({
     user: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: ObjectId,
         ref: 'User',
         required: true
     },
@@ -11,7 +12,7 @@ const commentSchema = mongoose.Schema({
         default: ''
     },
     attachedFiles: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: ObjectId,
         ref: 'Image',
         required: true
     }],
