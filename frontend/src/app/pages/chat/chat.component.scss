@@ -25,11 +25,13 @@ $border-color: #80808042;
   .exists-chats {
     border-right: 1px solid $border-color;
     min-width: 200px;
+    width: 25%;
     background: white;
     overflow: auto;
 
     .chat {
       padding: 8px 0;
+      padding-left: 5%;
     }
     .chat:hover {
       cursor: pointer;

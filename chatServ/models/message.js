@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Schema.Types;
 
 const messageSchema = mongoose.Schema({
-    roomId: {
+    chatId: {
         type: ObjectId,
-        ref: 'Room',
+        ref: 'Chat',
         required: true
     },
     user: {

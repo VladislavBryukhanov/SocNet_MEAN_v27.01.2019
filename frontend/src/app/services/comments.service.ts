@@ -2,16 +2,16 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/index';
 import {Comment} from '../models/comment';
-import {AuthInterceptor} from '../modules/authInterceptor';
 import * as io from 'socket.io-client';
 import {map} from 'rxjs/internal/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CommentsService {
 
-  private socket = io(AuthInterceptor.hostUrl, { path: '/comments_soc'});
+  private socket = io(environment.hostUrl, { path: '/comments_soc'});
 
   private _comments: Comment[] = [];
   get comments(): Comment[] {

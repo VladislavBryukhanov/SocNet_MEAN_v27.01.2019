@@ -20,7 +20,7 @@ const jwtMW = exjwt({secret: secret})
     .unless({path: unless});
 const authAccess = authTokenAccess(unless);
 
-const romsRouter = require('./routes/rooms');
+const chatRouter = require('./routes/chat');
 const authRouter = require('./routes/auth');
 const usersRouter = require('./routes/users');
 const blogsRouter = require('./routes/blogs');
@@ -39,7 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(jwtMW);
 app.use(authAccess);
 app.use('/', authRouter);
-app.use('/rooms', romsRouter);
+app.use('/chat', chatRouter);
 app.use('/users', usersRouter);
 app.use('/blogs', blogsRouter);
 app.use('/rate', rateRouter);
