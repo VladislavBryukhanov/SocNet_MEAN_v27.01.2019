@@ -16,7 +16,7 @@ const saveMessages = (msg, callback) => {
 
 module.exports = (server) => {
     const io = require('socket.io')(server, {
-        path: '/chat',
+        path: '/chat_soc',
         pingInterval: 10000,
         pingTimeout: 5000,
         origins: '*:*'

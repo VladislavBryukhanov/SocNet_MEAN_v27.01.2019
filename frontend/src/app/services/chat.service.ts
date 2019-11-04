@@ -3,13 +3,13 @@ import { environment } from 'src/environments/environment';
 import * as io from 'socket.io-client';
 import { BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { Chat, Message } from '../models/chat';
+import { Chat, LocalMessage, Message } from '../models/chat';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
-  private socket = io(environment.hostUrl, { path: '/chat' } );
+  private socket = io(environment.hostUrl, { path: '/chat_soc' } );
   public messageList: BehaviorSubject<Message[]> = new BehaviorSubject([]);
 
   constructor(private http: HttpClient) { }
@@ -29,15 +29,31 @@ export class ChatService {
     this.socket.close();
   }
 
-  getChatList() {
-    return this.http.get<Chat[]>('/getChatList');
+  getChatList(withPopulation?: boolean) {
+    const params = {};
+    if (withPopulation) {
+      Object.assign(
+        params,
+        { populate: true }
+      );
+    }
+
+    return this.http.get<Chat[]>('/chat/getChatList', { params });
   }
 
-  getOpenedChat() {
-    return this.http.get<Chat[]>('/getChat');
+  findChatByInterlocutor(intelocutor: string) {
+    return this.http.get<Chat[]>(`/chat/findChatByInterlocutor/${intelocutor}`);
   }
 
-  sendMessage(message: Partial<Message>) {
-    console.log(message)
+  getOpenedChat(id: string) {
+    return this.http.get<Chat>(`/chat/getChat/${id}`);
+  }
+
+  createChat(interlocutorIds: string[]) {
+    return this.http.post('/chat/createChat', { interlocutorIds });
+  }
+
+  sendMessage(message: LocalMessage) {
+    this.socket.emit('sendMessage', message);
   }
 }

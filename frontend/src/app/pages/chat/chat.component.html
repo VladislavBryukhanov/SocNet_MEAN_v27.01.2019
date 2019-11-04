@@ -5,9 +5,9 @@
     </div>
   </div>
 
-  <div class="opened-chat">
+  <div class="opened-chat" *ngIf="openedChat || initDialog; else noChats">
     <div class="chat-header">
-      <ng-container *ngTemplateOutlet="chatHeader; context: chatList[0]"></ng-container>
+      <ng-container *ngTemplateOutlet="chatHeader; context: openedChat"></ng-container>
     </div>
 
     <div class="chat-content">
@@ -32,18 +32,24 @@
       <span class="image-upload">
         <label>
           <img src="../../../assets/staticLayout/attach.png">
-          <input
+          <!-- <input
             type="file"
             multiple
-          />
+          /> -->
         </label>
       </span>
 
-      <button class="primary-button" (click)="onSendMessage()">
+      <button class="primary-button" (click)="onSendMessage()" [disabled]=loading>
         Send message
       </button>
     </div>
   </div>
+  
+  <ng-template #noChats>
+    <div class="no-chat-opened">
+      <p>Please choose chat</p>
+    </div>
+  </ng-template>
 </div>
 
 <ng-template #chatHeader let-name="name" let-avatar="avatar">

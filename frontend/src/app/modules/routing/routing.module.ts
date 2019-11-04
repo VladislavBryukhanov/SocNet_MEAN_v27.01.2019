@@ -43,7 +43,7 @@ const routes: Routes = [
     canActivate: [AuthGuardService]
   },
   {
-    path: 'chat/:interlocutor',
+    path: 'chat/:chatId',
     component: ChatComponent,
     canActivate: [AuthGuardService]
   }

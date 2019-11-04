@@ -3,7 +3,7 @@ import { User } from './user';
 
 export interface Chat {
   _id: string;
-  name: string;
+  name?: string;
   users: User[];
   avatar?: Image;
 }
@@ -14,4 +14,10 @@ export interface Message {
   attachedFiles: Image[];
   textContent: string;
   date: Date;
+}
+
+export interface LocalMessage {
+  attachedFiles: Image[];
+  textContent: string;
+  sender: string;
 }
