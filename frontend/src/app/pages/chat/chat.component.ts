@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ChatService } from '../../services/chat.service';
+import { ActivatedRoute } from '@angular/router';
+import { Message } from '../../models/chat';
 
 @Component({
   selector: 'app-chat',
@@ -10,29 +12,29 @@ export class ChatComponent implements OnInit {
 
   chatList = [
     {
-       avatar: {
-          fileName: "avatar-f0997740-4196-11e9-9ce7-7d59ffcc8c72.png",
-          filePath: "avatars/"
-       },
-       name: 'Test chat'
-    },
-    {
       avatar: {
-        fileName: "avatar-f0997740-4196-11e9-9ce7-7d59ffcc8c72.png",
+        fileName: "avatar-9c8db5a0-fed6-11e9-8e36-f3b5deee08a9.png",
         filePath: "avatars/"
       },
       name: 'Test chat'
     },
     {
       avatar: {
-        fileName: "avatar-f0997740-4196-11e9-9ce7-7d59ffcc8c72.png",
+        fileName: "avatar-9c8db5a0-fed6-11e9-8e36-f3b5deee08a9.png",
         filePath: "avatars/"
       },
       name: 'Test chat'
     },
     {
       avatar: {
-        fileName: "avatar-f0997740-4196-11e9-9ce7-7d59ffcc8c72.png",
+        fileName: "avatar-9c8db5a0-fed6-11e9-8e36-f3b5deee08a9.png",
+        filePath: "avatars/"
+      },
+      name: 'Test chat'
+    },
+    {
+      avatar: {
+        fileName: "avatar-9c8db5a0-fed6-11e9-8e36-f3b5deee08a9.png",
         filePath: "avatars/"
       },
       name: 'Test chat'
@@ -57,16 +59,31 @@ export class ChatComponent implements OnInit {
     { content: 'lorem ipsum dolor amet', date: new Date(), sentByMe: true },
   ]
 
-  constructor(private chatService: ChatService) { }
+  messageContent: string = '';
+
+  constructor(
+    private chatService: ChatService,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit() {
     this.chatService
-      .fetchChatList()
+      .getChatList()
       .toPromise();
+
+    const interlocutor = this.route.snapshot.params['interlocutor'];
+    console.log(interlocutor);
   }
 
   onOpenChat(chat) {
-    
+
+  }
+
+  onSendMessage() {
+    const message: Partial<Message> = {
+      textContent: this.messageContent
+    };
+    this.chatService.sendMessage(message);
   }
 
 }

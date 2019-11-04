@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import {Image} from "../models/image";
+import { Image } from '../models/image';
 
 @Pipe({
   name: 'imageResizer'
@@ -7,8 +7,13 @@ import {Image} from "../models/image";
 export class ImageResizerPipe implements PipeTransform {
 
   transform(image: Image, mode: string): Image {
+    if (!image) {
+      return;
+    }
+
     let {fileName} = image;
     fileName = `${mode}/${fileName}`;
+
     return {
       ...image, fileName
     };

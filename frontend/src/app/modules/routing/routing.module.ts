@@ -41,6 +41,11 @@ const routes: Routes = [
     path: 'chat',
     component: ChatComponent,
     canActivate: [AuthGuardService]
+  },
+  {
+    path: 'chat/:interlocutor',
+    component: ChatComponent,
+    canActivate: [AuthGuardService]
   }
 ];
 

@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import * as io from 'socket.io-client';
 import { BehaviorSubject } from 'rxjs';
-import { Message } from '@angular/compiler/src/i18n/i18n_ast';
 import { HttpClient } from '@angular/common/http';
-import { Chat } from '../models/chat';
+import { Chat, Message } from '../models/chat';
 
 @Injectable({
   providedIn: 'root'
@@ -30,12 +29,15 @@ export class ChatService {
     this.socket.close();
   }
 
-  fetchChatList() {
+  getChatList() {
     return this.http.get<Chat[]>('/getChatList');
   }
 
+  getOpenedChat() {
+    return this.http.get<Chat[]>('/getChat');
+  }
 
-  sendMessage() {
-
+  sendMessage(message: Partial<Message>) {
+    console.log(message)
   }
 }

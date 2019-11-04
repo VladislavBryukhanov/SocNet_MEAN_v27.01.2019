@@ -1,9 +1,9 @@
 $border-color: #80808042;
+$primary-color: #326080;
 
 .chat-list {
-  height: calc(100vh - 80px);
+  height: calc(100vh - 70px);
   margin-top: 70px;
-  padding-top: 10px;
   display: flex;
   overflow: hidden;
 
@@ -11,7 +11,7 @@ $border-color: #80808042;
     min-height: 100%;
     display: inline-block;
     vertical-align: top;
-
+    
     .chatAvatar {
       height: 50px;
       width: 50px;
@@ -28,6 +28,8 @@ $border-color: #80808042;
     width: 25%;
     background: white;
     overflow: auto;
+    padding-top: 10px;
+    box-shadow: 1px 1px 10px 0px grey;
 
     .chat {
       padding: 8px 0;
@@ -35,7 +37,7 @@ $border-color: #80808042;
     }
     .chat:hover {
       cursor: pointer;
-      color: #326080;
+      color: $primary-color;
       background-color: rgba(0, 0, 0, 0.05);
     }
   }
@@ -45,19 +47,27 @@ $border-color: #80808042;
     flex: 1;
 
     .chat-header {
+      position: relative;
       padding: 8px;
       height: fit-content;
       background-color: white;
       border-bottom: 1px solid $border-color;
+      box-shadow: 8px 2px 14px 0px grey;
+      padding-top: 18px;
     }
     .chat-content{
       padding: 16px;
       overflow: auto;
-      height: calc(100% - 98px);
+      height: calc(100% - 260px);
       
       .message {
         max-width: 60%;
         width: fit-content;
+        border: 1px solid $border-color;
+        background: white;
+        padding: 6px 10px;
+        margin-bottom: 6px;
+        color: $primary-color;
 
         .text-content {
           flex: 1;
@@ -71,7 +81,41 @@ $border-color: #80808042;
         }
       }
       .alien-message {
+        color: firebrick;
         margin-left: auto;
+      }
+    }
+  }
+  .input-message {
+    border-top: 1px solid grey;
+    background: white;
+    padding-top: 12px;
+    padding-bottom: 5px;
+
+    textarea {
+      min-height: 60px;
+      margin: 10px 15px 0 15px;
+      width: calc(100% - 35px);
+    }
+
+    .primary-button {
+      margin-right: 15px;
+      float: right;
+    }
+
+    .image-upload {
+      display: inline-block;
+      padding: 0 15px;
+
+      label {
+        cursor: pointer;
+        img {
+          padding-top: 10px;
+          width: 34px;
+        }
+      }
+      input {
+        display: none;
       }
     }
   }

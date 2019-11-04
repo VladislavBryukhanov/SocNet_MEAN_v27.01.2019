@@ -1,10 +1,14 @@
 const mongoose = require('mongoose');
+const { ObjectId } = mongoose.Schema.Types;
 
 const chatSchema = mongoose.Schema({
     name: String,
-    access: String,
+    avatar: {
+        type: ObjectId,
+        ref: 'Image'
+    },
     users: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: ObjectId,
         ref: 'User',
         required: true
     }]

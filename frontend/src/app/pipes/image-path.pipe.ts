@@ -8,6 +8,9 @@ import { environment } from 'src/environments/environment';
 export class ImagePathPipe implements PipeTransform {
 
   transform(avatar: Image): string {
+    if (!avatar) {
+      return '';
+    }
     return `${environment.hostUrl}/${avatar.filePath}${avatar.fileName}`;
   }
 

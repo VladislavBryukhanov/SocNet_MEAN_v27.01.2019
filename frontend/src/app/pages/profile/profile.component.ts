@@ -21,26 +21,26 @@ export class ProfileComponent implements OnInit, OnDestroy {
   public scrollCallback;
 
   constructor(private userService: UsersService,
-              private router: ActivatedRoute,
+              private activatedRoute: ActivatedRoute,
               public imageViewerService: ImageViewerService,
               public blogService: BlogService,
               public authService: AuthService,
-              private _router: Router) {
+              private router: Router) {
 
-    this._router.routeReuseStrategy.shouldReuseRoute = () => false;
-    this._router.events.subscribe((evt) => {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+    this.router.events.subscribe((evt) => {
       if (evt instanceof NavigationEnd) {
-        this._router.navigated = false;
+        this.router.navigated = false;
         window.scrollTo(0, 0);
       }
     });
   }
 
   ngOnInit() {
-    const profileId = this.router.snapshot.params['id'];
+    const profileId = this.activatedRoute.snapshot.params['id'];
     this.isMyPage = profileId === this.authService.myUser._id;
 
-    this.router.url.subscribe(_ => {
+    this.activatedRoute.url.subscribe(_ => {
       this.userService.getUserById(profileId)
         .subscribe(res => {
           this.profile = res;
@@ -54,7 +54,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   nextPage(maxCount: number, currentPage: number) {
-    return this.blogService.getBlog(this.router.snapshot.params['id'], maxCount, currentPage)
+    return this.blogService.getBlog(this.activatedRoute.snapshot.params['id'], maxCount, currentPage)
       .pipe(
         map(res => {
           this.blogService.blog = this.blogService.blog.concat(res['data']);
@@ -65,5 +65,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   openImageViewer(images: Image[], index: number) {
     this.imageViewerService.openImageViewer(images, index);
+  }
+
+  onStartChat(profile: User) {
+    this.router.navigate([ `/chat/${profile._id}` ]);
   }
 }

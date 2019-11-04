@@ -24,6 +24,25 @@
         </span>
       </div>
     </div>
+
+    <div class="input-message">
+      <textarea [(ngModel)]='messageContent'>
+      </textarea>
+
+      <span class="image-upload">
+        <label>
+          <img src="../../../assets/staticLayout/attach.png">
+          <input
+            type="file"
+            multiple
+          />
+        </label>
+      </span>
+
+      <button class="primary-button" (click)="onSendMessage()">
+        Send message
+      </button>
+    </div>
   </div>
 </div>
 
