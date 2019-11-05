@@ -17,7 +17,7 @@ const messageSchema = mongoose.Schema({
         ref: 'Image',
         required: true
     }],
-    content: String,
+    textContent: String,
     date: {
         type: Date,
         default: Date.now

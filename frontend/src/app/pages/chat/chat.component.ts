@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ChatService } from '../../services/chat.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LocalMessage, Chat } from '../../models/chat';
+import { LocalMessage, Chat, Message } from '../../models/chat';
 import { AuthService } from '../../services/auth.service';
-import { Subscription } from 'rxjs';
-import { mergeMap, filter } from 'rxjs/internal/operators';
+import { Subscription, forkJoin, of } from 'rxjs';
+import { mergeMap, filter, concatMap, tap, take } from 'rxjs/internal/operators';
 
 @Component({
   selector: 'app-chat',
@@ -13,31 +13,16 @@ import { mergeMap, filter } from 'rxjs/internal/operators';
 })
 export class ChatComponent implements OnInit, OnDestroy {
 
-  chatContent = [
-    { content: 'lorem ipsum dolor amet', date: new Date(), sentByMe: true },
-    { content: 'lorem ipsum dolor amet', date: new Date() },
-    { content: 'lorem ipsum dolor amet', date: new Date(), sentByMe: true },
-    { content: 'lorem ipsum dolor amet', date: new Date(), sentByMe: true },
-    { content: 'lorem ipsum dolor amet', date: new Date(), sentByMe: true },
-    { content: 'lorem ipsum dolor amet', date: new Date() },
-    { content: 'lorem ipsum dolor amet', date: new Date() },
-    { content: 'lorem ipsum dolor amet', date: new Date() },
-    { content: 'lorem ipsum dolor amet', date: new Date() },
-    { content: 'lorem ipsum dolor amet', date: new Date() },
-    { content: 'lorem ipsum dolor amet', date: new Date(), sentByMe: true },
-    { content: 'lorem ipsum dolor amet', date: new Date() },
-    { content: 'lorem ipsum dolor amet', date: new Date() },
-    { content: 'lorem ipsum dolor amet', date: new Date() },
-    { content: 'lorem ipsum dolor amet', date: new Date(), sentByMe: true },
-  ];
-
   chatList: Chat[] = [];
+  chatContent: Message[] = [];
   messageContent = '';
   openedChat?: Chat;
   initDialog: boolean;
   loading = true;
   subscriptions: Subscription[] = [];
   interlocutor: string;
+
+  // send message after chat creating and user connection to this new chat by socket
 
   constructor(
     private chatService: ChatService,
@@ -61,11 +46,16 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.route.params.pipe(
         filter(params => params.chatId),
-        mergeMap((params) => this.chatService.getOpenedChat(params.chatId))
-      ).subscribe((chat: Chat) => {
-        this.loading = false;
-        this.openedChat = this.displayableChat(chat);
-      })
+        mergeMap((params) => this.chatService.getOpenedChat(params.chatId)),
+        mergeMap((chat: Chat) => {
+          this.loading = false;
+          this.openedChat = this.displayableChat(chat);
+
+          return this.chatService.subscribeOnChat(chat._id);
+        })
+      ).subscribe((messages: Message[]) =>
+        this.chatContent = messages
+      )
     );
 
     this.subscriptions.push(
@@ -90,6 +80,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.chatService.unsubscribeFromChat();
   }
 
   displayableChat = (chat: Chat) => {
@@ -105,34 +96,53 @@ export class ChatComponent implements OnInit, OnDestroy {
     };
   }
 
+  isMyMessage(message: Message) {
+    return message.user === this.authService.myUser._id;
+  }
+
   onOpenChat(chat: Chat) {
     this.router.navigate([ `/chat/${chat._id}` ]);
   }
 
+  createChat(callback: Function) {
+    const interlocutors = [
+      this.authService.myUser._id,
+      this.interlocutor
+    ];
+
+    let newChat;
+    this.subscriptions.push(
+      this.chatService
+        .createChat(interlocutors)
+        .pipe(
+          mergeMap((chat: Chat) => {
+            newChat = chat;
+            return this.chatService.subscribeOnChat(chat._id);
+          }),
+          take(1)
+        ).subscribe(async (messages: Message[]) => {
+          await callback();
+          this.onOpenChat(newChat);
+        })
+    );
+  }
+
   async onSendMessage() {
-    if (this.initDialog) {
-      const interlocutors = [
-        this.authService.myUser._id,
-        this.interlocutor
-      ];
+    const sendMessage = () => {
+      const message: LocalMessage = {
+        textContent: this.messageContent,
+        sender: this.authService.myUser._id,
+        attachedFiles: []
+      };
 
-      this.subscriptions.push(
-        this.chatService
-          .createChat(interlocutors)
-          .subscribe((chat: Chat) => {
-            this.initDialog = false;
-            this.openedChat = this.displayableChat(chat);
-
-            this.chatList.push(this.openedChat);
-            this.onOpenChat(chat);
-          })
-      );
-    }
-    const message: LocalMessage = {
-      textContent: this.messageContent,
-      sender: this.authService.myUser._id,
-      attachedFiles: []
+      this.messageContent = '';
+      return this.chatService.sendMessage(message);
     };
-    this.chatService.sendMessage(message);
+
+    if (this.initDialog) {
+      return this.createChat(sendMessage);
+    } else {
+      sendMessage();
+    }
   }
 }

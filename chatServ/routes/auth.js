@@ -35,7 +35,8 @@ router.get('/getProfile', async (request, response) => {
         role: request.user.role,
         session_hash: request.user.session_hash
     }).populate('avatar');
-    if (user) {       response.send(user);
+    if (user) {  
+        response.send(user);
     } else {
        response.sendStatus(401);
     }

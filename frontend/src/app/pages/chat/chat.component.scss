@@ -37,6 +37,11 @@ $primary-color: #326080;
     }
     .chat:hover {
       cursor: pointer;
+      text-decoration: line-through;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+    .active-chat {
+      cursor: pointer;
       color: $primary-color;
       background-color: rgba(0, 0, 0, 0.05);
     }
@@ -74,7 +79,8 @@ $primary-color: #326080;
         background: white;
         padding: 6px 10px;
         margin-bottom: 6px;
-        color: $primary-color;
+        color: firebrick;
+        margin-left: auto;
 
         .text-content {
           flex: 1;
@@ -88,8 +94,8 @@ $primary-color: #326080;
         }
       }
       .alien-message {
-        color: firebrick;
-        margin-left: auto;
+        color: $primary-color;
+        margin-left: unset;
       }
     }
   }

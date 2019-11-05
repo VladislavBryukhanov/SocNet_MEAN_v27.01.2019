@@ -10,7 +10,8 @@ export interface Chat {
 
 export interface Message {
   _id: string;
-  user: User;
+  // user: User;
+  user: string;
   attachedFiles: Image[];
   textContent: string;
   date: Date;

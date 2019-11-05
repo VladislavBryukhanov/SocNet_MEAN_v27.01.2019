@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Chat = require('../models/chat');
 
+const findChatByInterlocutors = (users) => Chat.find({
+    users: { '$all': users }
+});
+
 router.get('/getChatList', async (request, response) => {
     const populate = request.query.populate;
     let chatList = Chat.find({
@@ -22,12 +26,14 @@ router.get('/getChatList', async (request, response) => {
 });
 
 router.get('/findChatByInterlocutor/:interlocutor', async (request, response) => {
-    const chat = await Chat.find({
-        users: { '$all': [
-            request.params.interlocutor,
-            request.user._id
-        ] }
-    });
+    const chat = await findChatByInterlocutors([
+        request.user._id,
+        request.params.interlocutor
+    ]);
+    
+    if (!chat) {
+        response.send(404);
+    }
     response.send(chat);
 });
 
@@ -38,13 +44,23 @@ router.get('/getChat/:id', async (request, response) => {
             populate: { path: 'avatar' }
         });
 
+    if (!chat) {
+        response.send(404);
+    }
     response.send(chat);
 });
 
 router.post('/createChat', async (request, response) => {
     const { interlocutorIds: users } = request.body;
-    const newChat = await Chat.create({ users });
 
+    const chat = await findChatByInterlocutors(users);
+    if (chat && chat.length) {
+        return response
+            .status(400)
+            .send('Chat already exists');
+    }
+
+    const newChat = await Chat.create({ users });
     await Chat.populate(newChat, {
         path: 'users',
         populate: { path: 'avatar' }

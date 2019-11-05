@@ -1,6 +1,11 @@
 <div class="chat-list">
   <div class="exists-chats">
-    <div class="chat" *ngFor="let chat of chatList" (click)="onOpenChat(chat)">
+    <div
+      class="chat"
+      *ngFor="let chat of chatList"
+      (click)="onOpenChat(chat)"
+      ngClass="{{ openedChat && openedChat._id === chat._id ? 'active-chat' : ''}}"
+    >
       <ng-container *ngTemplateOutlet="chatHeader; context: chat"></ng-container>
     </div>
   </div>
@@ -14,10 +19,10 @@
       <div 
         class="message"
         *ngFor="let message of chatContent"
-        [ngClass]="!message.sentByMe ? 'alien-message' : ''"
+        [ngClass]="!isMyMessage(message) ? 'alien-message' : ''"
       >
         <span class="text-content">
-          {{message.content}}
+          {{message.textContent}}
         </span>
         <span class="sent-date">
           {{message.date|date:'dd MMM, HH:mm:ss'}}
