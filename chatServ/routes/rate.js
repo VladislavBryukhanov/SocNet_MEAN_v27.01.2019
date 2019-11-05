@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const Rate = require('../models/rate');
-const Blog = require('../models/blog');
 const mongoose = require('mongoose');
 const objId = mongoose.Types.ObjectId;
 const _ = require("lodash");
 // const findWithPaging = require('../common/paging');
 
-const actions = require('../common/constants').actions;
+const {actions} = require('../common/constants');
 const bindDbModelMiddleware = require('../middlewares/bindDbModel');
 
 //TODO aggregation to common module
@@ -132,7 +131,7 @@ router.get('/getRatedUsers/:itemId&:targetModel&:isPositive&:limit&:offset',
     ]);
 
     // TODO count to prev aggregation
-    const count = await Blog.aggregate([
+    const count = await request.targetModel.aggregate([
         {
             $match: {
                 _id: objId(request.params.itemId)
@@ -160,6 +159,12 @@ router.get('/getRatedUsers/:itemId&:targetModel&:isPositive&:limit&:offset',
         }
     ]).then(res => res[0].count);
 
+    //TODO exclude from aggregation
+    ratedUsers.forEach(user => {
+        delete user.password,
+        delete user.session_hash
+    });
+
     const res = {
         data: ratedUsers,
         count,
@@ -172,12 +177,11 @@ router.get('/getRatedUsers/:itemId&:targetModel&:isPositive&:limit&:offset',
 router.get('/getRateCounter/:itemId&:targetModel&:userId',
     bindDbModelMiddleware, async (request, response) => {
     //TODO userId? mb from token?
-    const rate = await getRateInfo(
+    const [rateInfo] = await getRateInfo(
         request.targetModel,
         {_id: objId(request.params.itemId)},
         objId(request.params.userId)
     );
-    const [rateInfo] = rate;
     rateInfo.myAction = _.isEmpty(rateInfo.myAction) ? null
         : rateInfo.myAction[0].isPositive ? actions.like : actions.dislike;
     response.send(rateInfo);

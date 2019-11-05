@@ -5,10 +5,10 @@ const crypto = require('crypto');
 
 const User = require('../models/user');
 const secret = require('../secret');
-const avatarFileSize = require('../common/imageFiles/imagesSize').avatarFileSize;
-const maxFileSize = require('../common/imageFiles/imagesSize').maxFileSize;
-const resizeAndSaveImage = require('../common/imageFiles/imageActions').resizeAndSaveImage;
-const deleteAttachedFiles = require('../common/imageFiles/imageActions').deleteAttachedFiles;
+const {avatarFileSize} = require('../common/imageFiles/imagesSize');
+const {maxFileSize} = require('../common/imageFiles/imagesSize');
+const {resizeAndSaveImage} = require('../common/imageFiles/imageActions');
+const {deleteAttachedFiles} = require('../common/imageFiles/imageActions');
 
 const multer = require('multer');
 const storage = multer.memoryStorage();
@@ -35,7 +35,8 @@ router.get('/getProfile', async (request, response) => {
         role: request.user.role,
         session_hash: request.user.session_hash
     }).populate('avatar');
-    if (user) {       response.send(user);
+    if (user) {  
+        response.send(user);
     } else {
        response.sendStatus(401);
     }

@@ -1,14 +1,27 @@
-var mongoose = require('mongoose');
-var messageSchema = mongoose.Schema({
-    username: String,
-    content: String,
-    time: {
+const mongoose = require('mongoose');
+const { ObjectId } = mongoose.Schema.Types;
+
+const messageSchema = mongoose.Schema({
+    chatId: {
+        type: ObjectId,
+        ref: 'Chat',
+        required: true
+    },
+    user: {
+        type: ObjectId,
+        ref: 'User',
+        required: true
+    },
+    attachedFiles: [{
+        type: ObjectId,
+        ref: 'Image',
+        required: true
+    }],
+    textContent: String,
+    date: {
         type: Date,
         default: Date.now
-    },
-    roomId: {
-        type: String,
-        required: true
     }
 });
+
 module.exports = mongoose.model('Message', messageSchema);

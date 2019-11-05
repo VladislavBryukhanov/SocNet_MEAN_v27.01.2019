@@ -40,35 +40,39 @@
     text-decoration: line-through;
   }
 
-  .user {
-    cursor: pointer;
-    padding: 10px 2px 0 2px;
-    font-size: 22px;
-    color: #326080;
-    text-align: center;
-    display: inline-block;
-    //overflow: hidden;
-    //text-overflow: ellipsis;
-    //white-space: nowrap;
-    width: 19%;
-    min-width: 110px;
-    p {
-      margin: 4px;
-      max-width: 111px;
-      overflow: hidden;
-      text-overflow: ellipsis;
+  .userList {
+    display: flex;
+    .user {
+      cursor: pointer;
+      padding: 10px 2px 0 2px;
+      font-size: 22px;
+      color: #326080;
+      text-align: center;
+      display: inline-block;
+      //overflow: hidden;
+      //text-overflow: ellipsis;
+      //white-space: nowrap;
+      width: 19%;
+      min-width: 110px;
+      .ratedUsername {
+        white-space: nowrap;
+        margin: 4px;
+        max-width: 111px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .userAvatar {
+        height: 50px;
+        width: 50px;
+        border-radius: 45px;
+        vertical-align: middle;
+        box-shadow: 4px 6px 17px -1px black;
+      }
     }
-    .userAvatar {
-      height: 50px;
-      width: 50px;
-      border-radius: 45px;
-      vertical-align: middle;
-      box-shadow: 4px 6px 17px -1px black;
+    .user:hover {
+      color: firebrick;
+      //background-color: rgba(0, 0, 0, 0.05);
     }
-  }
-  .user:hover {
-    color: firebrick;
-    //background-color: rgba(0, 0, 0, 0.05);
   }
 }
 

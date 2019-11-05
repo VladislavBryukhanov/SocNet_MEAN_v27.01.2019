@@ -13,6 +13,14 @@
       </div>
       <div class="rightBlock">
         <h1 class="username">{{profile.username}}</h1>
+
+        <button 
+          *ngIf="!isMyPage"
+          class="primary-button"
+          (click)="onStartChat(profile)"
+        >
+          Start Chat
+        </button>
       </div>
     </div>
   </div>
@@ -22,7 +30,7 @@
 </div>
 
 <!--//TODO stop image viewer component rendering before modal open (mb its bug with model)-->
-<app-modal-component [id]="imageViewerService.modalImageViewerId">
+<app-modal-component [id]="imageViewerService.modalImageViewerId" class="imageViewerModal">
   <app-image-viewer
     class="imageViewer">
   </app-image-viewer>

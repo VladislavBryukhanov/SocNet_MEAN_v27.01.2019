@@ -9,7 +9,8 @@
 
   <ng-template #loggedIn>
     <div  class="navigation">
-        <a routerLink="/user_list">list of users</a>
+        <a routerLink="/user_list">List of users</a>
+        <a routerLink="/chat">Chat</a>
     </div>
     <div class="profile" *ngIf="this.authService.myUser">
       <a class="username" routerLink="/edit_profile">{{this.authService.myUser.username}}</a>

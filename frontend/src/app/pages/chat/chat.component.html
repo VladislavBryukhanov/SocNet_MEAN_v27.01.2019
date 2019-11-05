@@ -1,0 +1,63 @@
+<div class="chat-list">
+  <div class="exists-chats">
+    <div
+      class="chat"
+      *ngFor="let chat of chatList"
+      (click)="onOpenChat(chat)"
+      ngClass="{{ openedChat && openedChat._id === chat._id ? 'active-chat' : ''}}"
+    >
+      <ng-container *ngTemplateOutlet="chatHeader; context: chat"></ng-container>
+    </div>
+  </div>
+
+  <div class="opened-chat" *ngIf="openedChat || initDialog; else noChats">
+    <div class="chat-header">
+      <ng-container *ngTemplateOutlet="chatHeader; context: openedChat"></ng-container>
+    </div>
+
+    <div class="chat-content">
+      <div 
+        class="message"
+        *ngFor="let message of chatContent"
+        [ngClass]="!isMyMessage(message) ? 'alien-message' : ''"
+      >
+        <span class="text-content">
+          {{message.textContent}}
+        </span>
+        <span class="sent-date">
+          {{message.date|date:'dd MMM, HH:mm:ss'}}
+        </span>
+      </div>
+    </div>
+
+    <div class="input-message">
+      <textarea [(ngModel)]='messageContent'>
+      </textarea>
+
+      <span class="image-upload">
+        <label>
+          <img src="../../../assets/staticLayout/attach.png">
+          <!-- <input
+            type="file"
+            multiple
+          /> -->
+        </label>
+      </span>
+
+      <button class="primary-button" (click)="onSendMessage()" [disabled]=loading>
+        Send message
+      </button>
+    </div>
+  </div>
+  
+  <ng-template #noChats>
+    <div class="no-chat-opened">
+      <p>Please choose chat</p>
+    </div>
+  </ng-template>
+</div>
+
+<ng-template #chatHeader let-name="name" let-avatar="avatar">
+  <img class="chatAvatar" src="{{avatar | imageResizer:'min' | imagePath}}"/>
+  <span>{{name}}</span>
+</ng-template>

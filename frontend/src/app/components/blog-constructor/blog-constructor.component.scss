@@ -8,6 +8,9 @@
   .blogConstructor {
     text-align: left;
     margin-top: 0;
+    textarea {
+      min-height: 34px;
+    }
   }
 }
 
@@ -52,30 +55,11 @@
         display: none;
       }
     }
-    .submitPost {
-      font-family: inherit;
+    .primary-button {
       float: right;
       margin-top: 10px;
-      //margin: 8px -12px;
-      font-weight: 100;
       width: 153px;
       height: 36px;
-      color: white;
-      font-size: 19px;
-      border: 0;
-      //background-color: #5682a3;
-      background-color: #6496C7;
-      cursor: pointer;
-      border-radius: 2px;
-      box-shadow: 1px 2px 1px 1px #56729a;
-      //box-shadow: 1px 1px 1px 1px #4f6
-    }
-    .submitPost:hover {
-      background-color: rgb(84, 136, 200);
-    }
-    .submitPost:active {
-      background-color: #417BBA;
-      box-shadow: 1px 2px 1px 1px #56729a;
     }
   }
   .attachedImages {

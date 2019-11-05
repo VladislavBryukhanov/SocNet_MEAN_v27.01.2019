@@ -1,80 +1,139 @@
 const express = require('express');
 const router = express.Router();
 const Comment = require('../models/comment');
-const path = require('path');
 const mongoose = require('mongoose');
 const fs = require('fs');
-const findWithPaging = require('../common/paging');
-
+const { COMMENT_ADDED } = require('../common/constants').commentEventActions;
+const { commentEvent } = require('../sockets/comments');
+const { maxFileSize } = require('../common/imageFiles/imagesSize');
+const { commentFileSize } = require('../common/imageFiles/imagesSize');
+const { resizeAndSaveImage } = require('../common/imageFiles/imageActions');
+const bindDbModelMiddleware = require('../middlewares/bindDbModel');
+const objId = mongoose.Types.ObjectId;
 const multer = require('multer');
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, path.join(__dirname, '/../public/comments'))
-    },
-    filename: function(req, file, cb) {
-        cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`)
-    }
-});
+const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
-    limits: {
-        fileSize: 5 * 1024 * 1024
-    }
+    limits: maxFileSize
 });
 
 //TDOO blogs and comments equals
 
-router.get('/getCommentsCounter/:itemId&:userId', async (request, response) => {
-    const itemId = request.params.itemId;
-    const user = mongoose.Types.ObjectId(request.params.userId);
+// router.get('/getCommentsCounter/:itemId&:targetModel&:userId', bindDbModelMiddleware, async (request, response) => {
+//     const itemId = request.params.itemId;
+//     const user = objId(request.params.userId);
 
-    const commentsCounter = await Comment.count({itemId});
-    const isCommentedByMe = !!await Comment.findOne({itemId, user});
+//     // FIXME replace to aggregate
+//     const commentsCounter = await Comment.count({itemId});
+//     const isCommentedByMe = !!await Comment.findOne({itemId, user});
 
-    response.send({commentsCounter, isCommentedByMe});
-});
+//     response.send({commentsCounter, isCommentedByMe});
+// });
 
 router.get('/getComment/:commentId', async (request, response) => {
     response.send(await Comment.findOne({_id: request.params.commentId}));
 });
 
-router.get('/getComments/:itemId&:limit&:offset', async (request, response) => {
-    const populate = {
-        path: 'user',
-        populate: {path: 'avatar'}
-    };
-    const res = await findWithPaging(
-        request.params,
-        Comment,
-        {itemId: request.params.itemId},
-        populate);
-    res.data.length > 0 ? response.send(res) : response.sendStatus(404);
+router.get('/getComments/:itemId&:targetModel&:limit&:offset', bindDbModelMiddleware, async (request, response) => {
+    const { offset, limit } = request.params;
+
+    const [ result ] = await request.targetModel.aggregate([
+        {
+            $match: { _id: objId(request.params.itemId) }
+        },
+        {
+            $lookup: {
+                from: "comments",
+                localField: "comments",
+                foreignField: "_id",
+                as: "comments"
+            }
+        },
+        {
+            $project: {
+                comments: "$comments",
+                count: { $size: "$comments" }
+            }
+        },
+        { $unwind: "$comments" },
+        { $sort: { "comments.date": 1 } },
+        { $skip: +offset },
+        { $limit: +limit },
+        {
+            $lookup: {
+                from: "images",
+                localField: 'comments.attachedFiles',
+                foreignField: '_id',
+                as: "comments.attachedFiles"
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: 'comments.user',
+                foreignField: '_id',
+                as: "comments.user"
+            }
+        },
+        { $unwind: "$comments.user" },
+        {
+            $lookup: {
+                from: "images",
+                localField: 'comments.user.avatar',
+                foreignField: '_id',
+                as: "comments.user.avatar"
+            }
+        },
+        {$unwind: "$comments.user.avatar"},
+        {
+            $group: {
+                _id: "$_id",
+                data: { $push: "$comments" },
+                count: { $first: "$count" },
+            }
+        }
+    ]);
+
+    result.data.forEach(comment => {
+        delete comment.user.password,
+        delete comment.user.session_hash
+    });
+
+    response.send({ ...result, offset: +offset });
 });
 
-router.post('/addComment', upload.array('files', 12), async (request, response) => {
+router.post('/addComment', upload.array('files', 12), bindDbModelMiddleware, async (request, response) => {
+    const { itemId, content } = request.body;
     const comment = {
-        user: mongoose.Types.ObjectId(request.user._id),
+        user: objId(request.user._id),
         attachedFiles: [],
-        itemId: request.body.itemId,
-        textContent: request.body.content
+        itemId,
+        textContent: content
     };
-    request.files.forEach(file => {
-        comment.attachedFiles.push(`comments/${file.filename}`);
-    });
-    if(comment.textContent.length > 0 || comment.attachedFiles.length > 0) {
 
-        //TODO populate user ? mb need add if (userId = myAuth.id) useMy session ?
+    comment.attachedFiles = await resizeAndSaveImage(request.files, 'comments/', commentFileSize);
+
+    if(comment.textContent || comment.attachedFiles.length > 0) {
         const newComment = await Comment.create(comment);
-        await Comment.populate(newComment, 'user');
+        await Comment.populate(newComment, {
+            path: 'user',
+            populate: {path: 'avatar'}
+        });
+        await request.targetModel.updateOne(
+            {_id: objId(itemId)},
+            { $push: {comments: newComment._id} }
+        );
+
+        commentEvent.emit(COMMENT_ADDED, { itemId, newComment });
         response.send(newComment);
     } else {
-        response.sendStatus(404);
+        response.sendStatus(400);
     }
 });
 
 router.put('/editComment', upload.array('files', 12), async (request, response) => {
     const post = {
-        attachedFiles: request.body.existsFiles ? request.body.existsFiles : [],
+        attachedFiles: request.body.existsFiles || [],
         textContent: request.body.content,
         user: mongoose.Types.ObjectId(request.user._id),
     };
@@ -96,13 +155,22 @@ router.put('/editComment', upload.array('files', 12), async (request, response) 
         return response.sendStatus(404);
     }
 
-    response.send(await Blog.findOneAndUpdate({
-        _id: request.body._id, owner: request.user._id}, post, { "new": true }));
+    const comment = await Blog.findOneAndUpdate(
+        {
+            _id: request.body._id,
+             owner: request.user._id
+        },
+        post,
+        { "new": true }
+    );
+
+    response.send(comment);
 });
 
 router.delete('/deleteComment/:_id', async (request, response) => {
     const deletedItem = await Comment.findOneAndRemove({
-        _id: request.params._id, owner: request.user._id
+        _id: request.params._id,
+        owner: request.user._id
     });
     if(deletedItem) {
         deletedItem.attachedFiles.forEach(file => {

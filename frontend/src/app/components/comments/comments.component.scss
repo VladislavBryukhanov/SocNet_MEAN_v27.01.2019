@@ -36,35 +36,65 @@
         text-decoration: line-through;
       }
     }
-    .ownerBlock {
-      cursor: pointer;
-      display: inline-block;
-      .username {
-        font-size: 20px;
+    .commentTitle {
+      width: 100%;
+      display: inline-flex;
+      .ownerBlock {
+        cursor: pointer;
+        display: inline-block;
+        flex: 1;
+        .username {
+          font-size: 20px;
+        }
+        .userAvatar {
+          height: 50px;
+          width: 50px;
+          border-radius: 45px;
+          vertical-align: middle;
+          margin: 0 15px 12px 0;
+          box-shadow: 4px 6px 17px -1px black;
+        }
       }
-      .userAvatar {
-        height: 50px;
-        width: 50px;
-        border-radius: 45px;
-        vertical-align: middle;
-        margin: 0 15px 12px 0;
-        box-shadow: 4px 6px 17px -1px black;
+      .postDate {
+        height: fit-content;
+        display: flex;
+        margin: auto;
+        color: grey;
+        text-align:  right;
+        font-size: 14px;
+        // margin: 5px 0 4px 0;
       }
     }
-    .postDate {
-      color: grey;
-      text-align:  right;
-      font-size: 14px;
-      margin: 5px 0 4px 0;
+    .imageBlock {
+      margin-bottom: 9px;
+      img:hover {
+        box-shadow: 1px 5px 20px 1px grey;
+      }
+      img {
+        cursor: pointer;
+        box-shadow: 1px 1px 8px 1px grey;
+      }
+      .attachedImage{
+        //width: 120px;
+        height: 120px;
+        border-radius: 3px;
+        margin: 10px 20px 10px 0;
+        display: inline-block;
+      }
     }
     .textContent {
       color: #5682a3;
+      text-transform: capitalize;
+      margin: 6px;
     }
+  }
+  .comment:nth-last-child(1) {
+    border-bottom: none;
   }
 }
 
 .modalBody {
-  width: 55%;
+  width: 65%;
   margin: auto;
   background-color: white;
 
@@ -76,5 +106,4 @@
     border-bottom: 1px solid grey;
   }
 }
-
 

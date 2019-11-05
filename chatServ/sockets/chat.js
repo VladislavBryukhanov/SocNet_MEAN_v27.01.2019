@@ -1,78 +1,61 @@
 const Message = require('../models/message');
+const { ObjectId } = require('mongoose').Types;
+const jwt = require('jsonwebtoken');
+const secret = require('../secret');
 
-const getMessages = (clientSocket, roomId) => {
-    Message.find({roomId: roomId}, (err, data) => {
-        if (err) {
-            console.log(err);
+const socketAuthMiddleware = (socket, next) => {
+    const { query } = socket.handshake;
+
+    if (query && query.token) {
+        let { token } = query;
+        
+        // Remove Bearer from string
+        if (token.startsWith('Bearer ')) {
+            token = token.slice(7, token.length);
         }
-        clientSocket.emit('messages', data);
-    });
-};
 
-const saveMessages = (msg, callback) => {
-    let message = Message(msg);
-    message.save(callback);
-};
+        jwt.verify(token, secret, (err, decoded) => {
+            if(err) {
+                socket.disconnect();
+                return next(new Error('Auth error'));
+            }
+            socket.decoded = decoded;
+            next();
+        })
+    } else {
+        socket.disconnect();
+        return next(new Error('Auth error'));
+    }
+}
 
 module.exports = (server) => {
     const io = require('socket.io')(server, {
-        path: '/chat',
+        path: '/chat_soc',
         pingInterval: 10000,
         pingTimeout: 5000,
         origins: '*:*'
     });
 
-    let onlineCounter = 0;
+    io.use(socketAuthMiddleware)
+        .on('connection', (client) => {
 
-    const leaveRoom = (client) => {
-        client.leave(client.room);
-        delete client.room;
-        io.emit('newConnection', --onlineCounter);
-    };
+            // TODO add paging for message fetcher
+            client.on('joinChat', async (chatId) => {
+                client.join(chatId);
+                client.chatId = chatId;
+                const messages = await Message.find({ chatId });
+                client.emit('fetchMessages', messages);
+            });
 
-    io.on('connection', (client) => {
-
-        /*    const getRoomOnline = (io, roomId) => {
-                console.log(io.sockets.adapter);
-                let onlineCounter = (io.sockets.adapter.rooms[roomId]).length;
-                io.to(roomId).emit('newConnection', onlineCounter);
-            };*/
-
-        client.on('joinRoom', (roomId) => {
-            client.join(roomId);
-            client.room = roomId;
-            io.to(roomId).emit('newConnection', ++onlineCounter);
-            getMessages(client, roomId);//, roomId);
-            // getRoomOnline(roomId);
-        });
-
-        client.on('message', (msg) => {
-            saveMessages(msg, (err, msg) => {
-                if (err) {
-                    console.log(err);
-                }
-                io.to(client.room).emit('message', msg)
+            client.on('sendMessage', async (msg, cb) => {
+                const message = await Message.create({
+                    ...msg,
+                    user: client.decoded._id,
+                    chatId: ObjectId(client.chatId)
+                });
+                
+                cb({ exists: !!message });
+                io.to(client.chatId).emit('messageSent', message);
             });
         });
-
-        // client.on('disconnect', client => {
-        // getRoomOnline(client.room);
-        // console.log(io.sockets.clients(client.roomId));
-        // });
-
-        client.on('disconnecting', () => {
-            console.log(client.room);
-            if(client.room) {
-                leaveRoom(client);
-            }
-        });
-
-        client.on('leaveRoom', () => {
-            leaveRoom(client);
-            /*       client.leave(roomId);
-                   delete client.room;
-                   io.emit('newConnection', --onlineCounter);*/
-        });
-
-    });
 };

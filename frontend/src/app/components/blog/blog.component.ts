@@ -3,8 +3,8 @@ import {BlogService} from '../../services/blog.service';
 import {AuthService} from '../../services/auth.service';
 import {ModalService} from '../../services/modal.service';
 import {ImageViewerService} from '../../services/image-viewer.service';
-import {Image} from "../../models/image";
-import {TargetModel} from "../../models/constants";
+import {Image} from '../../models/image';
+import {TargetModel} from '../../models/constants';
 
 @Component({
   selector: 'app-blog',

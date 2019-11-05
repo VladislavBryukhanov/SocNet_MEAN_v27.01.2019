@@ -22,6 +22,7 @@ import {RatedUsersComponent} from './components/rated-users/rated-users.componen
 import { ImageViewerComponent } from './components/image-viewer/image-viewer.component';
 import { CommentsComponent } from './components/comments/comments.component';
 import { ImageResizerPipe } from './pipes/image-resizer.pipe';
+import { ChatComponent } from './pages/chat/chat.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { ImageResizerPipe } from './pipes/image-resizer.pipe';
     RatedUsersComponent,
     ImageViewerComponent,
     CommentsComponent,
-    ImageResizerPipe
+    ImageResizerPipe,
+    ChatComponent
   ],
   imports: [
     BrowserModule,

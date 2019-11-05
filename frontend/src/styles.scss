@@ -21,9 +21,33 @@ body {
 
   display: block;
   margin: 98px auto 20px auto;
-
 }
 
 /*body.modal-open {*/
   /*overflow: hidden;*/
 /*}*/
+
+.primary-button {
+  font-family: inherit;
+  margin: 8px 0;
+  font-weight: 100;
+  padding: 6px 20px;
+  color: white;
+  font-size: 19px;
+  border: 0;
+  background-color: #6496C7;
+  cursor: pointer;
+  border-radius: 2px;
+  box-shadow: 1px 2px 1px 1px #56729a;
+}
+.primary-button:hover {
+  background-color: #549dc8;
+}
+.primary-button:active {
+  background-color: #3775a0e3;
+  box-shadow: 1px 2px 1px 1px #56729a;
+}
+.primary-button:disabled {
+  background-color: #8080808c;
+  box-shadow: 1px 2px 1px 1px darken(gray, 0.5);
+}

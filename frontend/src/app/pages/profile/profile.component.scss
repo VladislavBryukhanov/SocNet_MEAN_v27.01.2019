@@ -37,11 +37,16 @@
     }
   }
 }
-.imageViewer {
+.imageViewerModal {
   position: relative;
-  max-height: 85vh;
-  width: 70%;
-  max-width: 1200px;
-  margin: auto;
-  text-align: left;
+  z-index: 4;
+
+  .imageViewer {
+    position: relative;
+    max-height: 85vh;
+    width: 70%;
+    max-width: 1200px;
+    margin: auto;
+    text-align: left;
+  }
 }

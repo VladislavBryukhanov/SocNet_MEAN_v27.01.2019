@@ -3,8 +3,7 @@ import {BlogService} from '../../services/blog.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Blog} from '../../models/blog';
 import {CommentsService} from '../../services/comments.service';
-import {Observable} from 'rxjs/index';
-import {Image} from "../../models/image";
+import {Image} from '../../models/image';
 
 // it component allows build posts or comments
 
@@ -16,14 +15,19 @@ import {Image} from "../../models/image";
 export class BlogConstructorComponent implements OnInit {
 
   @Input()
-  public isComment;
+  public targetModel: string;
   @Input()
-  private itemId;
+  private itemId: string;
+  @Input()
+  public editId: string;
 
   @Output()
   public closeEditForm = new EventEmitter<void>();
-  @Input()
-  public editId: string;
+  
+  get isComment() {
+    return !!this.targetModel;
+  }
+
   public existsPost: Blog;
   public textarea;
 
@@ -57,7 +61,7 @@ export class BlogConstructorComponent implements OnInit {
     } else {
       this.getItem = this.commentsService.getComment.bind(this.commentsService);
       this.editItem = this.commentsService.editComment.bind(this.commentsService);
-      this.publishItem = (data: FormData) => this.commentsService.addComment(data, this.itemId);
+      this.publishItem = (data: FormData) => this.commentsService.addComment(data, this.targetModel, this.itemId);
     }
 
     this.formGroup = this.formBuilder.group({
