@@ -8,13 +8,19 @@ export interface Chat {
   avatar?: Image;
 }
 
-export interface Message {
+interface BaseMessage {
   _id: string;
-  // user: User;
-  user: string;
   attachedFiles: Image[];
   textContent: string;
   date: Date;
+}
+
+export interface Message extends BaseMessage {
+  user: string;
+}
+
+export interface MessageNotification extends BaseMessage {
+  user: User;
 }
 
 export interface LocalMessage {

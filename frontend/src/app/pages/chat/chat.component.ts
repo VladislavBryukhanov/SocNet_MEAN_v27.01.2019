@@ -37,9 +37,9 @@ export class ChatComponent implements OnInit, OnDestroy {
 // TODO router error when route with query params
 
   ngOnInit() {
-    const { onMessage } = this.sseService.subscribeOnChatCreation();
+    const { $messageEvent } = this.sseService.subscribeOnChatCreation();
     this.subscriptions.push(
-      onMessage.subscribe(newChat => {
+      $messageEvent.subscribe(newChat => {
         const chat = this.displayableChat(newChat);
         this.chatList.push(chat);
       })

@@ -50,15 +50,20 @@ module.exports = (server) => {
             });
 
             client.on('sendMessage', async (msg, cb) => {
+                const { chatId } = client;
                 const message = await Message.create({
                     ...msg,
                     user: client.decoded._id,
-                    chatId: ObjectId(client.chatId)
+                    chatId: ObjectId(chatId)
                 });
-                
+                const viewMessage = await Message.populate(message, {
+                    path: 'user',
+                    populate: { path: 'avatar' }
+                });
+
                 cb({ exists: !!message });
-                io.to(client.chatId).emit('messageSent', message);
-                // chatEvent.emit(INCOMING_MESSAGE, message);
+                io.to(chatId).emit('messageSent', message);
+                chatEvent.emit(INCOMING_MESSAGE, { message: viewMessage, chatId });
             });
         });
 };

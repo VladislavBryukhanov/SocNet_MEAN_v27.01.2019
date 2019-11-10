@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { environment } from 'src/environments/environment';
 import { EventSourcePolyfill } from 'event-source-polyfill';
-import { fromEvent, combineLatest } from 'rxjs';
+import { fromEvent } from 'rxjs';
 import { map } from 'rxjs/internal/operators';
 
 @Injectable({
@@ -27,20 +27,16 @@ export class SseService {
     );
 
     return {
-      onMessage: fromEvent(eventSource, 'message').pipe(
+      $messageEvent: fromEvent(eventSource, 'message').pipe(
         map((res) => JSON.parse(res['data']))
       ),
-      onOpen: fromEvent(eventSource, 'open'),
-      onError: fromEvent(eventSource, 'error'),
+      $openEvent: fromEvent(eventSource, 'open'),
+      $errorEvent: fromEvent(eventSource, 'error'),
     };
   }
 
   subscribeOnImcomingMessages() {
-    const { onMessage } = this.sseEventHandler(`/incomingMessages`);
-
-    onMessage.subscribe((message) => {
-      console.log(message);
-    });
+    return this.sseEventHandler(`/incomingMessages`);
   }
 
   subscribeOnChatCreation() {
