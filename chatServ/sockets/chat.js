@@ -2,6 +2,8 @@ const Message = require('../models/message');
 const { ObjectId } = require('mongoose').Types;
 const jwt = require('jsonwebtoken');
 const secret = require('../secret');
+const { INCOMING_MESSAGE } = require('../common/constants').sseEvents;
+const { chatEvent } = require('../routes/sse');
 
 const socketAuthMiddleware = (socket, next) => {
     const { query } = socket.handshake;
@@ -56,6 +58,7 @@ module.exports = (server) => {
                 
                 cb({ exists: !!message });
                 io.to(client.chatId).emit('messageSent', message);
+                // chatEvent.emit(INCOMING_MESSAGE, message);
             });
         });
 };

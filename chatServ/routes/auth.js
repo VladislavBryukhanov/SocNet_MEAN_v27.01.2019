@@ -28,7 +28,6 @@ const getToken = (user) => {
     };
 };
 
-
 router.get('/getProfile', async (request, response) => {
     const user = await User.findOne({
         _id: request.user._id,
@@ -43,9 +42,11 @@ router.get('/getProfile', async (request, response) => {
 });
 
 router.post('/signIn', async (request, response) => {
-    const user = await User.findOne(request.body);
+    const { login, password } = request.body;
+    const user = await User.findOne({ login, password });
+
     if(user) {
-        const session_hash_data = await User.findOne(request.body).select('session_hash');
+        const session_hash_data = await User.findOne({ login, password }).select('session_hash');
         user.session_hash = session_hash_data.session_hash;
         response.send(getToken(user));
     } else {

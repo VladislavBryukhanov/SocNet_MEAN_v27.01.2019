@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Chat = require('../models/chat');
+const { CHAT_CREATED } = require('../common/constants').sseEvents;
+const { chatEvent } = require('../routes/sse');
 
 const findChatByInterlocutors = (users) => Chat.find({
     users: { '$all': users }
@@ -66,6 +68,7 @@ router.post('/createChat', async (request, response) => {
         populate: { path: 'avatar' }
     });
 
+    chatEvent.emit(CHAT_CREATED, newChat);
     response.send(newChat);
 });
 

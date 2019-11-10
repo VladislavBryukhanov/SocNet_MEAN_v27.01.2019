@@ -5,6 +5,7 @@ import { LocalMessage, Chat, Message } from '../../models/chat';
 import { AuthService } from '../../services/auth.service';
 import { Subscription, forkJoin, of } from 'rxjs';
 import { mergeMap, filter, concatMap, tap, take } from 'rxjs/internal/operators';
+import { SseService } from 'src/app/services/sse.service';
 
 @Component({
   selector: 'app-chat',
@@ -28,13 +29,22 @@ export class ChatComponent implements OnInit, OnDestroy {
     private chatService: ChatService,
     private route: ActivatedRoute,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private sseService: SseService
   ) { }
 
 // TODO pass user as param and display it in header even before message sendint
 // TODO router error when route with query params
 
   ngOnInit() {
+    const { onMessage } = this.sseService.subscribeOnChatCreation();
+    this.subscriptions.push(
+      onMessage.subscribe(newChat => {
+        const chat = this.displayableChat(newChat);
+        this.chatList.push(chat);
+      })
+    );
+
     this.subscriptions.push(
       this.chatService
         .getChatList(true)
