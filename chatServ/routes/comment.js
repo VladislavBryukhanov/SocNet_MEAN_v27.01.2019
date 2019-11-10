@@ -168,6 +168,7 @@ router.put('/editComment', upload.array('files', 12), async (request, response) 
 });
 
 router.delete('/deleteComment/:_id', async (request, response) => {
+    // TODO cascade deletion
     const deletedItem = await Comment.findOneAndRemove({
         _id: request.params._id,
         owner: request.user._id

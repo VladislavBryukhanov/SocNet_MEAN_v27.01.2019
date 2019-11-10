@@ -22,7 +22,7 @@
            [scrollCallback]="scrollCallback"
            [initDataSize]="2"
            [minItemSize]="95">
-        <div class="comment" *ngFor="let comment of commentsService.comments">
+        <div class="comment" *ngFor="let comment of commentsService.comments.value">
           <div class="commentTitle">
               <div class="ownerBlock" routerLink="/profile/{{comment.user._id}}">
                 <img class="userAvatar"
