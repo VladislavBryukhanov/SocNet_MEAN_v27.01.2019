@@ -17,6 +17,11 @@ const buildSseResponse = (payload) =>
 
 const sseHandler = (response, EVENT, checkAccess) => {
   response.status(200).set(sseHeaders);
+  
+  setInterval(
+    () => response.write('event: ping\n\n'),
+    30000
+  );
 
   event.on(EVENT, async (payload) => {
     const isAccessGranted = await checkAccess(payload);

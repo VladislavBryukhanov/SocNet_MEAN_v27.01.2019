@@ -26,7 +26,7 @@ export class ChatService {
         query: { token }
       }
     );
-      
+
     this.socket.emit('joinChat', chatId);
 
     this.socket.on(
@@ -73,7 +73,10 @@ export class ChatService {
   }
 
   findChatByInterlocutor(intelocutor: string) {
-    return this.http.get<Chat[]>(`/chat/findChatByInterlocutor/${intelocutor}`);
+    return this.http.get<Chat[]>(
+      `/chat/findChatByInterlocutor/${intelocutor}`,
+      {observe: 'response'}
+    );
   }
 
   getOpenedChat(id: string) {

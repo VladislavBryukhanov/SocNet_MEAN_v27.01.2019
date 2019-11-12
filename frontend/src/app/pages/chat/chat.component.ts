@@ -3,9 +3,10 @@ import { ChatService } from '../../services/chat.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocalMessage, Chat, Message } from '../../models/chat';
 import { AuthService } from '../../services/auth.service';
-import { Subscription, forkJoin, of } from 'rxjs';
-import { mergeMap, filter, concatMap, tap, take } from 'rxjs/internal/operators';
+import { Subscription, forkJoin, of, throwError } from 'rxjs';
+import { mergeMap, filter, concatMap, tap, take, catchError } from 'rxjs/internal/operators';
 import { SseService } from 'src/app/services/sse.service';
+import { HttpResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-chat',
@@ -23,6 +24,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   interlocutor: string;
 
+  eventSource;
+
   // send message after chat creating and user connection to this new chat by socket
 
   constructor(
@@ -37,7 +40,9 @@ export class ChatComponent implements OnInit, OnDestroy {
 // TODO router error when route with query params
 
   ngOnInit() {
-    const { $messageEvent } = this.sseService.subscribeOnChatCreation();
+    const { source, $messageEvent } = this.sseService.subscribeOnChatCreation();
+    this.eventSource = source;
+
     this.subscriptions.push(
       $messageEvent.subscribe(newChat => {
         const chat = this.displayableChat(newChat);
@@ -73,22 +78,25 @@ export class ChatComponent implements OnInit, OnDestroy {
         filter(params => params.interlocutor),
         mergeMap((params) => {
           this.interlocutor = params.interlocutor;
+
           return this.chatService.findChatByInterlocutor(params.interlocutor);
         })
-      ).subscribe((chatList: Chat[]) => {
-        const chat = chatList.find((item: Chat) => item.users.length === 2);
+      ).subscribe((response: HttpResponse<Chat[]>) => {
         this.loading = false;
 
-        if (!chat || !chat._id) {
+        // if interlocutor is not exists ... create chat with it
+        if (response.status === 204) {
           return this.initDialog = true;
         }
 
+        const chat = response.body.find((item: Chat) => item.users.length === 2);
         this.onOpenChat(chat);
       })
     );
   }
 
   ngOnDestroy() {
+    this.eventSource.close();
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.chatService.unsubscribeFromChat();
   }

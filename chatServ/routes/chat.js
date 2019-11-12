@@ -4,7 +4,7 @@ const Chat = require('../models/chat');
 const { CHAT_CREATED } = require('../common/constants').sseEvents;
 const { chatEvent } = require('../routes/sse');
 
-const findChatByInterlocutors = (users) => Chat.find({
+const findChatByInterlocutors = (users) => Chat.findOne({
     users: { '$all': users }
 });
 
@@ -34,7 +34,7 @@ router.get('/findChatByInterlocutor/:interlocutor', async (request, response) =>
     ]);
     
     if (!chat) {
-        response.send(404);
+        response.send(204);
     }
     response.send(chat);
 });
