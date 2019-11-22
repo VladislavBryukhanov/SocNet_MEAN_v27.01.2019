@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {Observable, of, throwError} from 'rxjs/index';
+import {Observable, of, throwError, BehaviorSubject} from 'rxjs/index';
 import {HttpClient} from '@angular/common/http';
 import {User} from '../models/user';
 import {Router} from '@angular/router';
@@ -16,11 +16,7 @@ export class AuthService {
   }
 
   get myUser(): User {
-    return this._myUser;
-  }
-
-  set myUser(value: User) {
-    this._myUser = value;
+    return this.myUserSubject.value;
   }
 
   get redirectUrl(): string {
@@ -32,8 +28,8 @@ export class AuthService {
   }
 
   private _redirectUrl = '/user_list';
-  private _myUser: User;
-  public _authToken: string;
+  private _authToken: string;
+  public myUserSubject: BehaviorSubject<User> = new BehaviorSubject(null);
 
   constructor (private http: HttpClient, private router: Router, private location: Location) { }
 
@@ -51,7 +47,7 @@ export class AuthService {
 
   signOut() {
     localStorage.removeItem('AuthToken');
-    this._myUser = null;
+    this.myUserSubject.next(null);
     this.router.navigate(['/']);
   }
 
@@ -63,7 +59,7 @@ export class AuthService {
     }
     return this.http.get<User>('/getProfile').pipe(
       map(user => {
-        this._myUser = user;
+        this.myUserSubject.next(user);
         // this.router.navigate([this.redirectUrl]);
       }),
       catchError((err) => {
@@ -105,8 +101,8 @@ export class AuthService {
       .subscribe(user => {
         // this.saveAuthToken(res['token']);
         // this._authToken = this.getAuthToken();
-        // this._myUser = res['user'];
-        this._myUser = user;
+        // this.myUserSubject = res['user'];
+        this.myUserSubject.next(user);
         this.location.back();
       });
   }

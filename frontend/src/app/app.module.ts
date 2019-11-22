@@ -53,7 +53,9 @@ import { ChatComponent } from './pages/chat/chat.component';
     FormsModule
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    ImagePathPipe,
+    ImageResizerPipe
   ],
   bootstrap: [AppComponent]
 })

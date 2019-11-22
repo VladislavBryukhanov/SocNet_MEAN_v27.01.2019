@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs/index';
+import {Observable, BehaviorSubject} from 'rxjs/index';
 import {Comment} from '../models/comment';
 import * as io from 'socket.io-client';
 import {map} from 'rxjs/internal/operators';
@@ -11,26 +11,26 @@ import { environment } from 'src/environments/environment';
 })
 export class CommentsService {
 
-  private socket = io(environment.hostUrl, { path: '/comments_soc'});
-
-  private _comments: Comment[] = [];
-  get comments(): Comment[] {
-    return this._comments;
-  }
-  set comments(value: Comment[]) {
-    this._comments = value;
-  }
+  private socket;
+  public comments: BehaviorSubject<Comment[]> = new BehaviorSubject([]);
 
   constructor(private http: HttpClient) { }
 
   addCommentListener(itemId: string) {
+    this.socket = io(environment.hostUrl, { path: '/comments_soc'});
+
     this.socket.emit('joinCommentsRoom', itemId);
     this.socket.on('commentAdded', (comment: Comment) => {
-      this._comments.push(comment);
+      this.comments.next([
+        ...this.comments.value,
+        comment
+      ]);
     });
   }
   removeCommentListener(itemId: string) {
-    this.socket.close();
+    if (this.socket) {
+      this.socket.close();
+    }
   }
 
   // getCommentsCounter(userId: string, itemId: string) {
@@ -45,10 +45,12 @@ export class CommentsService {
     return this.http.get<Comment[]>(`/comments/getComments/${itemId}&${targetModel}&${limit}&${currentPage * limit}`)
       .pipe(
         map(res => {
-            this._comments = this._comments.concat(res['data']);
-            return res;
-          }
-        )
+          this.comments.next([
+            ...this.comments.value,
+            ...res['data']
+          ]);
+          return res;
+        })
       );
   }
 
@@ -60,21 +62,27 @@ export class CommentsService {
   }
 
   deleteComment(commentId: string) {
-    this.http.delete<Comment>(`/FormData/deletePost/${commentId}`)
+    this.http.delete<Comment>(`/comments/deleteComment/${commentId}`)
       .subscribe((res: Comment) => {
-        this._comments = this._comments.filter(item => item._id !== res._id);
+        const fiteredComments = this.comments.value.filter(
+          item => item._id !== res._id
+        );
+        this.comments.next(fiteredComments);
       });
   }
 
   editComment(comment: FormData) {
-    this.http.put('/FormData/deleteComment', comment)
+    this.http.put('/comments/editComment', comment)
       .subscribe((res: Comment) => {
-        const index = this._comments.findIndex(item => item._id === res._id);
-        this._comments[index] = res;
+        const editedComments = this.comments.value;
+        const index = editedComments.findIndex(item => item._id === res._id);
+        editedComments[index] = res;
+
+        this.comments.next(editedComments);
       });
   }
 
   destroy() {
-    this._comments = [];
+    this.comments.next([]);
   }
 }

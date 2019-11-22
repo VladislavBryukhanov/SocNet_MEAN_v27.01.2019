@@ -3,8 +3,10 @@ import { ChatService } from '../../services/chat.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocalMessage, Chat, Message } from '../../models/chat';
 import { AuthService } from '../../services/auth.service';
-import { Subscription, forkJoin, of } from 'rxjs';
-import { mergeMap, filter, concatMap, tap, take } from 'rxjs/internal/operators';
+import { Subscription, forkJoin, of, throwError } from 'rxjs';
+import { mergeMap, filter, concatMap, tap, take, catchError } from 'rxjs/internal/operators';
+import { SseService } from 'src/app/services/sse.service';
+import { HttpResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-chat',
@@ -22,22 +24,34 @@ export class ChatComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   interlocutor: string;
 
+  eventSource;
+
   // send message after chat creating and user connection to this new chat by socket
 
   constructor(
     private chatService: ChatService,
     private route: ActivatedRoute,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private sseService: SseService
   ) { }
 
 // TODO pass user as param and display it in header even before message sendint
 // TODO router error when route with query params
 
   ngOnInit() {
+    const { source, $messageEvent } = this.sseService.subscribeOnChatCreation();
+    this.eventSource = source;
+
     this.subscriptions.push(
-      this.chatService
-        .getChatList(true)
+      $messageEvent.subscribe(newChat => {
+        const chat = this.displayableChat(newChat);
+        this.chatList.push(chat);
+      })
+    );
+
+    this.subscriptions.push(
+      this.chatService.getChatList(true)
         .subscribe(chatList => {
           this.chatList = chatList.map(this.displayableChat);
         })
@@ -63,22 +77,25 @@ export class ChatComponent implements OnInit, OnDestroy {
         filter(params => params.interlocutor),
         mergeMap((params) => {
           this.interlocutor = params.interlocutor;
+
           return this.chatService.findChatByInterlocutor(params.interlocutor);
         })
-      ).subscribe((chatList: Chat[]) => {
-        const chat = chatList.find((item: Chat) => item.users.length === 2);
+      ).subscribe((response: HttpResponse<Chat[]>) => {
         this.loading = false;
 
-        if (!chat || !chat._id) {
+        // if interlocutor is not exists ... create chat with it
+        if (response.status === 204) {
           return this.initDialog = true;
         }
 
+        const chat = response.body.find((item: Chat) => item.users.length === 2);
         this.onOpenChat(chat);
       })
     );
   }
 
   ngOnDestroy() {
+    this.eventSource.close();
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.chatService.unsubscribeFromChat();
   }
@@ -101,7 +118,14 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   onOpenChat(chat: Chat) {
-    this.router.navigate([ `/chat/${chat._id}` ]);
+    // Ангулар роутер почему-то не игнорирует переход на такой же роут после создания чата (и дестроит а далее инитит по новой один и
+    // тот же компонент, баг воспроизводится только для создателя чата), хотя это предусматривается дефолтным значением 
+    // onSameUrlNavigation, проверял на Ангулар 6 и на Ангулар 8, идентичный баг
+    if (this.router.url === `/chat/${chat._id}`) {
+      return;
+    }
+
+    this.router.navigate([ `${chat._id}` ]);
   }
 
   createChat(callback: Function) {
