@@ -20,6 +20,8 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    Notification.requestPermission();
+
     this.authService.myUserSubject
       .pipe(
         filter(user => !!user),

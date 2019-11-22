@@ -51,8 +51,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(
-      this.chatService
-        .getChatList(true)
+      this.chatService.getChatList(true)
         .subscribe(chatList => {
           this.chatList = chatList.map(this.displayableChat);
         })
@@ -119,7 +118,14 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   onOpenChat(chat: Chat) {
-    this.router.navigate([ `/chat/${chat._id}` ]);
+    // Ангулар роутер почему-то не игнорирует переход на такой же роут после создания чата (и дестроит а далее инитит по новой один и
+    // тот же компонент, баг воспроизводится только для создателя чата), хотя это предусматривается дефолтным значением 
+    // onSameUrlNavigation, проверял на Ангулар 6 и на Ангулар 8, идентичный баг
+    if (this.router.url === `/chat/${chat._id}`) {
+      return;
+    }
+
+    this.router.navigate([ `${chat._id}` ]);
   }
 
   createChat(callback: Function) {

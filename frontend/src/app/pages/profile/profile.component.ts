@@ -68,7 +68,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   onStartChat(profile: User) {
-    this.router.navigate([ `/chat` ], {
+    this.router.navigate([ `/chat/new` ], {
       queryParams: { interlocutor: profile._id }
     });
   }
