@@ -1,3 +1,4 @@
+import { UsersService } from './../../services/users.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ChatService } from '../../services/chat.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,6 +8,7 @@ import { Subscription, forkJoin, of, throwError } from 'rxjs';
 import { mergeMap, filter, concatMap, tap, take, catchError } from 'rxjs/internal/operators';
 import { SseService } from 'src/app/services/sse.service';
 import { HttpResponse } from '@angular/common/http';
+import { User } from 'src/app/models/user';
 
 @Component({
   selector: 'app-chat',
@@ -18,7 +20,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   chatList: Chat[] = [];
   chatContent: Message[] = [];
   messageContent = '';
-  openedChat?: Chat;
+  openedChat?: Partial<Chat>;
   initDialog: boolean;
   loading = true;
   subscriptions: Subscription[] = [];
@@ -30,6 +32,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   constructor(
     private chatService: ChatService,
+    private userService: UsersService,
     private route: ActivatedRoute,
     private authService: AuthService,
     private router: Router,
@@ -80,11 +83,18 @@ export class ChatComponent implements OnInit, OnDestroy {
 
           return this.chatService.findChatByInterlocutor(params.interlocutor);
         })
-      ).subscribe((response: HttpResponse<Chat[]>) => {
+      ).subscribe(async(response: HttpResponse<Chat[]>) => {
         this.loading = false;
 
         // if interlocutor is not exists ... create chat with it
         if (response.status === 204) {
+          this.userService.getUserById(this.interlocutor)
+            .toPromise()
+            .then(user => this.openedChat = {
+              avatar: user.avatar,
+              name: user.username,
+            });
+
           return this.initDialog = true;
         }
 
@@ -125,7 +135,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.router.navigate([ `${chat._id}` ]);
+    this.router.navigate([ `/chat/${chat._id}` ]);
   }
 
   createChat(callback: Function) {

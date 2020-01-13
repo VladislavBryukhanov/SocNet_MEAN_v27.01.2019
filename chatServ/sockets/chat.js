@@ -56,14 +56,14 @@ module.exports = (server) => {
                     user: client.decoded._id,
                     chatId: ObjectId(chatId)
                 });
-                const viewMessage = await Message.populate(message, {
-                    path: 'user',
-                    populate: { path: 'avatar' }
-                });
+                // const viewMessage = await Message.populate(message, {
+                //     path: 'user',
+                //     populate: { path: 'avatar' }
+                // });
 
                 cb({ exists: !!message });
                 io.to(chatId).emit('messageSent', message);
-                chatEvent.emit(INCOMING_MESSAGE, { message: viewMessage, chatId });
+                chatEvent.emit(INCOMING_MESSAGE, { message: message, chatId });
             });
         });
 };
